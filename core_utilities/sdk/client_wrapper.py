@@ -1,7 +1,6 @@
 import httpx
 import typing
 
-
 class BaseClientWrapper:
     def __init__(self, token: typing.Union[str, typing.Callable[[], str]]): 
         self._token = token
