@@ -15,6 +15,9 @@ class BaseClientWrapper:
         self._api_key = api_key
         self._api_secret = api_secret
 
+    def get_headers(self) -> typing.Dict[str, str]:
+        return {"AUTHORIZATION": httpx.BasicAuth(self._get_api_key(), self._get_api_secret())._auth_header}
+
     def _get_api_key(self) -> str:
         if isinstance(self._api_key, str):
             return self._api_key
@@ -26,10 +29,6 @@ class BaseClientWrapper:
             return self._api_secret
         else:
             return self._api_secret()
-
-    def get_headers(self) -> typing.Dict[str, str]:
-        self._api_key = api_key
-        self._api_secret = api_secret
 
 
 class SyncClientWrapper(BaseClientWrapper):

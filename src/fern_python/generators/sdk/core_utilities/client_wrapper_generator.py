@@ -85,10 +85,6 @@ class ClientWrapperGenerator:
             ),
         )
 
-        for constructor_param in constructor_info.constructor_parameters:
-            if constructor_param.getter_method is not None:
-                class_declaration.add_method(constructor_param.getter_method)
-
         class_declaration.add_method(
             AST.FunctionDeclaration(
                 name=ClientWrapperGenerator.GET_HEADERS_METHOD_NAME,
@@ -96,10 +92,14 @@ class ClientWrapperGenerator:
                     return_type=AST.TypeHint.dict(AST.TypeHint.str_(), AST.TypeHint.str_())
                 ),
                 body=AST.CodeWriter(
-                    self._get_write_constructor_body(constructor_parameters=constructor_info.constructor_parameters)
+                    self._get_write_get_headers_body(constructor_parameters=constructor_info.constructor_parameters)
                 ),
             )
         )
+
+        for constructor_param in constructor_info.constructor_parameters:
+            if constructor_param.getter_method is not None:
+                class_declaration.add_method(constructor_param.getter_method)
 
         return class_declaration
 
@@ -220,9 +220,13 @@ class ClientWrapperGenerator:
 
     def _get_write_constructor_body(self, *, constructor_parameters: List[ConstructorParameter]) -> CodeWriterFunction:
         def _write_constructor_body(writer: AST.NodeWriter) -> None:
+            params_empty = True
             for param in constructor_parameters:
                 if param.private_member_name is not None:
                     writer.write_line(f"self.{param.private_member_name} = {param.constructor_parameter_name}")
+                    params_empty = False
+            if params_empty:
+                writer.write_line("")
 
         return _write_constructor_body
 
