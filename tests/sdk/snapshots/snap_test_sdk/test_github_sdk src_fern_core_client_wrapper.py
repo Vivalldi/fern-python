@@ -9,25 +9,28 @@ class BaseClientWrapper:
     def __init__(
         self,
         *,
-        api_key: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
-        api_secret: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None
+        api_key: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        api_secret: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None
     ):
         self._api_key = api_key
         self._api_secret = api_secret
 
     def get_headers(self) -> typing.Dict[str, str]:
         headers: typing.Dict[str, str] = {}
-        headers["AUTHORIZATION"] = (httpx.BasicAuth(self._get_api_key(), self._get_api_secret())._auth_header,)
+        api_key = self._get_api_key()
+        api_secret = self._get_api_secret()
+        if api_key is not None and api_secret is not None:
+            headers["AUTHORIZATION"] = httpx.BasicAuth(api_key, api_secret)._auth_header
         return headers
 
-    def _get_api_key(self) -> str:
-        if isinstance(self._api_key, str):
+    def _get_api_key(self) -> typing.Optional[str]:
+        if isinstance(self._api_key, str) or self._api_key is None:
             return self._api_key
         else:
             return self._api_key()
 
-    def _get_api_secret(self) -> str:
-        if isinstance(self._api_secret, str):
+    def _get_api_secret(self) -> typing.Optional[str]:
+        if isinstance(self._api_secret, str) or self._api_secret is None:
             return self._api_secret
         else:
             return self._api_secret()
@@ -37,8 +40,8 @@ class SyncClientWrapper(BaseClientWrapper):
     def __init__(
         self,
         *,
-        api_key: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
-        api_secret: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+        api_key: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        api_secret: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         httpx_client: httpx.Client
     ):
         super().__init__(api_key=api_key, api_secret=api_secret)
@@ -49,8 +52,8 @@ class AsyncClientWrapper(BaseClientWrapper):
     def __init__(
         self,
         *,
-        api_key: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
-        api_secret: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+        api_key: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        api_secret: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         httpx_client: httpx.AsyncClient
     ):
         super().__init__(api_key=api_key, api_secret=api_secret)

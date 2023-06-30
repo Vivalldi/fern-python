@@ -10,19 +10,22 @@ class BaseClientWrapper:
         self,
         *,
         x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
     ):
         self._x_random_header = x_random_header
         self._token = token
 
     def get_headers(self) -> typing.Dict[str, str]:
         headers: typing.Dict[str, str] = {}
-        headers["X-Random-Header"] = self._x_random_header
-        headers["AUTHORIZATION"] = f"Bearer {self._get_token()}"
+        if self._x_random_header is not None:
+            headers["X-Random-Header"] = self._x_random_header
+        token = self._get_token()
+        if token is not None:
+            headers["AUTHORIZATION"] = f"Bearer {token}"
         return headers
 
-    def _get_token(self) -> str:
-        if isinstance(self._token, str):
+    def _get_token(self) -> typing.Optional[str]:
+        if isinstance(self._token, str) or self._token is None:
             return self._token
         else:
             return self._token()
@@ -33,7 +36,7 @@ class SyncClientWrapper(BaseClientWrapper):
         self,
         *,
         x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         httpx_client: httpx.Client,
     ):
         super().__init__(x_random_header=x_random_header, token=token)
@@ -45,7 +48,7 @@ class AsyncClientWrapper(BaseClientWrapper):
         self,
         *,
         x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         httpx_client: httpx.AsyncClient,
     ):
         super().__init__(x_random_header=x_random_header, token=token)
