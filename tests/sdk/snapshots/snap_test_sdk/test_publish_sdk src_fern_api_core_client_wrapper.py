@@ -8,15 +8,20 @@ import httpx
 class BaseClientWrapper:
     def __init__(self, *, header_auth: str):
         self.header_auth = header_auth
+
     def get_headers(self) -> typing.Dict[str, str]:
-        return {
-        "X-Header-Auth": MyPrefix self.header_auth,
-        }
+        headers: typing.Dict[str, str] = {}
+        headers["X-Header-Auth"] = f"MyPrefix {self.header_auth}"
+        return headers
+
+
 class SyncClientWrapper(BaseClientWrapper):
     def __init__(self, *, header_auth: str, httpx_client: httpx.Client):
-        super().__init__(header_auth)
+        super().__init__(header_auth=header_auth)
         self.httpx_client = httpx_client
+
+
 class AsyncClientWrapper(BaseClientWrapper):
     def __init__(self, *, header_auth: str, httpx_client: httpx.AsyncClient):
-        super().__init__(header_auth)
+        super().__init__(header_auth=header_auth)
         self.httpx_client = httpx_client

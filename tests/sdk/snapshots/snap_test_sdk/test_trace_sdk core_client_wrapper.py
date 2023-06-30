@@ -6,24 +6,47 @@ import httpx
 
 
 class BaseClientWrapper:
-    def __init__(self, *, x_random_header: typing.Optional[str] = None, token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None):
+    def __init__(
+        self,
+        *,
+        x_random_header: typing.Optional[str] = None,
+        token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+    ):
         self._x_random_header = x_random_header
         self._token = token
+
     def get_headers(self) -> typing.Dict[str, str]:
-        return {
-        "X-Random-Header":  self._x_random_header,
-        "AUTHORIZATION": Bearer self._get_token(),
-        }
+        headers: typing.Dict[str, str] = {}
+        headers["X-Random-Header"] = self._x_random_header
+        headers["AUTHORIZATION"] = f"Bearer {self._get_token()}"
+        return headers
+
     def _get_token(self) -> str:
         if isinstance(self._token, str):
             return self._token
         else:
             return self._token()
+
+
 class SyncClientWrapper(BaseClientWrapper):
-    def __init__(self, *, x_random_header: typing.Optional[str] = None, token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None, httpx_client: httpx.Client):
-        super().__init__(x_random_header, token)
+    def __init__(
+        self,
+        *,
+        x_random_header: typing.Optional[str] = None,
+        token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+        httpx_client: httpx.Client,
+    ):
+        super().__init__(x_random_header=x_random_header, token=token)
         self.httpx_client = httpx_client
+
+
 class AsyncClientWrapper(BaseClientWrapper):
-    def __init__(self, *, x_random_header: typing.Optional[str] = None, token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None, httpx_client: httpx.AsyncClient):
-        super().__init__(x_random_header, token)
+    def __init__(
+        self,
+        *,
+        x_random_header: typing.Optional[str] = None,
+        token: typing.Optional[typing.Callable[[str], typing.Callable[[], str]]] = None,
+        httpx_client: httpx.AsyncClient,
+    ):
+        super().__init__(x_random_header=x_random_header, token=token)
         self.httpx_client = httpx_client

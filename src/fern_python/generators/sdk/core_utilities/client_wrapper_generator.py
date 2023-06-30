@@ -166,7 +166,7 @@ class ClientWrapperGenerator:
     ) -> CodeWriterFunction:
         def _write_derived_client_wrapper_constructor_body(writer: AST.NodeWriter) -> None:
             writer.write_line(
-                f"super().__init__({', '.join([param.constructor_parameter_name for param in constructor_parameters])})"
+                "super().__init__(" + ', '.join([f"{param.constructor_parameter_name}={param.constructor_parameter_name}" for param in constructor_parameters]) + ")"
             )
             writer.write_line(
                 f"self.{ClientWrapperGenerator.HTTPX_CLIENT_MEMBER_NAME} = {ClientWrapperGenerator.HTTPX_CLIENT_MEMBER_NAME}"
@@ -187,10 +187,13 @@ class ClientWrapperGenerator:
 
     def _get_write_get_headers_body(self, *, constructor_parameters: List[ConstructorParameter]) -> CodeWriterFunction:
         def _write_get_headers_body(writer: AST.NodeWriter) -> None:
-            writer.write_line("return {")
+            writer.write("headers: ")
+            writer.write_node(AST.TypeHint.dict(AST.TypeHint.str_(), AST.TypeHint.str_()))
+            writer.write("= {}")
+            writer.write_newline_if_last_line_not()
             basic_auth_scheme = self._get_basic_auth_scheme()
             if basic_auth_scheme is not None:
-                writer.write(f'"{ClientWrapperGenerator.AUTHORIZATION_HEADER}": ')
+                writer.write(f'headers["{ClientWrapperGenerator.AUTHORIZATION_HEADER}"] = ')
                 writer.write_node(
                     AST.ClassInstantiation(
                         class_=httpx.HttpX.BASIC_AUTH,
@@ -206,15 +209,25 @@ class ClientWrapperGenerator:
                 if param.is_basic:
                     continue
                 if param.header_key is not None:
-                    if param.getter_method is not None:
-                        writer.write_line(
-                            f"\"{param.header_key}\": {param.header_prefix if param.header_prefix is not None else ''} self.{param.getter_method.name}(),"
-                        )
-                    elif param.private_member_name is not None:
-                        writer.write_line(
-                            f"\"{param.header_key}\": {param.header_prefix if param.header_prefix is not None else ''} self.{param.private_member_name},"
-                        )
-            writer.write_line("}")
+                    if param.header_prefix is not None: 
+                        if param.getter_method is not None:
+                            writer.write_line(
+                                f"headers[\"{param.header_key}\"] = f\"{param.header_prefix} {{self.{param.getter_method.name}()}}\""
+                            )
+                        elif param.private_member_name is not None:
+                            writer.write_line(
+                                f"headers[\"{param.header_key}\"] = f\"{param.header_prefix} {{self.{param.private_member_name}}}\""
+                            )
+                    else: 
+                        if param.getter_method is not None:
+                            writer.write_line(
+                                f"headers[\"{param.header_key}\"] = self.{param.getter_method.name}()"
+                            )
+                        elif param.private_member_name is not None:
+                            writer.write_line(
+                                f"headers[\"{param.header_key}\"] = self.{param.private_member_name}"
+                            )
+            writer.write_line("return headers")
 
         return _write_get_headers_body
 
@@ -226,7 +239,7 @@ class ClientWrapperGenerator:
                     writer.write_line(f"self.{param.private_member_name} = {param.constructor_parameter_name}")
                     params_empty = False
             if params_empty:
-                writer.write_line("")
+                writer.write_line("pass")
 
         return _write_constructor_body
 

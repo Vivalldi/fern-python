@@ -7,14 +7,19 @@ import httpx
 
 class BaseClientWrapper:
     def __init__(self) -> None:
-        
+        pass
+
     def get_headers(self) -> typing.Dict[str, str]:
-        return {
-        }
+        headers: typing.Dict[str, str] = {}
+        return headers
+
+
 class SyncClientWrapper(BaseClientWrapper):
     def __init__(self, *, httpx_client: httpx.Client):
         super().__init__()
         self.httpx_client = httpx_client
+
+
 class AsyncClientWrapper(BaseClientWrapper):
     def __init__(self, *, httpx_client: httpx.AsyncClient):
         super().__init__()
