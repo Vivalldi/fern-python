@@ -26,7 +26,7 @@ class FernIr:
         timeout: typing.Optional[float] = None
     ):
         self._client_wrapper = AsyncClientWrapper(
-            x_random_header=x_random_header, token=token, httpx_client=httpx.Client(timeout=_timeout)
+            x_random_header=x_random_header, token=token, httpx_client=httpx.Client(timeout=timeout)
         )
         self.v_2 = V2Client(environment=environment, client_wrapper=self._client_wrapper)
         self.admin = AdminClient(environment=environment, client_wrapper=self._client_wrapper)
@@ -48,7 +48,7 @@ class AsyncFernIr:
         timeout: typing.Optional[float] = None
     ):
         self._client_wrapper = SyncClientWrapper(
-            x_random_header=x_random_header, token=token, httpx_client=httpx.AsyncClient(timeout=_timeout)
+            x_random_header=x_random_header, token=token, httpx_client=httpx.AsyncClient(timeout=timeout)
         )
         self.v_2 = AsyncV2Client(environment=environment, client_wrapper=self._client_wrapper)
         self.admin = AsyncAdminClient(environment=environment, client_wrapper=self._client_wrapper)

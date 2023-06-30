@@ -18,7 +18,7 @@ class FernIr:
         timeout: typing.Optional[float] = 60
     ):
         self._client_wrapper = AsyncClientWrapper(
-            api_key=api_key, api_secret=api_secret, httpx_client=httpx.Client(timeout=_timeout)
+            api_key=api_key, api_secret=api_secret, httpx_client=httpx.Client(timeout=timeout)
         )
         self.movie = MovieClient(environment=environment, client_wrapper=self._client_wrapper)
 
@@ -33,6 +33,6 @@ class AsyncFernIr:
         timeout: typing.Optional[float] = 60
     ):
         self._client_wrapper = SyncClientWrapper(
-            api_key=api_key, api_secret=api_secret, httpx_client=httpx.AsyncClient(timeout=_timeout)
+            api_key=api_key, api_secret=api_secret, httpx_client=httpx.AsyncClient(timeout=timeout)
         )
         self.movie = AsyncMovieClient(environment=environment, client_wrapper=self._client_wrapper)

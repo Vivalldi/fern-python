@@ -54,6 +54,11 @@ class RootClientGenerator:
         self._async_class_name = async_class_name
         self._is_default_body_parameter_used = False
 
+        client_wrapper_generator = ClientWrapperGenerator(context=self._context)
+        self._client_wrapper_constructor_params = client_wrapper_generator._get_constructor_info().constructor_parameters
+
+        self._timeout_constructor_parameter_name = self._get_timeout_constructor_parameter_name([param.constructor_parameter_name for param in self._client_wrapper_constructor_params ])
+
     def generate(self, source_file: SourceFile) -> None:
         class_declaration = self._create_class_declaration(is_async=False)
         if self._is_default_body_parameter_used:
@@ -137,7 +142,7 @@ class RootClientGenerator:
 
         parameters.append(
             ConstructorParameter(
-                constructor_parameter_name=self._get_timeout_constructor_parameter_name(parameters),
+                constructor_parameter_name=self._timeout_constructor_parameter_name,
                 type_hint=AST.TypeHint.optional(AST.TypeHint.float_()),
                 initializer=AST.Expression(f"{self._context.custom_config.timeout_in_seconds}")
                 if isinstance(self._context.custom_config.timeout_in_seconds, int)
@@ -151,7 +156,6 @@ class RootClientGenerator:
 
     def _get_write_constructor_body(self, *, is_async: bool) -> CodeWriterFunction:
         def _write_constructor_body(writer: AST.NodeWriter) -> None:
-            constructor_parameters = self._get_constructor_parameters(is_async=is_async)
             client_wrapper_generator = ClientWrapperGenerator(context=self._context)
             kwargs = []
             for wrapper_param in client_wrapper_generator._get_constructor_info().constructor_parameters:
@@ -171,7 +175,7 @@ class RootClientGenerator:
                                 (
                                     "timeout",
                                     AST.Expression(
-                                        f"{self._get_timeout_constructor_parameter_name(constructor_parameters)}"
+                                        f"{self._timeout_constructor_parameter_name}"
                                     ),
                                 )
                             ],
@@ -237,8 +241,8 @@ class RootClientGenerator:
     def _get_client_wrapper_member_name(self) -> str:
         return "_client_wrapper"
 
-    def _get_timeout_constructor_parameter_name(self, params: typing.List[ConstructorParameter]) -> str:
+    def _get_timeout_constructor_parameter_name(self, params: typing.List[str]) -> str:
         for param in params:
-            if param.constructor_parameter_name == "timeout":
+            if param == "timeout":
                 return "_timeout"
         return "timeout"
