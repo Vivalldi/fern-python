@@ -5,6 +5,7 @@ from fern.generator_exec.resources.config import GeneratorConfig
 
 from fern_python.cli.abstract_generator import AbstractGenerator
 from fern_python.codegen import Project
+from fern_python.codegen.filepath import Filepath
 from fern_python.generator_exec_wrapper import GeneratorExecWrapper
 from fern_python.generators.pydantic_model import (
     PydanticModelCustomConfig,
@@ -13,6 +14,9 @@ from fern_python.generators.pydantic_model import (
 from fern_python.generators.sdk.context.sdk_generator_context import SdkGeneratorContext
 from fern_python.generators.sdk.context.sdk_generator_context_impl import (
     SdkGeneratorContextImpl,
+)
+from fern_python.generators.sdk.core_utilities.client_wrapper_generator import (
+    ClientWrapperGenerator,
 )
 from fern_python.source_file_generator import SourceFileGenerator
 
@@ -93,6 +97,12 @@ class SdkGenerator(AbstractGenerator):
                 project=project,
             )
 
+        self._generate_client_wrapper(
+            context=context,
+            generator_exec_wrapper=generator_exec_wrapper,
+            project=project,
+        )
+
         self._generate_root_client(
             context=context,
             ir=ir,
@@ -142,6 +152,23 @@ class SdkGenerator(AbstractGenerator):
                     context=context, environments=multiple_base_urls_environments
                 ).generate(source_file=source_file),
             )
+
+    def _generate_client_wrapper(
+        self,
+        context: SdkGeneratorContext,
+        generator_exec_wrapper: GeneratorExecWrapper,
+        project: Project,
+    ) -> None:
+        filepath = Filepath(
+            directories=context.core_utilities.filepath,
+            file=Filepath.FilepathPart(module_name="client_wrapper"),
+        )
+        with SourceFileGenerator.generate(
+            project=project,
+            filepath=filepath,
+            generator_exec_wrapper=generator_exec_wrapper,
+        ) as source_file:
+            ClientWrapperGenerator(context=context).generate(source_file=source_file)
 
     def _generate_root_client(
         self,
