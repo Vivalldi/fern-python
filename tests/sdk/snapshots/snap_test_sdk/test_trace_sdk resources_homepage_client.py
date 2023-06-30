@@ -13,6 +13,9 @@ from ...core.jsonable_encoder import jsonable_encoder
 from ...environment import FernIrEnvironment
 from ..commons.types.problem_id import ProblemId
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class HomepageClient:
     def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):

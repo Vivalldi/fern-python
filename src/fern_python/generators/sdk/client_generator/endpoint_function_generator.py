@@ -1,23 +1,24 @@
+from dataclasses import dataclass
+from typing import List, Optional, Set, Tuple
+
+import fern.ir.resources as ir_types
+from typing_extensions import Never
+
+from fern_python.codegen import AST
+from fern_python.external_dependencies import HttpX, UrlLibParse
+from fern_python.generators.sdk.client_generator.endpoint_response_code_writer import (
+    EndpointResponseCodeWriter,
+)
+from fern_python.generators.sdk.context.sdk_generator_context import SdkGeneratorContext
+
+from ..core_utilities.client_wrapper_generator import ClientWrapperGenerator
+from ..environment_generators import MultipleBaseUrlsEnvironmentGenerator
 from .request_body_parameters import (
     AbstractRequestBodyParameters,
     FileUploadRequestBodyParameters,
     InlinedRequestBodyParameters,
     ReferencedRequestBodyParameters,
 )
-from fern_python.generators.sdk.context.sdk_generator_context import SdkGeneratorContext
-from fern_python.codegen import AST
-import fern.ir.resources as ir_types
-from typing import List, Optional, Set, Tuple
-from fern_python.generators.sdk.client_generator.endpoint_response_code_writer import (
-    EndpointResponseCodeWriter,
-)
-from ..environment_generators import (
-    MultipleBaseUrlsEnvironmentGenerator,
-)
-from typing_extensions import Never
-from fern_python.external_dependencies import HttpX, UrlLibParse
-from ..core_utilities.client_wrapper_generator import ClientWrapperGenerator
-
 
 HTTPX_PRIMITIVE_DATA_TYPES = set(
     [
@@ -29,6 +30,12 @@ HTTPX_PRIMITIVE_DATA_TYPES = set(
 )
 
 
+@dataclass
+class GeneratedEndpointFunction:
+    function: AST.FunctionDeclaration
+    is_default_body_parameter_used: bool
+
+
 class EndpointFunctionGenerator:
     def __init__(
         self,
@@ -38,7 +45,7 @@ class EndpointFunctionGenerator:
         endpoint: ir_types.HttpEndpoint,
         client_wrapper_member_name: str,
         environment_member_name: str,
-        is_async: bool
+        is_async: bool,
     ):
         self._context = context
         self._service = service
@@ -46,9 +53,8 @@ class EndpointFunctionGenerator:
         self._is_async = is_async
         self._client_wrapper_member_name = client_wrapper_member_name
         self._environment_member_name = environment_member_name
-        self._is_default_body_parameter_used = False
-    
-    def generate(self) -> AST.FunctionDeclaration:
+
+    def generate(self) -> GeneratedEndpointFunction:
         request_body_parameters: Optional[AbstractRequestBodyParameters] = (
             self._endpoint.request_body.visit(
                 inlined_request_body=lambda inlined_request_body: InlinedRequestBodyParameters(
@@ -69,10 +75,7 @@ class EndpointFunctionGenerator:
             else None
         )
 
-        if not self._is_default_body_parameter_used and request_body_parameters is not None:
-            self._is_default_body_parameter_used = request_body_parameters.is_default_body_parameter_used()
-        
-        return AST.FunctionDeclaration(
+        function_declaration = AST.FunctionDeclaration(
             name=self._endpoint.name.get_as_name().snake_case.unsafe_name,
             is_async=self._is_async,
             signature=AST.FunctionSignature(
@@ -100,6 +103,10 @@ class EndpointFunctionGenerator:
                 request_body_parameters=request_body_parameters,
                 is_async=self._is_async,
             ),
+        )
+        return GeneratedEndpointFunction(
+            function=function_declaration,
+            is_default_body_parameter_used=request_body_parameters is not None,
         )
 
     def _get_endpoint_named_parameters(
@@ -241,7 +248,7 @@ class EndpointFunctionGenerator:
             writer.write('"')
 
         return AST.Expression(AST.CodeWriter(write))
-    
+
     def _get_path_parameter_from_name(
         self,
         *,
@@ -252,7 +259,7 @@ class EndpointFunctionGenerator:
             if path_parameter.name.original_name == path_parameter_name:
                 return path_parameter
         raise RuntimeError("Path parameter does not exist: " + path_parameter_name)
-    
+
     def _get_response_body_type(self, sdk_response: ir_types.SdkResponse, is_async: bool) -> AST.TypeHint:
         return sdk_response.visit(
             maybe_streaming=raise_maybe_streaming_unsupported,
@@ -336,7 +343,7 @@ class EndpointFunctionGenerator:
             return AST.Expression(f"self.{self._environment_member_name}.value")
         else:
             return AST.Expression(f"self.{self._environment_member_name}")
-    
+
     def _get_headers_for_endpoint(
         self,
         *,
@@ -359,11 +366,15 @@ class EndpointFunctionGenerator:
             )
 
         if len(headers) == 0:
-            return AST.Expression(f"self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_HEADERS_METHOD_NAME}()")
+            return AST.Expression(
+                f"self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_HEADERS_METHOD_NAME}()"
+            )
 
         def write_headers_dict(writer: AST.NodeWriter) -> None:
             writer.write("{")
-            writer.write(f"**self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_HEADERS_METHOD_NAME}(),")
+            writer.write(
+                f"**self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_HEADERS_METHOD_NAME}(),"
+            )
             for i, (header_key, header_value) in enumerate(headers):
                 writer.write(f'"{header_key}": ')
                 writer.write_node(header_value)
@@ -374,7 +385,7 @@ class EndpointFunctionGenerator:
         return self._context.core_utilities.remove_none_from_headers(
             AST.Expression(AST.CodeWriter(write_headers_dict)),
         )
-    
+
     def _is_datetime(
         self,
         type_reference: ir_types.TypeReference,
@@ -387,7 +398,7 @@ class EndpointFunctionGenerator:
             allow_optional=allow_optional,
             allow_enum=False,
         )
-    
+
     def _is_date(
         self,
         type_reference: ir_types.TypeReference,
@@ -397,7 +408,7 @@ class EndpointFunctionGenerator:
         return self._does_type_reference_match_primitives(
             type_reference, expected=set([ir_types.PrimitiveType.DATE]), allow_optional=allow_optional, allow_enum=False
         )
-    
+
     def _is_httpx_primitive_data(self, type_reference: ir_types.TypeReference, *, allow_optional: bool) -> bool:
         return self._does_type_reference_match_primitives(
             type_reference, expected=HTTPX_PRIMITIVE_DATA_TYPES, allow_optional=allow_optional, allow_enum=True
@@ -452,7 +463,7 @@ class EndpointFunctionGenerator:
             primitive=lambda primitive: primitive in expected,
             unknown=lambda: False,
         )
-    
+
     def _is_header_literal(self, header: ir_types.HttpHeader) -> bool:
         return self._get_literal_header_value(header) is not None
 
@@ -461,10 +472,10 @@ class EndpointFunctionGenerator:
 
     def _get_path_parameter_name(self, path_parameter: ir_types.PathParameter) -> str:
         return path_parameter.name.snake_case.unsafe_name
-    
+
     def _get_header_parameter_name(self, header: ir_types.HttpHeader) -> str:
         return header.name.name.snake_case.unsafe_name
-    
+
     def _get_query_parameter_name(self, query_parameter: ir_types.QueryParameter) -> str:
         return query_parameter.name.name.snake_case.unsafe_name
 

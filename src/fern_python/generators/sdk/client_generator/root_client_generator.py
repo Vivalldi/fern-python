@@ -55,9 +55,13 @@ class RootClientGenerator:
         self._is_default_body_parameter_used = False
 
         client_wrapper_generator = ClientWrapperGenerator(context=self._context)
-        self._client_wrapper_constructor_params = client_wrapper_generator._get_constructor_info().constructor_parameters
+        self._client_wrapper_constructor_params = (
+            client_wrapper_generator._get_constructor_info().constructor_parameters
+        )
 
-        self._timeout_constructor_parameter_name = self._get_timeout_constructor_parameter_name([param.constructor_parameter_name for param in self._client_wrapper_constructor_params ])
+        self._timeout_constructor_parameter_name = self._get_timeout_constructor_parameter_name(
+            [param.constructor_parameter_name for param in self._client_wrapper_constructor_params]
+        )
 
     def generate(self, source_file: SourceFile) -> None:
         class_declaration = self._create_class_declaration(is_async=False)
@@ -98,11 +102,20 @@ class RootClientGenerator:
             service = self._context.ir.services[self._package.service]
             for endpoint in service.endpoints:
                 endpoint_function_generator = EndpointFunctionGenerator(
-                    context=self._context, service=service, endpoint=endpoint, is_async=is_async, 
+                    context=self._context,
+                    service=service,
+                    endpoint=endpoint,
+                    is_async=is_async,
                     client_wrapper_member_name=self._get_client_wrapper_member_name(),
-                    environment_member_name=RootClientGenerator.ENVIRONMENT_MEMBER_NAME
+                    environment_member_name=RootClientGenerator.ENVIRONMENT_MEMBER_NAME,
                 )
-                class_declaration.add_method(endpoint_function_generator.generate())
+                generated_endpoint_function = endpoint_function_generator.generate()
+                class_declaration.add_method(generated_endpoint_function.function)
+                if (
+                    not self._is_default_body_parameter_used
+                    and generated_endpoint_function.is_default_body_parameter_used
+                ):
+                    self._is_default_body_parameter_used = True
 
         return class_declaration
 
@@ -174,9 +187,7 @@ class RootClientGenerator:
                             kwargs=[
                                 (
                                     "timeout",
-                                    AST.Expression(
-                                        f"{self._timeout_constructor_parameter_name}"
-                                    ),
+                                    AST.Expression(f"{self._timeout_constructor_parameter_name}"),
                                 )
                             ],
                         )
@@ -225,7 +236,7 @@ class RootClientGenerator:
                     writer.write_line()
 
         return _write_constructor_body
-    
+
     def _write_default_param(self, writer: AST.NodeWriter) -> None:
         writer.write_line("# this is used as the default value for optional parameters")
         writer.write(f"{DEFAULT_BODY_PARAMETER_VALUE} = ")

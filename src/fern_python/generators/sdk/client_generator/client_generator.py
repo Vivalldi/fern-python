@@ -9,6 +9,7 @@ from fern_python.codegen.ast.nodes.code_writer.code_writer import CodeWriterFunc
 from fern_python.generators.sdk.client_generator.endpoint_response_code_writer import (
     EndpointResponseCodeWriter,
 )
+
 from ..context.sdk_generator_context import SdkGeneratorContext
 from ..environment_generators import (
     MultipleBaseUrlsEnvironmentGenerator,
@@ -106,7 +107,13 @@ class ClientGenerator:
                     client_wrapper_member_name=self._get_client_wrapper_member_name(),
                     environment_member_name=ClientGenerator.ENVIRONMENT_MEMBER_NAME,
                 )
-                class_declaration.add_method(endpoint_function_generator.generate())
+                generated_endpoint_function = endpoint_function_generator.generate()
+                class_declaration.add_method(generated_endpoint_function.function)
+                if (
+                    not self._is_default_body_parameter_used
+                    and generated_endpoint_function.is_default_body_parameter_used
+                ):
+                    self._is_default_body_parameter_used = True
 
         return class_declaration
 
@@ -140,9 +147,7 @@ class ClientGenerator:
             ConstructorParameter(
                 constructor_parameter_name=self._get_client_wrapper_constructor_parameter_name(),
                 private_member_name=self._get_client_wrapper_member_name(),
-                type_hint=AST.TypeHint(
-                    self._context.core_utilities.get_reference_to_client_wrapper(is_async=is_async)
-                ),
+                type_hint=AST.TypeHint(self._context.core_utilities.get_reference_to_client_wrapper(is_async=is_async)),
             )
         )
 
@@ -165,12 +170,6 @@ class ClientGenerator:
                         (param.constructor_parameter_name, AST.Expression(f"self.{param.private_member_name}"))
                         for param in self._get_constructor_parameters(is_async=is_async)
                     ]
-                    kwargs.append(
-                        (
-                            "client_wrapper",
-                            AST.Expression(f"self.{self._get_client_wrapper_member_name()}"),
-                        ),
-                    )
                     writer.write_node(
                         AST.ClassInstantiation(
                             class_=self._context.get_reference_to_async_subpackage_service(subpackage_id)

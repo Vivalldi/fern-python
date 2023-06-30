@@ -15,12 +15,8 @@ class V2Client:
     def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
-        self.problem = ProblemClient(
-            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
-        )
-        self.v_3 = V3Client(
-            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
-        )
+        self.problem = ProblemClient(environment=self._environment, client_wrapper=self._client_wrapper)
+        self.v_3 = V3Client(environment=self._environment, client_wrapper=self._client_wrapper)
 
     def test(self) -> None:
         _response = httpx.request(
@@ -39,12 +35,8 @@ class AsyncV2Client:
     def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
-        self.problem = AsyncProblemClient(
-            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
-        )
-        self.v_3 = AsyncV3Client(
-            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
-        )
+        self.problem = AsyncProblemClient(environment=self._environment, client_wrapper=self._client_wrapper)
+        self.v_3 = AsyncV3Client(environment=self._environment, client_wrapper=self._client_wrapper)
 
     async def test(self) -> None:
         async with httpx.AsyncClient() as _client:

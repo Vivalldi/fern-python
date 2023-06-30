@@ -11,6 +11,9 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from .types.movie_id import MovieId
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class MovieClient:
     def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):

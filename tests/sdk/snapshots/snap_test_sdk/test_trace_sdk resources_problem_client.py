@@ -19,6 +19,9 @@ from .types.get_default_starter_files_response import GetDefaultStarterFilesResp
 from .types.update_problem_response import UpdateProblemResponse
 from .types.variable_type_and_name import VariableTypeAndName
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class ProblemClient:
     def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):

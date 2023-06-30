@@ -13,6 +13,9 @@ from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from .types.stream_response import StreamResponse
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class AiClient:
     def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):

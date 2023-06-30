@@ -21,6 +21,9 @@ from ..submission.types.workspace_submission_status import WorkspaceSubmissionSt
 from ..submission.types.workspace_submission_update import WorkspaceSubmissionUpdate
 from ..v_2.resources.problem.types.test_case_id import TestCaseId
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class AdminClient:
     def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):

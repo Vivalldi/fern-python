@@ -21,6 +21,9 @@ from .types.playlist_id import PlaylistId
 from .types.playlist_id_not_found_error_body import PlaylistIdNotFoundErrorBody
 from .types.update_playlist_request import UpdatePlaylistRequest
 
+# this is used as the default value for optional parameters
+OMIT = typing.cast(typing.Any, ...)
+
 
 class PlaylistClient:
     def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
