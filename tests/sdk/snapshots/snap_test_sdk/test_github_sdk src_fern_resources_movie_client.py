@@ -9,6 +9,7 @@ import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.datetime_utils import serialize_datetime
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
@@ -23,18 +24,9 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class MovieClient:
-    def __init__(
-        self,
-        *,
-        environment: str,
-        api_key: typing.Optional[str] = None,
-        api_secret: typing.Optional[str] = None,
-        client: httpx.Client,
-    ):
+    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
         self._environment = environment
-        self._api_key = api_key
-        self._api_secret = api_secret
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     def get_movie(self, movie_id: MovieId) -> Movie:
         _response = httpx.request(
@@ -140,18 +132,9 @@ class MovieClient:
 
 
 class AsyncMovieClient:
-    def __init__(
-        self,
-        *,
-        environment: str,
-        api_key: typing.Optional[str] = None,
-        api_secret: typing.Optional[str] = None,
-        client: httpx.AsyncClient,
-    ):
+    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
         self._environment = environment
-        self._api_key = api_key
-        self._api_secret = api_secret
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     async def get_movie(self, movie_id: MovieId) -> Movie:
         async with httpx.AsyncClient() as _client:

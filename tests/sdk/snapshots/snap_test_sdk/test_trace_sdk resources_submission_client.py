@@ -8,6 +8,7 @@ import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FernIrEnvironment
 from ..commons.types.language import Language
@@ -16,18 +17,9 @@ from .types.get_execution_session_state_response import GetExecutionSessionState
 
 
 class SubmissionClient:
-    def __init__(
-        self,
-        *,
-        environment: FernIrEnvironment = FernIrEnvironment.PROD,
-        x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[str] = None,
-        client: httpx.Client,
-    ):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
-        self._x_random_header = x_random_header
-        self._token = token
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     def create_execution_session(self, language: Language) -> ExecutionSessionResponse:
         _response = httpx.request(
@@ -111,18 +103,9 @@ class SubmissionClient:
 
 
 class AsyncSubmissionClient:
-    def __init__(
-        self,
-        *,
-        environment: FernIrEnvironment = FernIrEnvironment.PROD,
-        x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[str] = None,
-        client: httpx.AsyncClient,
-    ):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
-        self._x_random_header = x_random_header
-        self._token = token
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     async def create_execution_session(self, language: Language) -> ExecutionSessionResponse:
         async with httpx.AsyncClient() as _client:

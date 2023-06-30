@@ -8,6 +8,7 @@ import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
 from ...environment import FernIrEnvironment
 from .errors.invalid_movie_error import InvalidMovieError
@@ -18,9 +19,11 @@ from .types.movie_id import MovieId
 
 
 class CommonsClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client: httpx.Client):
+    def __init__(
+        self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client_wrapper: AsyncClientWrapper
+    ):
         self._environment = environment
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     def get_movie(self, movie_id: MovieId) -> Movie:
         _response = httpx.request(
@@ -83,9 +86,11 @@ class CommonsClient:
 
 
 class AsyncCommonsClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client: httpx.AsyncClient):
+    def __init__(
+        self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client_wrapper: SyncClientWrapper
+    ):
         self._environment = environment
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     async def get_movie(self, movie_id: MovieId) -> Movie:
         async with httpx.AsyncClient() as _client:

@@ -7,6 +7,7 @@ import fern.ir.resources as ir_types
 from fern_python.codegen import AST, SourceFile
 from fern_python.codegen.ast.nodes.code_writer.code_writer import CodeWriterFunction
 from fern_python.external_dependencies import httpx
+from fern_python.generators.sdk.core_utilities.core_utilities import CoreUtilities
 
 from ..context.sdk_generator_context import SdkGeneratorContext
 
@@ -28,12 +29,10 @@ class ConstructorInfo:
 
 
 class ClientWrapperGenerator:
-    AUTHORIZATION_HEADER = "AUTHORIZATION"
+    AUTHORIZATION_HEADER = "Authorization"
     BEARER_AUTH_PREFIX = "Bearer"
 
     BASE_CLIENT_WRAPPER_CLASS_NAME = "BaseClientWrapper"
-    SYNC_CLIENT_WRAPPER_CLASS_NAME = "SyncClientWrapper"
-    ASYNC_CLIENT_WRAPPER_CLASS_NAME = "AsyncClientWrapper"
 
     GET_HEADERS_METHOD_NAME = "get_headers"
 
@@ -116,7 +115,7 @@ class ClientWrapperGenerator:
         )
 
         class_declaration = AST.ClassDeclaration(
-            name=ClientWrapperGenerator.SYNC_CLIENT_WRAPPER_CLASS_NAME,
+            name=CoreUtilities.SYNC_CLIENT_WRAPPER_CLASS_NAME,
             extends=[AST.ClassReference((ClientWrapperGenerator.BASE_CLIENT_WRAPPER_CLASS_NAME,))],
             constructor=AST.ClassConstructor(
                 signature=AST.FunctionSignature(
@@ -145,7 +144,7 @@ class ClientWrapperGenerator:
         )
 
         class_declaration = AST.ClassDeclaration(
-            name=ClientWrapperGenerator.ASYNC_CLIENT_WRAPPER_CLASS_NAME,
+            name=CoreUtilities.ASYNC_CLIENT_WRAPPER_CLASS_NAME,
             extends=[AST.ClassReference((ClientWrapperGenerator.BASE_CLIENT_WRAPPER_CLASS_NAME,))],
             constructor=AST.ClassConstructor(
                 signature=AST.FunctionSignature(
@@ -166,7 +165,14 @@ class ClientWrapperGenerator:
     ) -> CodeWriterFunction:
         def _write_derived_client_wrapper_constructor_body(writer: AST.NodeWriter) -> None:
             writer.write_line(
-                "super().__init__(" + ', '.join([f"{param.constructor_parameter_name}={param.constructor_parameter_name}" for param in constructor_parameters]) + ")"
+                "super().__init__("
+                + ", ".join(
+                    [
+                        f"{param.constructor_parameter_name}={param.constructor_parameter_name}"
+                        for param in constructor_parameters
+                    ]
+                )
+                + ")"
             )
             writer.write_line(
                 f"self.{ClientWrapperGenerator.HTTPX_CLIENT_MEMBER_NAME} = {ClientWrapperGenerator.HTTPX_CLIENT_MEMBER_NAME}"
@@ -193,13 +199,13 @@ class ClientWrapperGenerator:
             writer.write_newline_if_last_line_not()
             basic_auth_scheme = self._get_basic_auth_scheme()
             if basic_auth_scheme is not None:
-                if not self._context.ir.sdk_config.is_auth_mandatory: 
+                if not self._context.ir.sdk_config.is_auth_mandatory:
                     username_var = self._get_username_constructor_parameter_name(basic_auth_scheme)
                     password_var = self._get_password_constructor_parameter_name(basic_auth_scheme)
                     writer.write_line(f"{username_var} = self.{self._get_username_getter_name(basic_auth_scheme)}()")
                     writer.write_line(f"{password_var} = self.{self._get_password_getter_name(basic_auth_scheme)}()")
                     writer.write_line(f"if {username_var} is not None and {password_var} is not None:")
-                    with writer.indent(): 
+                    with writer.indent():
                         writer.write(f'headers["{ClientWrapperGenerator.AUTHORIZATION_HEADER}"] = ')
                         writer.write_node(
                             AST.ClassInstantiation(
@@ -229,49 +235,49 @@ class ClientWrapperGenerator:
                 if param.is_basic:
                     continue
                 if param.header_key is not None:
-                    if param.header_prefix is not None: 
+                    if param.header_prefix is not None:
                         if param.getter_method is not None:
-                            if param.type_hint.is_optional(): 
-                                writer.write_line(f"{param.constructor_parameter_name} = self.{param.getter_method.name}()")
+                            if param.type_hint.is_optional():
+                                writer.write_line(
+                                    f"{param.constructor_parameter_name} = self.{param.getter_method.name}()"
+                                )
                                 writer.write_line(f"if {param.constructor_parameter_name} is not None:")
-                                with writer.indent(): 
+                                with writer.indent():
                                     writer.write_line(
-                                        f"headers[\"{param.header_key}\"] = f\"{param.header_prefix} {{{param.constructor_parameter_name}}}\""
+                                        f'headers["{param.header_key}"] = f"{param.header_prefix} {{{param.constructor_parameter_name}}}"'
                                     )
                             else:
                                 writer.write_line(
-                                    f"headers[\"{param.header_key}\"] = f\"{param.header_prefix} {{self.{param.getter_method.name}()}}\""
+                                    f'headers["{param.header_key}"] = f"{param.header_prefix} {{self.{param.getter_method.name}()}}"'
                                 )
                         elif param.private_member_name is not None:
-                            if param.type_hint.is_optional(): 
+                            if param.type_hint.is_optional():
                                 writer.write_line(f"if self.{param.private_member_name} is not None:")
                                 writer.indent()
                             writer.write_line(
-                                f"headers[\"{param.header_key}\"] = f\"{param.header_prefix} {{self.{param.private_member_name}}}\""
+                                f'headers["{param.header_key}"] = f"{param.header_prefix} {{self.{param.private_member_name}}}"'
                             )
-                            if param.type_hint.is_optional(): 
+                            if param.type_hint.is_optional():
                                 writer.outdent()
-                    else: 
+                    else:
                         if param.getter_method is not None:
-                            if param.type_hint.is_optional(): 
-                                writer.write_line(f"{param.constructor_parameter_name} = self.{param.getter_method.name}()")
-                                writer.write_line(f"if {param.constructor_parameter_name} is not None:")
-                                with writer.indent(): 
-                                    writer.write_line(
-                                        f"headers[\"{param.header_key}\"] = {param.constructor_parameter_name}"
-                                    )
-                            else: 
+                            if param.type_hint.is_optional():
                                 writer.write_line(
-                                    f"headers[\"{param.header_key}\"] = self.{param.getter_method.name}()"
+                                    f"{param.constructor_parameter_name} = self.{param.getter_method.name}()"
                                 )
+                                writer.write_line(f"if {param.constructor_parameter_name} is not None:")
+                                with writer.indent():
+                                    writer.write_line(
+                                        f'headers["{param.header_key}"] = {param.constructor_parameter_name}'
+                                    )
+                            else:
+                                writer.write_line(f'headers["{param.header_key}"] = self.{param.getter_method.name}()')
                         elif param.private_member_name is not None:
-                            if param.type_hint.is_optional(): 
+                            if param.type_hint.is_optional():
                                 writer.write_line(f"if self.{param.private_member_name} is not None:")
                                 writer.indent()
-                            writer.write_line(
-                                f"headers[\"{param.header_key}\"] = self.{param.private_member_name}"
-                            )
-                            if param.type_hint.is_optional(): 
+                            writer.write_line(f'headers["{param.header_key}"] = self.{param.private_member_name}')
+                            if param.type_hint.is_optional():
                                 writer.outdent()
             writer.write_line("return headers")
 
@@ -331,12 +337,16 @@ class ClientWrapperGenerator:
                         name=f"_get_{ClientWrapperGenerator.TOKEN_CONSTRUCTOR_PARAMETER_NAME}",
                         signature=AST.FunctionSignature(
                             parameters=[],
-                            return_type=AST.TypeHint.str_() if self._context.ir.sdk_config.is_auth_mandatory else AST.TypeHint.optional(AST.TypeHint.str_()),
+                            return_type=AST.TypeHint.str_()
+                            if self._context.ir.sdk_config.is_auth_mandatory
+                            else AST.TypeHint.optional(AST.TypeHint.str_()),
                         ),
                         body=AST.CodeWriter(
                             self._get_required_getter_body_writer(member_name=ClientWrapperGenerator.TOKEN_MEMBER_NAME)
                             if self._context.ir.sdk_config.is_auth_mandatory
-                            else self._get_optional_getter_body_writer(member_name=ClientWrapperGenerator.TOKEN_MEMBER_NAME)
+                            else self._get_optional_getter_body_writer(
+                                member_name=ClientWrapperGenerator.TOKEN_MEMBER_NAME
+                            )
                         ),
                     ),
                     header_key=ClientWrapperGenerator.AUTHORIZATION_HEADER,
@@ -356,12 +366,18 @@ class ClientWrapperGenerator:
                     name=self._get_username_getter_name(basic_auth_scheme),
                     signature=AST.FunctionSignature(
                         parameters=[],
-                        return_type=AST.TypeHint.str_() if self._context.ir.sdk_config.is_auth_mandatory else AST.TypeHint.optional(AST.TypeHint.str_()),
+                        return_type=AST.TypeHint.str_()
+                        if self._context.ir.sdk_config.is_auth_mandatory
+                        else AST.TypeHint.optional(AST.TypeHint.str_()),
                     ),
                     body=AST.CodeWriter(
-                        self._get_required_getter_body_writer(member_name=self._get_username_member_name(basic_auth_scheme))
+                        self._get_required_getter_body_writer(
+                            member_name=self._get_username_member_name(basic_auth_scheme)
+                        )
                         if self._context.ir.sdk_config.is_auth_mandatory
-                        else self._get_optional_getter_body_writer(member_name=self._get_username_member_name(basic_auth_scheme))
+                        else self._get_optional_getter_body_writer(
+                            member_name=self._get_username_member_name(basic_auth_scheme)
+                        )
                     ),
                 ),
                 is_basic=True,
@@ -376,12 +392,18 @@ class ClientWrapperGenerator:
                     name=self._get_password_getter_name(basic_auth_scheme),
                     signature=AST.FunctionSignature(
                         parameters=[],
-                        return_type=AST.TypeHint.str_() if self._context.ir.sdk_config.is_auth_mandatory else AST.TypeHint.optional(AST.TypeHint.str_()),
+                        return_type=AST.TypeHint.str_()
+                        if self._context.ir.sdk_config.is_auth_mandatory
+                        else AST.TypeHint.optional(AST.TypeHint.str_()),
                     ),
                     body=AST.CodeWriter(
-                        self._get_required_getter_body_writer(member_name=self._get_password_member_name(basic_auth_scheme))
+                        self._get_required_getter_body_writer(
+                            member_name=self._get_password_member_name(basic_auth_scheme)
+                        )
                         if self._context.ir.sdk_config.is_auth_mandatory
-                        else self._get_optional_getter_body_writer(member_name=self._get_password_member_name(basic_auth_scheme))
+                        else self._get_optional_getter_body_writer(
+                            member_name=self._get_password_member_name(basic_auth_scheme)
+                        )
                     ),
                 ),
                 is_basic=True,

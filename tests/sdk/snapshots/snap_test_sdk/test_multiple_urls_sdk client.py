@@ -4,6 +4,7 @@ import typing
 
 import httpx
 
+from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from .environment import FernIrEnvironment
 from .resources.a.client import AClient, AsyncAClient
 from .resources.b.client import AsyncBClient, BClient
@@ -15,10 +16,10 @@ class FernIr:
         self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, timeout: typing.Optional[float] = 60
     ):
         self._environment = environment
-        self._client = httpx.Client(timeout=timeout)
-        self.a = AClient(environment=self._environment, client=self._client)
-        self.b = BClient(environment=self._environment, client=self._client)
-        self.commons = CommonsClient(environment=self._environment, client=self._client)
+        self._client_wrapper = AsyncClientWrapper(httpx_client=httpx.Client(timeout=timeout))
+        self.a = AClient(environment=self._environment, client=self._client_wrapper)
+        self.b = BClient(environment=self._environment, client=self._client_wrapper)
+        self.commons = CommonsClient(environment=self._environment, client=self._client_wrapper)
 
 
 class AsyncFernIr:
@@ -26,7 +27,7 @@ class AsyncFernIr:
         self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, timeout: typing.Optional[float] = 60
     ):
         self._environment = environment
-        self._client = httpx.AsyncClient(timeout=timeout)
-        self.a = AsyncAClient(environment=self._environment, client=self._client)
-        self.b = AsyncBClient(environment=self._environment, client=self._client)
-        self.commons = AsyncCommonsClient(environment=self._environment, client=self._client)
+        self._client_wrapper = SyncClientWrapper(httpx_client=httpx.AsyncClient(timeout=timeout))
+        self.a = AsyncAClient(environment=self._environment, client=self._client_wrapper)
+        self.b = AsyncBClient(environment=self._environment, client=self._client_wrapper)
+        self.commons = AsyncCommonsClient(environment=self._environment, client=self._client_wrapper)

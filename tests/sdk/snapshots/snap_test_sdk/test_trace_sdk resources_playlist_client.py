@@ -9,6 +9,7 @@ import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.datetime_utils import serialize_datetime
 from ...core.jsonable_encoder import jsonable_encoder
 from ...core.remove_none_from_headers import remove_none_from_headers
@@ -23,18 +24,9 @@ from .types.update_playlist_request import UpdatePlaylistRequest
 
 
 class PlaylistClient:
-    def __init__(
-        self,
-        *,
-        environment: FernIrEnvironment = FernIrEnvironment.PROD,
-        x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[str] = None,
-        client: httpx.Client,
-    ):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
-        self._x_random_header = x_random_header
-        self._token = token
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     def create_playlist(
         self,
@@ -181,18 +173,9 @@ class PlaylistClient:
 
 
 class AsyncPlaylistClient:
-    def __init__(
-        self,
-        *,
-        environment: FernIrEnvironment = FernIrEnvironment.PROD,
-        x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[str] = None,
-        client: httpx.AsyncClient,
-    ):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
-        self._x_random_header = x_random_header
-        self._token = token
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     async def create_playlist(
         self,

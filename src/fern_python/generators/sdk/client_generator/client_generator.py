@@ -11,6 +11,9 @@ from fern_python.external_dependencies import HttpX, Json, UrlLibParse
 from fern_python.generators.sdk.client_generator.endpoint_response_code_writer import (
     EndpointResponseCodeWriter,
 )
+from fern_python.generators.sdk.core_utilities.client_wrapper_generator import (
+    ClientWrapperGenerator,
+)
 
 from ..context.sdk_generator_context import SdkGeneratorContext
 from ..environment_generators import (
@@ -202,65 +205,24 @@ class ClientGenerator:
             )
         )
 
-        for header in self._context.ir.headers:
-            parameters.append(
-                ConstructorParameter(
-                    constructor_parameter_name=self._get_header_constructor_parameter_name(header),
-                    private_member_name=self._get_header_private_member_name(header),
-                    type_hint=self._context.pydantic_generator_context.get_type_hint_for_type_reference(
-                        header.value_type
-                    ),
-                )
-            )
-
-        for header_auth_scheme in self._get_header_auth_schemes():
-            parameters.append(
-                ConstructorParameter(
-                    constructor_parameter_name=self._get_auth_scheme_header_private_member_name(header_auth_scheme),
-                    private_member_name=self._get_auth_scheme_header_private_member_name(header_auth_scheme),
-                    type_hint=self._context.pydantic_generator_context.get_type_hint_for_type_reference(
-                        header_auth_scheme.value_type
-                    ),
-                )
-            )
-
-        if self._has_bearer_auth():
-            parameters.append(
-                ConstructorParameter(
-                    constructor_parameter_name=ClientGenerator.TOKEN_CONSTRUCTOR_PARAMETER_NAME,
-                    private_member_name=ClientGenerator.TOKEN_MEMBER_NAME,
-                    type_hint=AST.TypeHint.str_()
-                    if self._context.ir.sdk_config.is_auth_mandatory
-                    else AST.TypeHint.optional(AST.TypeHint.str_()),
-                )
-            )
-
-        if self._has_basic_auth():
-            parameters.extend(
-                [
+        if self._is_root:
+            client_wrapper_generator = ClientWrapperGenerator(context=self._context)
+            for param in client_wrapper_generator._get_constructor_info().constructor_parameters:
+                parameters.append(
                     ConstructorParameter(
-                        constructor_parameter_name=self._get_username_constructor_parameter_name(),
-                        private_member_name=self._get_username_member_name(),
-                        type_hint=AST.TypeHint.str_()
-                        if self._context.ir.sdk_config.is_auth_mandatory
-                        else AST.TypeHint.optional(AST.TypeHint.str_()),
-                    ),
-                    ConstructorParameter(
-                        constructor_parameter_name=self._get_password_constructor_parameter_name(),
-                        private_member_name=self._get_password_member_name(),
-                        type_hint=AST.TypeHint.str_()
-                        if self._context.ir.sdk_config.is_auth_mandatory
-                        else AST.TypeHint.optional(AST.TypeHint.str_()),
-                    ),
-                ]
-            )
-
-        if not self._is_root:
+                        constructor_parameter_name=param.constructor_parameter_name,
+                        private_member_name=param.private_member_name,
+                        type_hint=param.type_hint,
+                    )
+                )
+        else:
             parameters.append(
                 ConstructorParameter(
                     constructor_parameter_name=self._get_client_constructor_parameter_name(params=parameters),
                     private_member_name=self._get_client_member_name(params=parameters),
-                    type_hint=AST.TypeHint(HttpX.ASYNC_CLIENT) if is_async else AST.TypeHint(HttpX.CLIENT),
+                    type_hint=AST.TypeHint(
+                        self._context.core_utilities.get_reference_to_client_wrapper(is_async=is_async)
+                    ),
                 )
             )
 
@@ -276,18 +238,38 @@ class ClientGenerator:
                 if param.private_member_name is not None:
                     writer.write_line(f"self.{param.private_member_name} = {param.constructor_parameter_name}")
             if self._is_root:
+                client_wrapper_generator = ClientWrapperGenerator(context=self._context)
+                kwargs = []
+                for wrapper_param in client_wrapper_generator._get_constructor_info().constructor_parameters:
+                    kwargs.append(
+                        (
+                            wrapper_param.constructor_parameter_name,
+                            AST.Expression(wrapper_param.constructor_parameter_name),
+                        )
+                    )
+                kwargs.append(
+                    (
+                        ClientWrapperGenerator.HTTPX_CLIENT_MEMBER_NAME,
+                        AST.Expression(
+                            AST.ClassInstantiation(
+                                HttpX.ASYNC_CLIENT if is_async else HttpX.CLIENT,
+                                kwargs=[
+                                    (
+                                        "timeout",
+                                        AST.Expression(
+                                            f"{self._get_timeout_constructor_parameter_name(constructor_parameters)}"
+                                        ),
+                                    )
+                                ],
+                            )
+                        ),
+                    )
+                )
                 writer.write(f"self.{self._get_client_member_name(constructor_parameters)} = ")
                 writer.write_node(
                     AST.ClassInstantiation(
-                        HttpX.ASYNC_CLIENT if is_async else HttpX.CLIENT,
-                        kwargs=[
-                            (
-                                "timeout",
-                                AST.Expression(
-                                    f"{self._get_timeout_constructor_parameter_name(constructor_parameters)}"
-                                ),
-                            )
-                        ],
+                        self._context.core_utilities.get_reference_to_client_wrapper(is_async=is_async),
+                        kwargs=kwargs,
                     )
                 )
                 writer.write_newline_if_last_line_not()
@@ -818,15 +800,15 @@ class ClientGenerator:
 
     def _get_client_constructor_parameter_name(self, params: typing.List[ConstructorParameter]) -> str:
         for param in params:
-            if param.constructor_parameter_name == "client":
-                return "_client"
-        return "client"
+            if param.constructor_parameter_name == "client_wrapper":
+                return "_client_wrapper"
+        return "client_wrapper"
 
     def _get_client_member_name(self, params: typing.List[ConstructorParameter]) -> str:
         for param in params:
-            if param.private_member_name == "_client":
-                return "__client"
-        return "_client"
+            if param.private_member_name == "_client_wrapper":
+                return "__client_wrapper"
+        return "_client_wrapper"
 
     def _get_timeout_constructor_parameter_name(self, params: typing.List[ConstructorParameter]) -> str:
         for param in params:

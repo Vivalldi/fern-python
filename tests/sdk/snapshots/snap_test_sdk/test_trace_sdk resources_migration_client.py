@@ -8,24 +8,16 @@ import httpx
 import pydantic
 
 from ...core.api_error import ApiError
+from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FernIrEnvironment
 from .types.migration import Migration
 
 
 class MigrationClient:
-    def __init__(
-        self,
-        *,
-        environment: FernIrEnvironment = FernIrEnvironment.PROD,
-        x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[str] = None,
-        client: httpx.Client,
-    ):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
-        self._x_random_header = x_random_header
-        self._token = token
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     def get_attempted_migrations(self, *, admin_key_header: str) -> typing.List[Migration]:
         _response = httpx.request(
@@ -50,18 +42,9 @@ class MigrationClient:
 
 
 class AsyncMigrationClient:
-    def __init__(
-        self,
-        *,
-        environment: FernIrEnvironment = FernIrEnvironment.PROD,
-        x_random_header: typing.Optional[str] = None,
-        token: typing.Optional[str] = None,
-        client: httpx.AsyncClient,
-    ):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
-        self._x_random_header = x_random_header
-        self._token = token
-        self._client = client
+        self._client_wrapper = client_wrapper
 
     async def get_attempted_migrations(self, *, admin_key_header: str) -> typing.List[Migration]:
         async with httpx.AsyncClient() as _client:

@@ -20,7 +20,7 @@ class BaseClientWrapper:
         api_key = self._get_api_key()
         api_secret = self._get_api_secret()
         if api_key is not None and api_secret is not None:
-            headers["AUTHORIZATION"] = httpx.BasicAuth(api_key, api_secret)._auth_header
+            headers["Authorization"] = httpx.BasicAuth(api_key, api_secret)._auth_header
         return headers
 
     def _get_api_key(self) -> typing.Optional[str]:

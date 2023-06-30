@@ -21,7 +21,7 @@ class BaseClientWrapper:
             headers["X-Random-Header"] = self._x_random_header
         token = self._get_token()
         if token is not None:
-            headers["AUTHORIZATION"] = f"Bearer {token}"
+            headers["Authorization"] = f"Bearer {token}"
         return headers
 
     def _get_token(self) -> typing.Optional[str]:
