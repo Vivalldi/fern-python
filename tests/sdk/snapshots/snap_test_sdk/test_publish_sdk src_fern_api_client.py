@@ -10,21 +10,13 @@ from .resources.movie.client import AsyncMovieClient, MovieClient
 
 class FernIr:
     def __init__(self, *, environment: str, header_auth: str, timeout: typing.Optional[float] = 5):
-        self._environment = environment
-        self.header_auth = header_auth
-        self._client_wrapper = AsyncClientWrapper(header_auth=header_auth, httpx_client=httpx.Client(timeout=timeout))
-        self.movie = MovieClient(
-            environment=self._environment, header_auth=self.header_auth, client=self._client_wrapper
-        )
+        self._client_wrapper = AsyncClientWrapper(header_auth=header_auth, httpx_client=httpx.Client(timeout=_timeout))
+        self.movie = MovieClient(environment=environment, client_wrapper=self._client_wrapper)
 
 
 class AsyncFernIr:
     def __init__(self, *, environment: str, header_auth: str, timeout: typing.Optional[float] = 5):
-        self._environment = environment
-        self.header_auth = header_auth
         self._client_wrapper = SyncClientWrapper(
-            header_auth=header_auth, httpx_client=httpx.AsyncClient(timeout=timeout)
+            header_auth=header_auth, httpx_client=httpx.AsyncClient(timeout=_timeout)
         )
-        self.movie = AsyncMovieClient(
-            environment=self._environment, header_auth=self.header_auth, client=self._client_wrapper
-        )
+        self.movie = AsyncMovieClient(environment=environment, client_wrapper=self._client_wrapper)

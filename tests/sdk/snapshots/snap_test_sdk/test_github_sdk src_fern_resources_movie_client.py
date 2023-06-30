@@ -19,9 +19,6 @@ from .errors.movie_not_found_error import MovieNotFoundError
 from .types.movie import Movie
 from .types.movie_id import MovieId
 
-# this is used as the default value for optional parameters
-OMIT = typing.cast(typing.Any, ...)
-
 
 class MovieClient:
     def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
@@ -32,9 +29,7 @@ class MovieClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
-            auth=(self._api_key, self._api_secret)
-            if self._api_key is not None and self._api_secret is not None
-            else None,
+            headers=self.__client_wrapper,
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -51,10 +46,9 @@ class MovieClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "movie/all-movies"),
-            headers=remove_none_from_headers({"literal_header": "hello world", "string_header": string_header}),
-            auth=(self._api_key, self._api_secret)
-            if self._api_key is not None and self._api_secret is not None
-            else None,
+            headers=remove_none_from_headers(
+                {**self.__client_wrapper, "literal_header": "hello world", "string_header": string_header}
+            ),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -88,9 +82,7 @@ class MovieClient:
                 "optional_boolean": optional_boolean,
             },
             json=jsonable_encoder(request),
-            auth=(self._api_key, self._api_secret)
-            if self._api_key is not None and self._api_secret is not None
-            else None,
+            headers=self.__client_wrapper,
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -115,9 +107,7 @@ class MovieClient:
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"movie/{movie_id}"),
             json=jsonable_encoder(_request),
-            auth=(self._api_key, self._api_secret)
-            if self._api_key is not None and self._api_secret is not None
-            else None,
+            headers=self.__client_wrapper,
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -141,9 +131,7 @@ class AsyncMovieClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
-                auth=(self._api_key, self._api_secret)
-                if self._api_key is not None and self._api_secret is not None
-                else None,
+                headers=self.__client_wrapper,
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -161,10 +149,9 @@ class AsyncMovieClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "movie/all-movies"),
-                headers=remove_none_from_headers({"literal_header": "hello world", "string_header": string_header}),
-                auth=(self._api_key, self._api_secret)
-                if self._api_key is not None and self._api_secret is not None
-                else None,
+                headers=remove_none_from_headers(
+                    {**self.__client_wrapper, "literal_header": "hello world", "string_header": string_header}
+                ),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -201,9 +188,7 @@ class AsyncMovieClient:
                     "optional_boolean": optional_boolean,
                 },
                 json=jsonable_encoder(request),
-                auth=(self._api_key, self._api_secret)
-                if self._api_key is not None and self._api_secret is not None
-                else None,
+                headers=self.__client_wrapper,
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -229,9 +214,7 @@ class AsyncMovieClient:
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"movie/{movie_id}"),
                 json=jsonable_encoder(_request),
-                auth=(self._api_key, self._api_secret)
-                if self._api_key is not None and self._api_secret is not None
-                else None,
+                headers=self.__client_wrapper,
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

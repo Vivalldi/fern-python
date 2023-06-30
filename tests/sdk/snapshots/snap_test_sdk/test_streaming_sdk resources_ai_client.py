@@ -24,6 +24,7 @@ class AiClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "generate-stream"),
             json=jsonable_encoder({"num_events": num_events}),
+            headers=self.__client_wrapper,
             timeout=60,
         ) as _response:
             if 200 <= _response.status_code < 300:
@@ -50,6 +51,7 @@ class AsyncAiClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "generate-stream"),
                 json=jsonable_encoder({"num_events": num_events}),
+                headers=self.__client_wrapper,
                 timeout=60,
             ) as _response:
                 if 200 <= _response.status_code < 300:

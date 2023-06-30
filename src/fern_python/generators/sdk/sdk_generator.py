@@ -21,6 +21,7 @@ from fern_python.generators.sdk.core_utilities.client_wrapper_generator import (
 from fern_python.source_file_generator import SourceFileGenerator
 
 from .client_generator.client_generator import ClientGenerator
+from .client_generator.root_client_generator import RootClientGenerator
 from .custom_config import SDKCustomConfig
 from .environment_generators import (
     MultipleBaseUrlsEnvironmentGenerator,
@@ -182,12 +183,11 @@ class SdkGenerator(AbstractGenerator):
             filepath=context.get_filepath_for_root_client(),
             generator_exec_wrapper=generator_exec_wrapper,
         ) as source_file:
-            ClientGenerator(
+            RootClientGenerator(
                 context=context,
                 package=ir.root_package,
                 class_name=context.get_class_name_for_root_client(),
                 async_class_name="Async" + context.get_class_name_for_root_client(),
-                is_root=True,
             ).generate(source_file=source_file)
 
     def _generate_subpackage_client(

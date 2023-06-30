@@ -6,7 +6,6 @@ import httpx
 
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FernIrEnvironment
 from .resources.problem.client import AsyncProblemClient, ProblemClient
 from .resources.v_3.client import AsyncV3Client, V3Client
@@ -20,17 +19,7 @@ class V2Client:
         self.v_3 = V3Client(environment=self._environment, client_wrapper=self._client_wrapper)
 
     def test(self) -> None:
-        _response = httpx.request(
-            "GET",
-            self._environment.value,
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
-            timeout=None,
-        )
+        _response = httpx.request("GET", self._environment.value, headers=self.__client_wrapper, timeout=None)
         if 200 <= _response.status_code < 300:
             return
         try:
@@ -50,15 +39,7 @@ class AsyncV2Client:
     async def test(self) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
-                "GET",
-                self._environment.value,
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
-                timeout=None,
+                "GET", self._environment.value, headers=self.__client_wrapper, timeout=None
             )
         if 200 <= _response.status_code < 300:
             return

@@ -12,7 +12,6 @@ from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.datetime_utils import serialize_datetime
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FernIrEnvironment
 from .errors.playlist_id_not_found_error import PlaylistIdNotFoundError
 from .errors.unauthorized_error import UnauthorizedError
@@ -44,12 +43,7 @@ class PlaylistClient:
                 "optionalDatetime": serialize_datetime(optional_datetime) if optional_datetime is not None else None,
             },
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -80,12 +74,7 @@ class PlaylistClient:
                 "optionalMultipleField": optional_multiple_field,
                 "multipleField": multiple_field,
             },
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -100,12 +89,7 @@ class PlaylistClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -130,12 +114,7 @@ class PlaylistClient:
             "PUT",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -155,12 +134,7 @@ class PlaylistClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -196,12 +170,7 @@ class AsyncPlaylistClient:
                     else None,
                 },
                 json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -233,12 +202,7 @@ class AsyncPlaylistClient:
                     "optionalMultipleField": optional_multiple_field,
                     "multipleField": multiple_field,
                 },
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -254,12 +218,7 @@ class AsyncPlaylistClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -285,12 +244,7 @@ class AsyncPlaylistClient:
                 "PUT",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
                 json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -311,12 +265,7 @@ class AsyncPlaylistClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:

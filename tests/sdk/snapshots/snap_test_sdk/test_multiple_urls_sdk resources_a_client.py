@@ -27,7 +27,10 @@ class AClient:
 
     def get_movie(self, movie_id: MovieId) -> Movie:
         _response = httpx.request(
-            "GET", urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/movie/{movie_id}"), timeout=60
+            "GET",
+            urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/movie/{movie_id}"),
+            headers=self.__client_wrapper,
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Movie, _response.json())  # type: ignore
@@ -41,7 +44,10 @@ class AClient:
 
     def get_all_movies(self) -> typing.List[Movie]:
         _response = httpx.request(
-            "GET", urllib.parse.urljoin(f"{self._environment.server_b}/", "movie/all-movies"), timeout=60
+            "GET",
+            urllib.parse.urljoin(f"{self._environment.server_b}/", "movie/all-movies"),
+            headers=self.__client_wrapper,
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.List[Movie], _response.json())  # type: ignore
@@ -56,6 +62,7 @@ class AClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.server_a}/", "movie/movie"),
             json=jsonable_encoder(request),
+            headers=self.__client_wrapper,
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -72,7 +79,10 @@ class AClient:
 
     def delete_movie(self, movie_id: MovieId) -> None:
         _response = httpx.request(
-            "DELETE", urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/{movie_id}"), timeout=60
+            "DELETE",
+            urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/{movie_id}"),
+            headers=self.__client_wrapper,
+            timeout=60,
         )
         if 200 <= _response.status_code < 300:
             return
@@ -95,7 +105,10 @@ class AsyncAClient:
     async def get_movie(self, movie_id: MovieId) -> Movie:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
-                "GET", urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/movie/{movie_id}"), timeout=60
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/movie/{movie_id}"),
+                headers=self.__client_wrapper,
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(Movie, _response.json())  # type: ignore
@@ -110,7 +123,10 @@ class AsyncAClient:
     async def get_all_movies(self) -> typing.List[Movie]:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
-                "GET", urllib.parse.urljoin(f"{self._environment.server_b}/", "movie/all-movies"), timeout=60
+                "GET",
+                urllib.parse.urljoin(f"{self._environment.server_b}/", "movie/all-movies"),
+                headers=self.__client_wrapper,
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return pydantic.parse_obj_as(typing.List[Movie], _response.json())  # type: ignore
@@ -126,6 +142,7 @@ class AsyncAClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.server_a}/", "movie/movie"),
                 json=jsonable_encoder(request),
+                headers=self.__client_wrapper,
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -143,7 +160,10 @@ class AsyncAClient:
     async def delete_movie(self, movie_id: MovieId) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
-                "DELETE", urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/{movie_id}"), timeout=60
+                "DELETE",
+                urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/{movie_id}"),
+                headers=self.__client_wrapper,
+                timeout=60,
             )
         if 200 <= _response.status_code < 300:
             return

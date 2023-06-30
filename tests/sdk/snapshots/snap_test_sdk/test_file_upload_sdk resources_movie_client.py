@@ -23,6 +23,7 @@ class MovieClient:
             urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
             data=jsonable_encoder({"name": name}),
             files={"contents": contents},
+            headers=self.__client_wrapper,
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -46,6 +47,7 @@ class AsyncMovieClient:
                 urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
                 data=jsonable_encoder({"name": name}),
                 files={"contents": contents},
+                headers=self.__client_wrapper,
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

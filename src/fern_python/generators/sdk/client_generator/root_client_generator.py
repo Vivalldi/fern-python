@@ -27,21 +27,10 @@ from .endpoint_function_generator import EndpointFunctionGenerator
 class ConstructorParameter:
     constructor_parameter_name: str
     type_hint: AST.TypeHint
-    private_member_name: typing.Optional[str] = None
     initializer: Optional[AST.Expression] = None
 
 
-HTTPX_PRIMITIVE_DATA_TYPES = set(
-    [
-        ir_types.PrimitiveType.STRING,
-        ir_types.PrimitiveType.INTEGER,
-        ir_types.PrimitiveType.DOUBLE,
-        ir_types.PrimitiveType.BOOLEAN,
-    ]
-)
-
-
-class ClientGenerator:
+class RootClientGenerator:
     ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME = "environment"
     ENVIRONMENT_MEMBER_NAME = "_environment"
 
@@ -58,13 +47,11 @@ class ClientGenerator:
         package: ir_types.Package,
         class_name: str,
         async_class_name: str,
-        is_root: bool,
     ):
         self._context = context
         self._package = package
         self._class_name = class_name
         self._async_class_name = async_class_name
-        self._is_root = is_root
         self._is_default_body_parameter_used = False
 
     def generate(self, source_file: SourceFile) -> None:
@@ -92,17 +79,6 @@ class ClientGenerator:
             for param in constructor_parameters
         ]
 
-        if self._is_root:
-            named_parameters.append(
-                AST.NamedFunctionParameter(
-                    name=self._get_timeout_constructor_parameter_name(constructor_parameters),
-                    type_hint=AST.TypeHint.optional(AST.TypeHint.float_()),
-                    initializer=AST.Expression(f"{self._context.custom_config.timeout_in_seconds}")
-                    if isinstance(self._context.custom_config.timeout_in_seconds, int)
-                    else AST.Expression(AST.TypeHint.none()),
-                )
-            )
-
         class_declaration = AST.ClassDeclaration(
             name=self._async_class_name if is_async else self._class_name,
             constructor=AST.ClassConstructor(
@@ -117,12 +93,9 @@ class ClientGenerator:
             service = self._context.ir.services[self._package.service]
             for endpoint in service.endpoints:
                 endpoint_function_generator = EndpointFunctionGenerator(
-                    context=self._context,
-                    service=service,
-                    endpoint=endpoint,
-                    is_async=is_async,
-                    client_wrapper_member_name=self._get_client_member_name(constructor_parameters),
-                    environment_member_name=ClientGenerator.ENVIRONMENT_MEMBER_NAME,
+                    context=self._context, service=service, endpoint=endpoint, is_async=is_async, 
+                    client_wrapper_member_name=self._get_client_wrapper_member_name(),
+                    environment_member_name=RootClientGenerator.ENVIRONMENT_MEMBER_NAME
                 )
                 class_declaration.add_method(endpoint_function_generator.generate())
 
@@ -133,8 +106,7 @@ class ClientGenerator:
 
         parameters.append(
             ConstructorParameter(
-                constructor_parameter_name=ClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
-                private_member_name=ClientGenerator.ENVIRONMENT_MEMBER_NAME,
+                constructor_parameter_name=RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
                 type_hint=AST.TypeHint(self._context.get_reference_to_environments_class())
                 if self._environment_is_enum()
                 else AST.TypeHint.str_(),
@@ -154,16 +126,24 @@ class ClientGenerator:
             )
         )
 
+        client_wrapper_generator = ClientWrapperGenerator(context=self._context)
+        for param in client_wrapper_generator._get_constructor_info().constructor_parameters:
+            parameters.append(
+                ConstructorParameter(
+                    constructor_parameter_name=param.constructor_parameter_name,
+                    type_hint=param.type_hint,
+                )
+            )
+
         parameters.append(
             ConstructorParameter(
-                constructor_parameter_name=self._get_client_constructor_parameter_name(params=parameters),
-                private_member_name=self._get_client_member_name(params=parameters),
-                type_hint=AST.TypeHint(
-                    self._context.core_utilities.get_reference_to_client_wrapper(is_async=is_async)
-                ),
+                constructor_parameter_name=self._get_timeout_constructor_parameter_name(parameters),
+                type_hint=AST.TypeHint.optional(AST.TypeHint.float_()),
+                initializer=AST.Expression(f"{self._context.custom_config.timeout_in_seconds}")
+                if isinstance(self._context.custom_config.timeout_in_seconds, int)
+                else AST.Expression(AST.TypeHint.none()),
             )
         )
-
         return parameters
 
     def _environment_is_enum(self) -> bool:
@@ -172,86 +152,93 @@ class ClientGenerator:
     def _get_write_constructor_body(self, *, is_async: bool) -> CodeWriterFunction:
         def _write_constructor_body(writer: AST.NodeWriter) -> None:
             constructor_parameters = self._get_constructor_parameters(is_async=is_async)
-            for param in constructor_parameters:
-                if param.private_member_name is not None:
-                    writer.write_line(f"self.{param.private_member_name} = {param.constructor_parameter_name}")
-            if self._is_root:
-                client_wrapper_generator = ClientWrapperGenerator(context=self._context)
-                kwargs = []
-                for wrapper_param in client_wrapper_generator._get_constructor_info().constructor_parameters:
-                    kwargs.append(
-                        (
-                            wrapper_param.constructor_parameter_name,
-                            AST.Expression(wrapper_param.constructor_parameter_name),
-                        )
-                    )
+            client_wrapper_generator = ClientWrapperGenerator(context=self._context)
+            kwargs = []
+            for wrapper_param in client_wrapper_generator._get_constructor_info().constructor_parameters:
                 kwargs.append(
                     (
-                        ClientWrapperGenerator.HTTPX_CLIENT_MEMBER_NAME,
-                        AST.Expression(
-                            AST.ClassInstantiation(
-                                HttpX.ASYNC_CLIENT if is_async else HttpX.CLIENT,
-                                kwargs=[
-                                    (
-                                        "timeout",
-                                        AST.Expression(
-                                            f"{self._get_timeout_constructor_parameter_name(constructor_parameters)}"
-                                        ),
-                                    )
-                                ],
-                            )
-                        ),
+                        wrapper_param.constructor_parameter_name,
+                        AST.Expression(wrapper_param.constructor_parameter_name),
                     )
                 )
-                writer.write(f"self.{self._get_client_member_name(constructor_parameters)} = ")
-                writer.write_node(
-                    AST.ClassInstantiation(
-                        self._context.core_utilities.get_reference_to_client_wrapper(is_async=is_async),
-                        kwargs=kwargs,
-                    )
+            kwargs.append(
+                (
+                    ClientWrapperGenerator.HTTPX_CLIENT_MEMBER_NAME,
+                    AST.Expression(
+                        AST.ClassInstantiation(
+                            HttpX.ASYNC_CLIENT if is_async else HttpX.CLIENT,
+                            kwargs=[
+                                (
+                                    "timeout",
+                                    AST.Expression(
+                                        f"{self._get_timeout_constructor_parameter_name(constructor_parameters)}"
+                                    ),
+                                )
+                            ],
+                        )
+                    ),
                 )
-                writer.write_newline_if_last_line_not()
+            )
+            writer.write(f"self.{self._get_client_wrapper_member_name()} = ")
+            writer.write_node(
+                AST.ClassInstantiation(
+                    self._context.core_utilities.get_reference_to_client_wrapper(is_async=is_async),
+                    kwargs=kwargs,
+                )
+            )
+            writer.write_newline_if_last_line_not()
             for subpackage_id in self._package.subpackages:
                 subpackage = self._context.ir.subpackages[subpackage_id]
                 if subpackage.has_endpoints_in_tree:
                     writer.write_node(AST.Expression(f"self.{subpackage.name.snake_case.safe_name} = "))
                     kwargs = [
-                        (param.constructor_parameter_name, AST.Expression(f"self.{param.private_member_name}"))
+                        (param.constructor_parameter_name, AST.Expression(f"self.{param.constructor_parameter_name}"))
                         for param in self._get_constructor_parameters(is_async=is_async)
                     ]
-                    if self._is_root:
-                        kwargs.append(
-                            (
-                                "client_wrapper",
-                                AST.Expression(f"self.{self._get_client_member_name(constructor_parameters)}"),
-                            ),
-                        )
+                    kwargs.append(
+                        (
+                            "client_wrapper",
+                            AST.Expression(f"self.{self._get_client_wrapper_member_name()}"),
+                        ),
+                    )
                     writer.write_node(
                         AST.ClassInstantiation(
                             class_=self._context.get_reference_to_async_subpackage_service(subpackage_id)
                             if is_async
                             else self._context.get_reference_to_subpackage_service(subpackage_id),
-                            kwargs=kwargs,
+                            kwargs=[
+                                (
+                                    RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
+                                    AST.Expression(RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME),
+                                ),
+                                (
+                                    "client_wrapper",
+                                    AST.Expression(f"self.{self._get_client_wrapper_member_name()}"),
+                                ),
+                            ],
                         )
                     )
                     writer.write_line()
 
         return _write_constructor_body
-
+    
     def _write_default_param(self, writer: AST.NodeWriter) -> None:
         writer.write_line("# this is used as the default value for optional parameters")
         writer.write(f"{DEFAULT_BODY_PARAMETER_VALUE} = ")
         writer.write_node(AST.TypeHint.cast(AST.TypeHint.any(), AST.Expression("...")))
         writer.write_newline_if_last_line_not()
 
-    def _get_client_constructor_parameter_name(self, params: typing.List[ConstructorParameter]) -> str:
+    def _get_client_wrapper_constructor_parameter_name(self, params: typing.List[ConstructorParameter]) -> str:
         for param in params:
             if param.constructor_parameter_name == "client_wrapper":
                 return "_client_wrapper"
         return "client_wrapper"
 
-    def _get_client_member_name(self, params: typing.List[ConstructorParameter]) -> str:
-        for param in params:
-            if param.private_member_name == "_client_wrapper":
-                return "__client_wrapper"
+    def _get_client_wrapper_member_name(self) -> str:
         return "_client_wrapper"
+
+    def _get_timeout_constructor_parameter_name(self, params: typing.List[ConstructorParameter]) -> str:
+        for param in params:
+            if param.constructor_parameter_name == "timeout":
+                return "_timeout"
+        return "timeout"

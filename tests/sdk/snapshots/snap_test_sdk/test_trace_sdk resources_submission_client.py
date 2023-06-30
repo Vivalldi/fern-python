@@ -9,7 +9,6 @@ import pydantic
 
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FernIrEnvironment
 from ..commons.types.language import Language
 from .types.execution_session_response import ExecutionSessionResponse
@@ -25,12 +24,7 @@ class SubmissionClient:
         _response = httpx.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"sessions/create-session/{language}"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -45,12 +39,7 @@ class SubmissionClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"sessions/{session_id}"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -65,12 +54,7 @@ class SubmissionClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment.value}/", f"sessions/stop/{session_id}"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -85,12 +69,7 @@ class SubmissionClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "sessions/execution-sessions-state"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -112,12 +91,7 @@ class AsyncSubmissionClient:
             _response = await _client.request(
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"sessions/create-session/{language}"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -133,12 +107,7 @@ class AsyncSubmissionClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"sessions/{session_id}"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -154,12 +123,7 @@ class AsyncSubmissionClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"sessions/stop/{session_id}"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -175,12 +139,7 @@ class AsyncSubmissionClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "sessions/execution-sessions-state"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:

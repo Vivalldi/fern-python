@@ -10,7 +10,6 @@ import pydantic
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FernIrEnvironment
 from ..commons.types.problem_id import ProblemId
 from ..commons.types.variable_type import VariableType
@@ -31,12 +30,7 @@ class ProblemClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "problem-crud/create"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -52,12 +46,7 @@ class ProblemClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/update/{problem_id}"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -72,12 +61,7 @@ class ProblemClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/delete/{problem_id}"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -95,12 +79,7 @@ class ProblemClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "problem-crud/default-starter-files"),
             json=jsonable_encoder({"inputParams": input_params, "outputType": output_type, "methodName": method_name}),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -123,12 +102,7 @@ class AsyncProblemClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", "problem-crud/create"),
                 json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -145,12 +119,7 @@ class AsyncProblemClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/update/{problem_id}"),
                 json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -166,12 +135,7 @@ class AsyncProblemClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/delete/{problem_id}"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -192,12 +156,7 @@ class AsyncProblemClient:
                 json=jsonable_encoder(
                     {"inputParams": input_params, "outputType": output_type, "methodName": method_name}
                 ),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:

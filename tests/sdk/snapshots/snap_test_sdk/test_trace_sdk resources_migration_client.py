@@ -23,13 +23,7 @@ class MigrationClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "migration-info/all"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "admin-key-header": admin_key_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=remove_none_from_headers({**self.__client_wrapper, "admin-key-header": admin_key_header}),
             timeout=None,
         )
         try:
@@ -51,13 +45,7 @@ class AsyncMigrationClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "migration-info/all"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "admin-key-header": admin_key_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=remove_none_from_headers({**self.__client_wrapper, "admin-key-header": admin_key_header}),
                 timeout=None,
             )
         try:

@@ -10,7 +10,6 @@ import pydantic
 from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_headers import remove_none_from_headers
 from ...environment import FernIrEnvironment
 from ..commons.types.problem_id import ProblemId
 
@@ -24,12 +23,7 @@ class HomepageClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         try:
@@ -45,12 +39,7 @@ class HomepageClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
             json=jsonable_encoder(request),
-            headers=remove_none_from_headers(
-                {
-                    "X-Random-Header": self._x_random_header,
-                    "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                }
-            ),
+            headers=self.__client_wrapper,
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -72,12 +61,7 @@ class AsyncHomepageClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         try:
@@ -94,12 +78,7 @@ class AsyncHomepageClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
                 json=jsonable_encoder(request),
-                headers=remove_none_from_headers(
-                    {
-                        "X-Random-Header": self._x_random_header,
-                        "Authorization": f"Bearer {self._token}" if self._token is not None else None,
-                    }
-                ),
+                headers=self.__client_wrapper,
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
