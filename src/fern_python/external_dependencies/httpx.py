@@ -82,7 +82,8 @@ class HttpX:
             writer.write_node(timeout)
 
         def write_non_streaming_call(
-            *, writer: AST.NodeWriter,
+            *,
+            writer: AST.NodeWriter,
         ) -> None:
             make_non_streaming_request(writer=writer)
             response_code_writer.write(writer=writer)
