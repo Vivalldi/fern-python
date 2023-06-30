@@ -21,7 +21,7 @@ from .types.movie_id import MovieId
 
 
 class MovieClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -29,7 +29,7 @@ class MovieClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -47,7 +47,7 @@ class MovieClient:
             "GET",
             urllib.parse.urljoin(f"{self._environment}/", "movie/all-movies"),
             headers=remove_none_from_headers(
-                {**self.__client_wrapper, "literal_header": "hello world", "string_header": string_header}
+                {**self._client_wrapper.get_headers(), "literal_header": "hello world", "string_header": string_header}
             ),
             timeout=60,
         )
@@ -82,7 +82,7 @@ class MovieClient:
                 "optional_boolean": optional_boolean,
             },
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -107,7 +107,7 @@ class MovieClient:
             "DELETE",
             urllib.parse.urljoin(f"{self._environment}/", f"movie/{movie_id}"),
             json=jsonable_encoder(_request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -122,7 +122,7 @@ class MovieClient:
 
 
 class AsyncMovieClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -131,7 +131,7 @@ class AsyncMovieClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -150,7 +150,11 @@ class AsyncMovieClient:
                 "GET",
                 urllib.parse.urljoin(f"{self._environment}/", "movie/all-movies"),
                 headers=remove_none_from_headers(
-                    {**self.__client_wrapper, "literal_header": "hello world", "string_header": string_header}
+                    {
+                        **self._client_wrapper.get_headers(),
+                        "literal_header": "hello world",
+                        "string_header": string_header,
+                    }
                 ),
                 timeout=60,
             )
@@ -188,7 +192,7 @@ class AsyncMovieClient:
                     "optional_boolean": optional_boolean,
                 },
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -214,7 +218,7 @@ class AsyncMovieClient:
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment}/", f"movie/{movie_id}"),
                 json=jsonable_encoder(_request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

@@ -25,7 +25,7 @@ class FernIr:
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         timeout: typing.Optional[float] = None
     ):
-        self._client_wrapper = AsyncClientWrapper(
+        self._client_wrapper = SyncClientWrapper(
             x_random_header=x_random_header, token=token, httpx_client=httpx.Client(timeout=timeout)
         )
         self.v_2 = V2Client(environment=environment, client_wrapper=self._client_wrapper)
@@ -47,7 +47,7 @@ class AsyncFernIr:
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         timeout: typing.Optional[float] = None
     ):
-        self._client_wrapper = SyncClientWrapper(
+        self._client_wrapper = AsyncClientWrapper(
             x_random_header=x_random_header, token=token, httpx_client=httpx.AsyncClient(timeout=timeout)
         )
         self.v_2 = AsyncV2Client(environment=environment, client_wrapper=self._client_wrapper)

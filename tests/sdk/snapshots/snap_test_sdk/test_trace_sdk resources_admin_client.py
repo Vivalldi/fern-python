@@ -23,7 +23,7 @@ from ..v_2.resources.problem.types.test_case_id import TestCaseId
 
 
 class AdminClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -32,7 +32,7 @@ class AdminClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"admin/store-test-submission-status/{submission_id}"),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -50,7 +50,7 @@ class AdminClient:
                 f"{self._environment.value}/", f"admin/store-test-submission-status-v2/{submission_id}"
             ),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -70,7 +70,7 @@ class AdminClient:
                 f"{self._environment.value}/", f"admin/store-workspace-submission-status/{submission_id}"
             ),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -90,7 +90,7 @@ class AdminClient:
                 f"{self._environment.value}/", f"admin/store-workspace-submission-status-v2/{submission_id}"
             ),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -116,7 +116,7 @@ class AdminClient:
                 f"admin/store-test-trace/submission/{submission_id}/testCase/{test_case_id}",
             ),
             json=jsonable_encoder({"result": result, "traceResponses": trace_responses}),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -137,7 +137,7 @@ class AdminClient:
                 f"admin/store-test-trace-v2/submission/{submission_id}/testCase/{test_case_id}",
             ),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -161,7 +161,7 @@ class AdminClient:
                 f"{self._environment.value}/", f"admin/store-workspace-trace/submission/{submission_id}"
             ),
             json=jsonable_encoder({"workspaceRunDetails": workspace_run_details, "traceResponses": trace_responses}),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -179,7 +179,7 @@ class AdminClient:
                 f"{self._environment.value}/", f"admin/store-workspace-trace-v2/submission/{submission_id}"
             ),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -192,7 +192,7 @@ class AdminClient:
 
 
 class AsyncAdminClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -206,7 +206,7 @@ class AsyncAdminClient:
                     f"{self._environment.value}/", f"admin/store-test-submission-status/{submission_id}"
                 ),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -225,7 +225,7 @@ class AsyncAdminClient:
                     f"{self._environment.value}/", f"admin/store-test-submission-status-v2/{submission_id}"
                 ),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -246,7 +246,7 @@ class AsyncAdminClient:
                     f"{self._environment.value}/", f"admin/store-workspace-submission-status/{submission_id}"
                 ),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -267,7 +267,7 @@ class AsyncAdminClient:
                     f"{self._environment.value}/", f"admin/store-workspace-submission-status-v2/{submission_id}"
                 ),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -294,7 +294,7 @@ class AsyncAdminClient:
                     f"admin/store-test-trace/submission/{submission_id}/testCase/{test_case_id}",
                 ),
                 json=jsonable_encoder({"result": result, "traceResponses": trace_responses}),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -316,7 +316,7 @@ class AsyncAdminClient:
                     f"admin/store-test-trace-v2/submission/{submission_id}/testCase/{test_case_id}",
                 ),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -343,7 +343,7 @@ class AsyncAdminClient:
                 json=jsonable_encoder(
                     {"workspaceRunDetails": workspace_run_details, "traceResponses": trace_responses}
                 ),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -364,7 +364,7 @@ class AsyncAdminClient:
                     f"{self._environment.value}/", f"admin/store-workspace-trace-v2/submission/{submission_id}"
                 ),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:

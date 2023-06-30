@@ -23,7 +23,7 @@ from .types.update_playlist_request import UpdatePlaylistRequest
 
 
 class PlaylistClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -43,7 +43,7 @@ class PlaylistClient:
                 "optionalDatetime": serialize_datetime(optional_datetime) if optional_datetime is not None else None,
             },
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -74,7 +74,7 @@ class PlaylistClient:
                 "optionalMultipleField": optional_multiple_field,
                 "multipleField": multiple_field,
             },
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -89,7 +89,7 @@ class PlaylistClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -114,7 +114,7 @@ class PlaylistClient:
             "PUT",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -134,7 +134,7 @@ class PlaylistClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -147,7 +147,7 @@ class PlaylistClient:
 
 
 class AsyncPlaylistClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -170,7 +170,7 @@ class AsyncPlaylistClient:
                     else None,
                 },
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -202,7 +202,7 @@ class AsyncPlaylistClient:
                     "optionalMultipleField": optional_multiple_field,
                     "multipleField": multiple_field,
                 },
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -218,7 +218,7 @@ class AsyncPlaylistClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -244,7 +244,7 @@ class AsyncPlaylistClient:
                 "PUT",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -265,7 +265,7 @@ class AsyncPlaylistClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/{playlist_id}"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:

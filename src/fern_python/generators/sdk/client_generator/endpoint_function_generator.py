@@ -16,6 +16,7 @@ from ..environment_generators import (
 )
 from typing_extensions import Never
 from fern_python.external_dependencies import HttpX, UrlLibParse
+from ..core_utilities.client_wrapper_generator import ClientWrapperGenerator
 
 
 HTTPX_PRIMITIVE_DATA_TYPES = set(
@@ -358,11 +359,11 @@ class EndpointFunctionGenerator:
             )
 
         if len(headers) == 0:
-            return AST.Expression(f"self.{self._client_wrapper_member_name}")
+            return AST.Expression(f"self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_HEADERS_METHOD_NAME}()")
 
         def write_headers_dict(writer: AST.NodeWriter) -> None:
             writer.write("{")
-            writer.write(f"**self.{self._client_wrapper_member_name},")
+            writer.write(f"**self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_HEADERS_METHOD_NAME}(),")
             for i, (header_key, header_value) in enumerate(headers):
                 writer.write(f'"{header_key}": ')
                 writer.write_node(header_value)

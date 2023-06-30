@@ -13,7 +13,7 @@ from .types.movie_id import MovieId
 
 
 class MovieClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -23,7 +23,7 @@ class MovieClient:
             urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
             data=jsonable_encoder({"name": name}),
             files={"contents": contents},
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -36,7 +36,7 @@ class MovieClient:
 
 
 class AsyncMovieClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -47,7 +47,7 @@ class AsyncMovieClient:
                 urllib.parse.urljoin(f"{self._environment}/", f"movie/movie/{movie_id}"),
                 data=jsonable_encoder({"name": name}),
                 files={"contents": contents},
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

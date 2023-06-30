@@ -20,7 +20,7 @@ from .types.movie_id import MovieId
 
 class CommonsClient:
     def __init__(
-        self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client_wrapper: AsyncClientWrapper
+        self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client_wrapper: SyncClientWrapper
     ):
         self._environment = environment
         self._client_wrapper = client_wrapper
@@ -29,7 +29,7 @@ class CommonsClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/movie/{movie_id}"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -46,7 +46,7 @@ class CommonsClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.server_a}/", "movie/all-movies"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -62,7 +62,7 @@ class CommonsClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.server_a}/", "movie/movie"),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -81,7 +81,7 @@ class CommonsClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/{movie_id}"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
         if 200 <= _response.status_code < 300:
@@ -97,7 +97,7 @@ class CommonsClient:
 
 class AsyncCommonsClient:
     def __init__(
-        self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client_wrapper: SyncClientWrapper
+        self, *, environment: FernIrEnvironment = FernIrEnvironment.PRODUCTION, client_wrapper: AsyncClientWrapper
     ):
         self._environment = environment
         self._client_wrapper = client_wrapper
@@ -107,7 +107,7 @@ class AsyncCommonsClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/movie/{movie_id}"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -125,7 +125,7 @@ class AsyncCommonsClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.server_a}/", "movie/all-movies"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -142,7 +142,7 @@ class AsyncCommonsClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.server_a}/", "movie/movie"),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:
@@ -162,7 +162,7 @@ class AsyncCommonsClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment.server_a}/", f"movie/{movie_id}"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             )
         if 200 <= _response.status_code < 300:

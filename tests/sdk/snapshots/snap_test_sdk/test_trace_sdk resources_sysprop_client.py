@@ -14,7 +14,7 @@ from ..commons.types.language import Language
 
 
 class SyspropClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -24,7 +24,7 @@ class SyspropClient:
             urllib.parse.urljoin(
                 f"{self._environment.value}/", f"sysprop/num-warm-instances/{language}/{num_warm_instances}"
             ),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -39,7 +39,7 @@ class SyspropClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "sysprop/num-warm-instances"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -52,7 +52,7 @@ class SyspropClient:
 
 
 class AsyncSyspropClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -63,7 +63,7 @@ class AsyncSyspropClient:
                 urllib.parse.urljoin(
                     f"{self._environment.value}/", f"sysprop/num-warm-instances/{language}/{num_warm_instances}"
                 ),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -79,7 +79,7 @@ class AsyncSyspropClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "sysprop/num-warm-instances"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:

@@ -116,7 +116,7 @@ class CoreUtilities:
                 qualified_name_excluding_import=(),
                 import_=AST.ReferenceImport(
                     module=AST.Module.local(*self._module_path, "client_wrapper"),
-                    named_import=CoreUtilities.SYNC_CLIENT_WRAPPER_CLASS_NAME,
+                    named_import=CoreUtilities.ASYNC_CLIENT_WRAPPER_CLASS_NAME,
                 ),
             )
         else:
@@ -124,7 +124,7 @@ class CoreUtilities:
                 qualified_name_excluding_import=(),
                 import_=AST.ReferenceImport(
                     module=AST.Module.local(*self._module_path, "client_wrapper"),
-                    named_import=CoreUtilities.ASYNC_CLIENT_WRAPPER_CLASS_NAME,
+                    named_import=CoreUtilities.SYNC_CLIENT_WRAPPER_CLASS_NAME,
                 ),
             )
 

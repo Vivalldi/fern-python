@@ -15,7 +15,7 @@ from .types.migration import Migration
 
 
 class MigrationClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -23,7 +23,9 @@ class MigrationClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "migration-info/all"),
-            headers=remove_none_from_headers({**self.__client_wrapper, "admin-key-header": admin_key_header}),
+            headers=remove_none_from_headers(
+                {**self._client_wrapper.get_headers(), "admin-key-header": admin_key_header}
+            ),
             timeout=None,
         )
         try:
@@ -36,7 +38,7 @@ class MigrationClient:
 
 
 class AsyncMigrationClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -45,7 +47,9 @@ class AsyncMigrationClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "migration-info/all"),
-                headers=remove_none_from_headers({**self.__client_wrapper, "admin-key-header": admin_key_header}),
+                headers=remove_none_from_headers(
+                    {**self._client_wrapper.get_headers(), "admin-key-header": admin_key_header}
+                ),
                 timeout=None,
             )
         try:

@@ -15,7 +15,7 @@ from ..commons.types.problem_id import ProblemId
 
 
 class HomepageClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -23,7 +23,7 @@ class HomepageClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -39,7 +39,7 @@ class HomepageClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -52,7 +52,7 @@ class HomepageClient:
 
 
 class AsyncHomepageClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -61,7 +61,7 @@ class AsyncHomepageClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -78,7 +78,7 @@ class AsyncHomepageClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", "homepage-problems"),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:

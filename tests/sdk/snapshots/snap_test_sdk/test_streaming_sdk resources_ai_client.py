@@ -15,7 +15,7 @@ from .types.stream_response import StreamResponse
 
 
 class AiClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -24,7 +24,7 @@ class AiClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "generate-stream"),
             json=jsonable_encoder({"num_events": num_events}),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=60,
         ) as _response:
             if 200 <= _response.status_code < 300:
@@ -41,7 +41,7 @@ class AiClient:
 
 
 class AsyncAiClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -51,7 +51,7 @@ class AsyncAiClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment}/", "generate-stream"),
                 json=jsonable_encoder({"num_events": num_events}),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=60,
             ) as _response:
                 if 200 <= _response.status_code < 300:

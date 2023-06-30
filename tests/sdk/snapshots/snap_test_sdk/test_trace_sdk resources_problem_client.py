@@ -21,7 +21,7 @@ from .types.variable_type_and_name import VariableTypeAndName
 
 
 class ProblemClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -30,7 +30,7 @@ class ProblemClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "problem-crud/create"),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -46,7 +46,7 @@ class ProblemClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/update/{problem_id}"),
             json=jsonable_encoder(request),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -61,7 +61,7 @@ class ProblemClient:
         _response = httpx.request(
             "DELETE",
             urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/delete/{problem_id}"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         if 200 <= _response.status_code < 300:
@@ -79,7 +79,7 @@ class ProblemClient:
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", "problem-crud/default-starter-files"),
             json=jsonable_encoder({"inputParams": input_params, "outputType": output_type, "methodName": method_name}),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -92,7 +92,7 @@ class ProblemClient:
 
 
 class AsyncProblemClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -102,7 +102,7 @@ class AsyncProblemClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", "problem-crud/create"),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -119,7 +119,7 @@ class AsyncProblemClient:
                 "POST",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/update/{problem_id}"),
                 json=jsonable_encoder(request),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -135,7 +135,7 @@ class AsyncProblemClient:
             _response = await _client.request(
                 "DELETE",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"problem-crud/delete/{problem_id}"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         if 200 <= _response.status_code < 300:
@@ -156,7 +156,7 @@ class AsyncProblemClient:
                 json=jsonable_encoder(
                     {"inputParams": input_params, "outputType": output_type, "methodName": method_name}
                 ),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:

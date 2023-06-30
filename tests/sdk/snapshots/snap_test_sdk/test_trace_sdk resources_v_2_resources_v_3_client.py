@@ -6,14 +6,18 @@ from .resources.problem.client import AsyncProblemClient, ProblemClient
 
 
 class V3Client:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
-        self._client_wrapper = client_wrapper
-        self.problem = ProblemClient(environment=self._environment, client_wrapper=self._client_wrapper)
-
-
-class AsyncV3Client:
     def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
-        self.problem = AsyncProblemClient(environment=self._environment, client_wrapper=self._client_wrapper)
+        self.problem = ProblemClient(
+            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
+        )
+
+
+class AsyncV3Client:
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+        self._environment = environment
+        self._client_wrapper = client_wrapper
+        self.problem = AsyncProblemClient(
+            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
+        )

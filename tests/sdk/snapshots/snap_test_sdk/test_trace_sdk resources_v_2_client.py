@@ -12,14 +12,20 @@ from .resources.v_3.client import AsyncV3Client, V3Client
 
 
 class V2Client:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
-        self.problem = ProblemClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.v_3 = V3Client(environment=self._environment, client_wrapper=self._client_wrapper)
+        self.problem = ProblemClient(
+            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
+        )
+        self.v_3 = V3Client(
+            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
+        )
 
     def test(self) -> None:
-        _response = httpx.request("GET", self._environment.value, headers=self.__client_wrapper, timeout=None)
+        _response = httpx.request(
+            "GET", self._environment.value, headers=self._client_wrapper.get_headers(), timeout=None
+        )
         if 200 <= _response.status_code < 300:
             return
         try:
@@ -30,16 +36,20 @@ class V2Client:
 
 
 class AsyncV2Client:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
-        self.problem = AsyncProblemClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.v_3 = AsyncV3Client(environment=self._environment, client_wrapper=self._client_wrapper)
+        self.problem = AsyncProblemClient(
+            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
+        )
+        self.v_3 = AsyncV3Client(
+            environment=self._environment, client_wrapper=self._client_wrapper, client_wrapper=self._client_wrapper
+        )
 
     async def test(self) -> None:
         async with httpx.AsyncClient() as _client:
             _response = await _client.request(
-                "GET", self._environment.value, headers=self.__client_wrapper, timeout=None
+                "GET", self._environment.value, headers=self._client_wrapper.get_headers(), timeout=None
             )
         if 200 <= _response.status_code < 300:
             return

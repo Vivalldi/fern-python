@@ -16,7 +16,7 @@ from .types.problem_info_v_2 import ProblemInfoV2
 
 
 class ProblemClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -24,7 +24,7 @@ class ProblemClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "problems-v2/lightweight-problem-info"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -39,7 +39,7 @@ class ProblemClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", "problems-v2/problem-info"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -54,7 +54,7 @@ class ProblemClient:
         _response = httpx.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"problems-v2/problem-info/{problem_id}"),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -71,7 +71,7 @@ class ProblemClient:
             urllib.parse.urljoin(
                 f"{self._environment.value}/", f"problems-v2/problem-info/{problem_id}/version/{problem_version}"
             ),
-            headers=self.__client_wrapper,
+            headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
         try:
@@ -84,7 +84,7 @@ class ProblemClient:
 
 
 class AsyncProblemClient:
-    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: SyncClientWrapper):
+    def __init__(self, *, environment: FernIrEnvironment = FernIrEnvironment.PROD, client_wrapper: AsyncClientWrapper):
         self._environment = environment
         self._client_wrapper = client_wrapper
 
@@ -93,7 +93,7 @@ class AsyncProblemClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "problems-v2/lightweight-problem-info"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -109,7 +109,7 @@ class AsyncProblemClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", "problems-v2/problem-info"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -125,7 +125,7 @@ class AsyncProblemClient:
             _response = await _client.request(
                 "GET",
                 urllib.parse.urljoin(f"{self._environment.value}/", f"problems-v2/problem-info/{problem_id}"),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
@@ -143,7 +143,7 @@ class AsyncProblemClient:
                 urllib.parse.urljoin(
                     f"{self._environment.value}/", f"problems-v2/problem-info/{problem_id}/version/{problem_version}"
                 ),
-                headers=self.__client_wrapper,
+                headers=self._client_wrapper.get_headers(),
                 timeout=None,
             )
         try:
