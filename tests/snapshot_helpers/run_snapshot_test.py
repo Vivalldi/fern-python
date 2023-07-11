@@ -103,7 +103,6 @@ def run_snapshot_test(
                 "types-backports=0.1.3",
             ]
         )
-    run_command_in_output_directory(["poetry", "install"])
 
     if test_commands is not None:
         for command in test_commands:

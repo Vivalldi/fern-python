@@ -175,6 +175,7 @@ def test_circular_imports(snapshot: SnapshotTest, tmpdir: Path) -> None:
         ),
         organization="my_org",
         test_commands=[
+            "poetry install",
             "poetry run python -c 'import my_org'",
         ],
     )
