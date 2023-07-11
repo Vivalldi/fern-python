@@ -5,5 +5,4 @@ imports:
 
 types:
   A:
-    properties:
-      rootType: root.RootType
+    extends: root.RootType

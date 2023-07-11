@@ -3,15 +3,11 @@
 import datetime as dt
 import typing
 
-import pydantic
-
 from ....core.datetime_utils import serialize_datetime
 from ....types.root_type import RootType
 
 
-class A(pydantic.BaseModel):
-    root_type: RootType = pydantic.Field(alias="rootType")
-
+class A(RootType):
     def json(self, **kwargs: typing.Any) -> str:
         kwargs_with_defaults: typing.Any = {"by_alias": True, "exclude_unset": True, **kwargs}
         return super().json(**kwargs_with_defaults)
