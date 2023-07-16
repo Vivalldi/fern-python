@@ -172,9 +172,8 @@ class RootClientGenerator:
     def _get_write_constructor_body(self, *, is_async: bool) -> CodeWriterFunction:
         def _write_constructor_body(writer: AST.NodeWriter) -> None:
             client_wrapper_generator = ClientWrapperGenerator(context=self._context)
-            constructor_parameters = client_wrapper_generator._get_constructor_info().constructor_parameters
             kwargs = []
-            for wrapper_param in constructor_parameters:
+            for wrapper_param in client_wrapper_generator._get_constructor_info().constructor_parameters:
                 kwargs.append(
                     (
                         wrapper_param.constructor_parameter_name,
@@ -197,7 +196,7 @@ class RootClientGenerator:
                     ),
                 )
             )
-            for param in constructor_parameters:
+            for param in self._get_constructor_parameters(is_async=is_async):
                 if param.private_member_name is not None:
                     writer.write_line(f"self.{param.private_member_name} = {param.constructor_parameter_name}")
             writer.write(f"self.{self._get_client_wrapper_member_name()} = ")
