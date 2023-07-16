@@ -50,6 +50,15 @@ class CoreUtilities:
             ),
             exports={"remove_none_from_headers"},
         )
+        self._copy_file_to_project(
+            project=project,
+            relative_filepath_on_disk="remove_none_from_query_parameters.py",
+            filepath_in_project=Filepath(
+                directories=self.filepath,
+                file=Filepath.FilepathPart(module_name="remove_none_from_query_parameters"),
+            ),
+            exports={"remove_none_from_query_parameters"},
+        )
 
     def _copy_file_to_project(
         self, *, project: Project, relative_filepath_on_disk: str, filepath_in_project: Filepath, exports: Set[str]
@@ -139,6 +148,20 @@ class CoreUtilities:
                     ),
                 ),
                 args=[headers],
+            )
+        )
+
+    def remove_none_from_query_parameters(self, query_parameters: AST.Expression) -> AST.Expression:
+        return AST.Expression(
+            AST.FunctionInvocation(
+                function_definition=AST.Reference(
+                    qualified_name_excluding_import=(),
+                    import_=AST.ReferenceImport(
+                        module=AST.Module.local(*self._module_path, "remove_none_from_query_parameters"),
+                        named_import="remove_none_from_query_parameters",
+                    ),
+                ),
+                args=[query_parameters],
             )
         )
 

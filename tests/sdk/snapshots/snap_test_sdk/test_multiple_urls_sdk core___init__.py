@@ -5,6 +5,7 @@ from .client_wrapper import AsyncClientWrapper, BaseClientWrapper, SyncClientWra
 from .datetime_utils import serialize_datetime
 from .jsonable_encoder import jsonable_encoder
 from .remove_none_from_headers import remove_none_from_headers
+from .remove_none_from_query_parameters import remove_none_from_query_parameters
 
 __all__ = [
     "ApiError",
@@ -13,5 +14,6 @@ __all__ = [
     "SyncClientWrapper",
     "jsonable_encoder",
     "remove_none_from_headers",
+    "remove_none_from_query_parameters",
     "serialize_datetime",
 ]

@@ -34,7 +34,7 @@ class HttpX:
         *,
         url: AST.Expression,
         method: str,
-        query_parameters: List[Tuple[str, str, bool, AST.Expression]],
+        query_parameters: Optional[AST.Expression],
         request_body: Optional[AST.Expression],
         headers: Optional[AST.Expression],
         files: Optional[AST.Expression],
@@ -47,8 +47,9 @@ class HttpX:
         reference_to_client: AST.Expression,
     ) -> AST.Expression:
         def add_request_params(*, writer: AST.NodeWriter) -> None:
-            if len(query_parameters) > 0:
-                writer.write("params=params")
+            if query_parameters is not None:
+                writer.write("params=")
+                writer.write_node(query_parameters)
                 writer.write_line(",")
 
             if request_body is not None:
@@ -74,36 +75,6 @@ class HttpX:
             writer.write("timeout=")
             writer.write_node(timeout)
 
-        def add_query_params(*, writer: AST.NodeWriter) -> None:
-            if len(query_parameters) == 0:
-                return
-            writer.write_line("params={")
-            for i, (
-                query_parameter_key,
-                query_parameter_name,
-                query_parameter_is_optional,
-                query_parameter_value,
-            ) in enumerate(query_parameters):
-                if i > 0:
-                    writer.write_line(", ")
-                writer.write(f'"{query_parameter_key}": ')
-                writer.write_node(query_parameter_value)
-            writer.write_line()
-            writer.write_line("}")
-
-            for i, (
-                query_parameter_key,
-                query_parameter_name,
-                query_parameter_is_optional,
-                query_parameter_value,
-            ) in enumerate(query_parameters):
-                if query_parameter_is_optional:
-                    writer.write(f"if {query_parameter_name} is None:")
-                    writer.write_line()
-                    with writer.indent():
-                        writer.write(f'del params["{query_parameter_key}"]')
-                        writer.write_line()
-
         def write_non_streaming_call(
             *,
             writer: AST.NodeWriter,
@@ -115,8 +86,6 @@ class HttpX:
             *,
             writer: AST.NodeWriter,
         ) -> None:
-
-            add_query_params(writer=writer)
             writer.write(f"{response_variable_name} = ")
             if is_async:
                 writer.write("await ")
@@ -129,7 +98,6 @@ class HttpX:
             writer.write_line(")")
 
         def write_streaming_call(*, writer: AST.NodeWriter) -> None:
-            add_query_params(writer=writer)
             if is_async:
                 writer.write("async ")
             writer.write("with ")
