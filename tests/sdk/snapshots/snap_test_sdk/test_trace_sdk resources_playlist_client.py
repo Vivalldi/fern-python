@@ -11,7 +11,7 @@ from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.datetime_utils import serialize_datetime
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_query_parameters import remove_none_from_query_parameters
+from ...core.remove_none_from_dict import remove_none_from_dict
 from ...environment import FernIrEnvironment
 from .errors.playlist_id_not_found_error import PlaylistIdNotFoundError
 from .errors.unauthorized_error import UnauthorizedError
@@ -41,7 +41,7 @@ class PlaylistClient:
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/create"),
-            params=remove_none_from_query_parameters(
+            params=remove_none_from_dict(
                 {
                     "datetime": serialize_datetime(datetime),
                     "optionalDatetime": serialize_datetime(optional_datetime)
@@ -74,7 +74,7 @@ class PlaylistClient:
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/all"),
-            params=remove_none_from_query_parameters(
+            params=remove_none_from_dict(
                 {
                     "limit": limit,
                     "otherField": other_field,
@@ -171,7 +171,7 @@ class AsyncPlaylistClient:
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/create"),
-            params=remove_none_from_query_parameters(
+            params=remove_none_from_dict(
                 {
                     "datetime": serialize_datetime(datetime),
                     "optionalDatetime": serialize_datetime(optional_datetime)
@@ -204,7 +204,7 @@ class AsyncPlaylistClient:
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/all"),
-            params=remove_none_from_query_parameters(
+            params=remove_none_from_dict(
                 {
                     "limit": limit,
                     "otherField": other_field,

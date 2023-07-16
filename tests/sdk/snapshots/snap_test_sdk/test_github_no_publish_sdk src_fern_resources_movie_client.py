@@ -11,7 +11,7 @@ from ...core.api_error import ApiError
 from ...core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ...core.datetime_utils import serialize_datetime
 from ...core.jsonable_encoder import jsonable_encoder
-from ...core.remove_none_from_query_parameters import remove_none_from_query_parameters
+from ...core.remove_none_from_dict import remove_none_from_dict
 from .errors.invalid_movie_error import InvalidMovieError
 from .errors.movie_already_exists_error import MovieAlreadyExistsError
 from .errors.movie_not_found_error import MovieNotFoundError
@@ -73,7 +73,7 @@ class MovieClient:
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "movie/movie"),
-            params=remove_none_from_query_parameters(
+            params=remove_none_from_dict(
                 {
                     "date": str(date),
                     "datetime": serialize_datetime(datetime),
@@ -170,7 +170,7 @@ class AsyncMovieClient:
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment}/", "movie/movie"),
-            params=remove_none_from_query_parameters(
+            params=remove_none_from_dict(
                 {
                     "date": str(date),
                     "datetime": serialize_datetime(datetime),

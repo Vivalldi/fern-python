@@ -382,7 +382,7 @@ class EndpointFunctionGenerator:
 
             writer.write_line("},")
 
-        return self._context.core_utilities.remove_none_from_headers(
+        return self._context.core_utilities.remove_none_from_dict(
             AST.Expression(AST.CodeWriter(write_headers_dict)),
         )
 
@@ -408,7 +408,7 @@ class EndpointFunctionGenerator:
 
             writer.write_line("},")
 
-        return self._context.core_utilities.remove_none_from_query_parameters(
+        return self._context.core_utilities.remove_none_from_dict(
             AST.Expression(AST.CodeWriter(write_query_parameters_dict)),
         )
 
