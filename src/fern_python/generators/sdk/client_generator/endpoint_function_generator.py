@@ -200,7 +200,7 @@ class EndpointFunctionGenerator:
                         delete=lambda: "DELETE",
                     ),
                     query_parameters=[
-                        (query_parameter.name.wire_value, self._get_reference_to_query_parameter(query_parameter))
+                        (query_parameter.name.wire_value, self._get_query_parameter_name(query_parameter), self._is_query_parameter_optional(query_parameter), self._get_reference_to_query_parameter(query_parameter))
                         for query_parameter in endpoint.query_parameters
                     ],
                     request_body=(
@@ -288,6 +288,8 @@ class EndpointFunctionGenerator:
 
     def _get_reference_to_query_parameter(self, query_parameter: ir_types.QueryParameter) -> AST.Expression:
         reference = AST.Expression(self._get_query_parameter_name(query_parameter))
+        if self._is_string(query_parameter.value_type, allow_optional=True):
+            return reference
 
         if self._is_datetime(query_parameter.value_type, allow_optional=True):
             reference = self._context.core_utilities.serialize_datetime(reference)
@@ -328,7 +330,14 @@ class EndpointFunctionGenerator:
         elif not self._is_httpx_primitive_data(query_parameter.value_type, allow_optional=True):
             reference = self._context.core_utilities.jsonable_encoder(reference)
 
-        return reference
+        # By default, we need to cast the value as a string.
+        string_reference = reference
+        def write_strftime(writer: AST.NodeWriter) -> None:
+            writer.write("str(")
+            writer.write_node(string_reference)
+            writer.write(")")
+
+        return AST.Expression(AST.CodeWriter(write_strftime))
 
     def _get_environment_as_str(self, *, endpoint: ir_types.HttpEndpoint) -> AST.Expression:
         if self._context.ir.environments is not None:
@@ -412,6 +421,19 @@ class EndpointFunctionGenerator:
             type_reference, expected=set([ir_types.PrimitiveType.DATE]), allow_optional=allow_optional, allow_enum=False
         )
 
+    def _is_string(
+        self,
+        type_reference: ir_types.TypeReference,
+        *,
+        allow_optional: bool,
+    ) -> bool:
+        return self._does_type_reference_match_primitives(
+            type_reference,
+            expected=set([ir_types.PrimitiveType.STRING]),
+            allow_optional=allow_optional,
+            allow_enum=False,
+        )
+
     def _is_httpx_primitive_data(self, type_reference: ir_types.TypeReference, *, allow_optional: bool) -> bool:
         return self._does_type_reference_match_primitives(
             type_reference, expected=HTTPX_PRIMITIVE_DATA_TYPES, allow_optional=allow_optional, allow_enum=True
@@ -470,6 +492,13 @@ class EndpointFunctionGenerator:
     def _is_header_literal(self, header: ir_types.HttpHeader) -> bool:
         return self._get_literal_header_value(header) is not None
 
+    def _is_query_parameter_optional(self, query_parameter: ir_types.QueryParameter) -> bool:
+        type = query_parameter.value_type.get_as_union()
+        if type.type == "container":
+            container_type = type.container.get_as_union()
+            return container_type.type == "optional"
+        return False
+
     def _environment_is_enum(self) -> bool:
         return self._context.ir.environments is not None
 
@@ -497,7 +526,6 @@ class EndpointFunctionGenerator:
             if container_type.type == "literal":
                 return container_type.literal.get_as_union().string
         return None
-
 
 def is_endpoint_path_empty(endpoint: ir_types.HttpEndpoint) -> bool:
     return len(endpoint.full_path.head) == 0 and len(endpoint.full_path.parts) == 0
