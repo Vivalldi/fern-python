@@ -27,6 +27,7 @@ from .endpoint_function_generator import EndpointFunctionGenerator
 class ConstructorParameter:
     constructor_parameter_name: str
     type_hint: AST.TypeHint
+    private_member_name: typing.Optional[str] = None
     initializer: Optional[AST.Expression] = None
 
 
@@ -128,6 +129,7 @@ class RootClientGenerator:
                 type_hint=AST.TypeHint(self._context.get_reference_to_environments_class())
                 if self._environment_is_enum()
                 else AST.TypeHint.str_(),
+                private_member_name=RootClientGenerator.ENVIRONMENT_MEMBER_NAME,
                 initializer=AST.Expression(
                     self._context.ir.environments.environments.visit(
                         single_base_url=lambda single_base_url_environments: SingleBaseUrlEnvironmentGenerator(
@@ -170,8 +172,9 @@ class RootClientGenerator:
     def _get_write_constructor_body(self, *, is_async: bool) -> CodeWriterFunction:
         def _write_constructor_body(writer: AST.NodeWriter) -> None:
             client_wrapper_generator = ClientWrapperGenerator(context=self._context)
+            constructor_parameters = client_wrapper_generator._get_constructor_info().constructor_parameters
             kwargs = []
-            for wrapper_param in client_wrapper_generator._get_constructor_info().constructor_parameters:
+            for wrapper_param in constructor_parameters:
                 kwargs.append(
                     (
                         wrapper_param.constructor_parameter_name,
@@ -194,6 +197,9 @@ class RootClientGenerator:
                     ),
                 )
             )
+            for param in constructor_parameters:
+                if param.private_member_name is not None:
+                    writer.write_line(f"self.{param.private_member_name} = {param.constructor_parameter_name}")
             writer.write(f"self.{self._get_client_wrapper_member_name()} = ")
             writer.write_node(
                 AST.ClassInstantiation(
