@@ -78,7 +78,12 @@ class HttpX:
             if len(query_parameters) == 0:
                 return
             writer.write_line("params={")
-            for i, (query_parameter_key, query_parameter_name, query_parameter_is_optional, query_parameter_value) in enumerate(query_parameters):
+            for i, (
+                query_parameter_key,
+                query_parameter_name,
+                query_parameter_is_optional,
+                query_parameter_value,
+            ) in enumerate(query_parameters):
                 if i > 0:
                     writer.write_line(", ")
                 writer.write(f'"{query_parameter_key}": ')
@@ -86,9 +91,14 @@ class HttpX:
             writer.write_line()
             writer.write_line("}")
 
-            for i, (query_parameter_key, query_parameter_name, query_parameter_is_optional, query_parameter_value) in enumerate(query_parameters):
+            for i, (
+                query_parameter_key,
+                query_parameter_name,
+                query_parameter_is_optional,
+                query_parameter_value,
+            ) in enumerate(query_parameters):
                 if query_parameter_is_optional:
-                    writer.write(f'if {query_parameter_name} is None:')
+                    writer.write(f"if {query_parameter_name} is None:")
                     writer.write_line()
                     with writer.indent():
                         writer.write(f'del params["{query_parameter_key}"]')

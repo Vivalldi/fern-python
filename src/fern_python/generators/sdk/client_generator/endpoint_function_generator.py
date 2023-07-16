@@ -200,7 +200,12 @@ class EndpointFunctionGenerator:
                         delete=lambda: "DELETE",
                     ),
                     query_parameters=[
-                        (query_parameter.name.wire_value, self._get_query_parameter_name(query_parameter), self._is_query_parameter_optional(query_parameter), self._get_reference_to_query_parameter(query_parameter))
+                        (
+                            query_parameter.name.wire_value,
+                            self._get_query_parameter_name(query_parameter),
+                            self._is_query_parameter_optional(query_parameter),
+                            self._get_reference_to_query_parameter(query_parameter),
+                        )
                         for query_parameter in endpoint.query_parameters
                     ],
                     request_body=(
@@ -504,6 +509,7 @@ class EndpointFunctionGenerator:
             if container_type.type == "literal":
                 return container_type.literal.get_as_union().string
         return None
+
 
 def is_endpoint_path_empty(endpoint: ir_types.HttpEndpoint) -> bool:
     return len(endpoint.full_path.head) == 0 and len(endpoint.full_path.parts) == 0
