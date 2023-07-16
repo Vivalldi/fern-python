@@ -77,18 +77,22 @@ class HttpX:
         def add_query_params(*, writer: AST.NodeWriter) -> None:
             if len(query_parameters) == 0:
                 return
-            writer.write_line("params = {}")
+            writer.write_line("params={")
+            for i, (query_parameter_key, query_parameter_name, query_parameter_is_optional, query_parameter_value) in enumerate(query_parameters):
+                if i > 0:
+                    writer.write_line(", ")
+                writer.write(f'"{query_parameter_key}": ')
+                writer.write_node(query_parameter_value)
+            writer.write_line()
+            writer.write_line("}")
+
             for i, (query_parameter_key, query_parameter_name, query_parameter_is_optional, query_parameter_value) in enumerate(query_parameters):
                 if query_parameter_is_optional:
-                    writer.write(f'if {query_parameter_name} is not None:')
+                    writer.write(f'if {query_parameter_name} is None:')
                     writer.write_line()
                     with writer.indent():
-                        writer.write(f'params["{query_parameter_key}"] = ')
-                        writer.write_node(query_parameter_value)
-                else:
-                    writer.write(f'params["{query_parameter_key}"] = ')
-                    writer.write_node(query_parameter_value)
-                writer.write_line()
+                        writer.write(f'del params["{query_parameter_key}"]')
+                        writer.write_line()
 
         def write_non_streaming_call(
             *,

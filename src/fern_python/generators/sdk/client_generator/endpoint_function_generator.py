@@ -288,8 +288,6 @@ class EndpointFunctionGenerator:
 
     def _get_reference_to_query_parameter(self, query_parameter: ir_types.QueryParameter) -> AST.Expression:
         reference = AST.Expression(self._get_query_parameter_name(query_parameter))
-        if self._is_string(query_parameter.value_type, allow_optional=True):
-            return reference
 
         if self._is_datetime(query_parameter.value_type, allow_optional=True):
             reference = self._context.core_utilities.serialize_datetime(reference)
@@ -330,14 +328,7 @@ class EndpointFunctionGenerator:
         elif not self._is_httpx_primitive_data(query_parameter.value_type, allow_optional=True):
             reference = self._context.core_utilities.jsonable_encoder(reference)
 
-        # By default, we need to cast the value as a string.
-        string_reference = reference
-        def write_strftime(writer: AST.NodeWriter) -> None:
-            writer.write("str(")
-            writer.write_node(string_reference)
-            writer.write(")")
-
-        return AST.Expression(AST.CodeWriter(write_strftime))
+        return reference
 
     def _get_environment_as_str(self, *, endpoint: ir_types.HttpEndpoint) -> AST.Expression:
         if self._context.ir.environments is not None:
@@ -419,19 +410,6 @@ class EndpointFunctionGenerator:
     ) -> bool:
         return self._does_type_reference_match_primitives(
             type_reference, expected=set([ir_types.PrimitiveType.DATE]), allow_optional=allow_optional, allow_enum=False
-        )
-
-    def _is_string(
-        self,
-        type_reference: ir_types.TypeReference,
-        *,
-        allow_optional: bool,
-    ) -> bool:
-        return self._does_type_reference_match_primitives(
-            type_reference,
-            expected=set([ir_types.PrimitiveType.STRING]),
-            allow_optional=allow_optional,
-            allow_enum=False,
         )
 
     def _is_httpx_primitive_data(self, type_reference: ir_types.TypeReference, *, allow_optional: bool) -> bool:

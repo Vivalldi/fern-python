@@ -37,13 +37,16 @@ class PlaylistClient:
         optional_datetime: typing.Optional[dt.datetime] = None,
         request: PlaylistCreateRequest,
     ) -> Playlist:
+        params = {
+            "datetime": serialize_datetime(datetime),
+            "optionalDatetime": serialize_datetime(optional_datetime) if optional_datetime is not None else None,
+        }
+        if optional_datetime is None:
+            del params["optionalDatetime"]
         _response = self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/create"),
-            params={
-                "datetime": serialize_datetime(datetime),
-                "optionalDatetime": serialize_datetime(optional_datetime) if optional_datetime is not None else None,
-            },
+            params=params,
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=None,
@@ -66,16 +69,21 @@ class PlaylistClient:
         optional_multiple_field: typing.Union[typing.Optional[str], typing.List[str]],
         multiple_field: typing.Union[str, typing.List[str]],
     ) -> typing.List[Playlist]:
+        params = {
+            "limit": limit,
+            "otherField": other_field,
+            "multiLineDocs": multi_line_docs,
+            "optionalMultipleField": optional_multiple_field,
+            "multipleField": multiple_field,
+        }
+        if limit is None:
+            del params["limit"]
+        if optional_multiple_field is None:
+            del params["optionalMultipleField"]
         _response = self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/all"),
-            params={
-                "limit": limit,
-                "otherField": other_field,
-                "multiLineDocs": multi_line_docs,
-                "optionalMultipleField": optional_multiple_field,
-                "multipleField": multiple_field,
-            },
+            params=params,
             headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
@@ -161,13 +169,16 @@ class AsyncPlaylistClient:
         optional_datetime: typing.Optional[dt.datetime] = None,
         request: PlaylistCreateRequest,
     ) -> Playlist:
+        params = {
+            "datetime": serialize_datetime(datetime),
+            "optionalDatetime": serialize_datetime(optional_datetime) if optional_datetime is not None else None,
+        }
+        if optional_datetime is None:
+            del params["optionalDatetime"]
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/create"),
-            params={
-                "datetime": serialize_datetime(datetime),
-                "optionalDatetime": serialize_datetime(optional_datetime) if optional_datetime is not None else None,
-            },
+            params=params,
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=None,
@@ -190,16 +201,21 @@ class AsyncPlaylistClient:
         optional_multiple_field: typing.Union[typing.Optional[str], typing.List[str]],
         multiple_field: typing.Union[str, typing.List[str]],
     ) -> typing.List[Playlist]:
+        params = {
+            "limit": limit,
+            "otherField": other_field,
+            "multiLineDocs": multi_line_docs,
+            "optionalMultipleField": optional_multiple_field,
+            "multipleField": multiple_field,
+        }
+        if limit is None:
+            del params["limit"]
+        if optional_multiple_field is None:
+            del params["optionalMultipleField"]
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
             urllib.parse.urljoin(f"{self._environment.value}/", f"v2/playlist/{service_param}/all"),
-            params={
-                "limit": limit,
-                "otherField": other_field,
-                "multiLineDocs": multi_line_docs,
-                "optionalMultipleField": optional_multiple_field,
-                "multipleField": multiple_field,
-            },
+            params=params,
             headers=self._client_wrapper.get_headers(),
             timeout=None,
         )
