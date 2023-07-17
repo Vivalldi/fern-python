@@ -175,7 +175,11 @@ class EndpointFunctionGenerator:
 
             is_streaming = (
                 True
-                if endpoint.sdk_response is not None and (endpoint.sdk_response.get_as_union().type == "streaming" or endpoint.sdk_response.get_as_union().type == "fileDownload")
+                if endpoint.sdk_response is not None
+                and (
+                    endpoint.sdk_response.get_as_union().type == "streaming"
+                    or endpoint.sdk_response.get_as_union().type == "fileDownload"
+                )
                 else False
             )
             response_code_writer = EndpointResponseCodeWriter(
@@ -263,7 +267,9 @@ class EndpointFunctionGenerator:
     def _get_response_body_type(self, sdk_response: ir_types.SdkResponse, is_async: bool) -> AST.TypeHint:
         return sdk_response.visit(
             maybe_streaming=raise_maybe_streaming_unsupported,
-            file_download=lambda _: AST.TypeHint.async_iterator(AST.TypeHint.bytes()) if self._is_async else AST.TypeHint.iterator(AST.TypeHint.bytes()),
+            file_download=lambda _: AST.TypeHint.async_iterator(AST.TypeHint.bytes())
+            if self._is_async
+            else AST.TypeHint.iterator(AST.TypeHint.bytes()),
             json=lambda json_response: self._context.pydantic_generator_context.get_type_hint_for_type_reference(
                 json_response.response_body_type
             ),

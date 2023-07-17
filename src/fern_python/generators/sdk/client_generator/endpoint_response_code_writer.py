@@ -245,7 +245,9 @@ class EndpointResponseCodeWriter:
 
     def _get_response_body_type(self, response: ir_types.HttpResponse) -> AST.TypeHint:
         return response.visit(
-            file_download=lambda _: AST.TypeHint.async_iterator(AST.TypeHint.bytes()) if self._is_async else AST.TypeHint.iterator(AST.TypeHint.bytes()),
+            file_download=lambda _: AST.TypeHint.async_iterator(AST.TypeHint.bytes())
+            if self._is_async
+            else AST.TypeHint.iterator(AST.TypeHint.bytes()),
             json=lambda json_response: self._context.pydantic_generator_context.get_type_hint_for_type_reference(
                 json_response.response_body_type
             ),

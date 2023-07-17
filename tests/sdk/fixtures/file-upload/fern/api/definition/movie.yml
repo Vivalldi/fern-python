@@ -15,8 +15,8 @@ service:
           properties:
             name: string
             contents: file
-    
-    downloadMovie: 
+
+    downloadMovie:
       method: GET
       path: /movie/{movieId}
       path-parameters:
