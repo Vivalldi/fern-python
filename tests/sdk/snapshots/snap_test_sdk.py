@@ -22,7 +22,7 @@ snapshots['test_file_upload_sdk core_datetime_utils'] = FileSnapshot('snap_test_
 
 snapshots['test_file_upload_sdk core_jsonable_encoder'] = FileSnapshot('snap_test_sdk/test_file_upload_sdk core_jsonable_encoder.py')
 
-snapshots['test_file_upload_sdk core_remove_none_from_headers'] = FileSnapshot('snap_test_sdk/test_file_upload_sdk core_remove_none_from_headers.py')
+snapshots['test_file_upload_sdk core_remove_none_from_dict'] = FileSnapshot('snap_test_sdk/test_file_upload_sdk core_remove_none_from_dict.py')
 
 snapshots['test_file_upload_sdk filepaths'] = [
     '__init__.py',
@@ -32,7 +32,7 @@ snapshots['test_file_upload_sdk filepaths'] = [
     'core/client_wrapper.py',
     'core/datetime_utils.py',
     'core/jsonable_encoder.py',
-    'core/remove_none_from_headers.py',
+    'core/remove_none_from_dict.py',
     'resources/__init__.py',
     'resources/movie/__init__.py',
     'resources/movie/client.py',
