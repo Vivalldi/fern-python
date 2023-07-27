@@ -52,7 +52,9 @@ class ClientWrapperGenerator:
     def generate(self, source_file: SourceFile, project: Project) -> None:
         constructor_info = self._get_constructor_info()
         source_file.add_class_declaration(
-            declaration=self._create_base_client_wrapper_class_declaration(constructor_info=constructor_info, project=project),
+            declaration=self._create_base_client_wrapper_class_declaration(
+                constructor_info=constructor_info, project=project
+            ),
             should_export=True,
         )
         source_file.add_class_declaration(
@@ -89,7 +91,8 @@ class ClientWrapperGenerator:
                 ),
                 body=AST.CodeWriter(
                     self._get_write_get_headers_body(
-                        constructor_parameters=constructor_info.constructor_parameters, project=project,
+                        constructor_parameters=constructor_info.constructor_parameters,
+                        project=project,
                     )
                 ),
             )
