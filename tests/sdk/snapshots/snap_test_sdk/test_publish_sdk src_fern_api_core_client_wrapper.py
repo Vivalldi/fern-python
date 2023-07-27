@@ -10,7 +10,11 @@ class BaseClientWrapper:
         self.header_auth = header_auth
 
     def get_headers(self) -> typing.Dict[str, str]:
-        headers: typing.Dict[str, str] = {}
+        headers: typing.Dict[str, str] = {
+            "X-Fern-Language": "Python",
+            "X-Fern-SDK-Name": "my-package-name",
+            "X-Fern-SDK-Version": "1.0.0",
+        }
         headers["X-Header-Auth"] = f"MyPrefix {self.header_auth}"
         return headers
 
