@@ -340,7 +340,9 @@ class ClientWrapperGenerator:
                             else AST.TypeHint.optional(AST.TypeHint.str_()),
                         ),
                         body=AST.CodeWriter(
-                            self._get_required_getter_body_writer(member_name=self._get_token_member_name(bearer_auth_scheme))
+                            self._get_required_getter_body_writer(
+                                member_name=self._get_token_member_name(bearer_auth_scheme)
+                            )
                             if self._context.ir.sdk_config.is_auth_mandatory
                             else self._get_optional_getter_body_writer(
                                 member_name=self._get_token_member_name(bearer_auth_scheme)
@@ -465,13 +467,13 @@ class ClientWrapperGenerator:
 
     def _get_password_constructor_parameter_name(self, basic_auth_scheme: ir_types.BasicAuthScheme) -> str:
         return basic_auth_scheme.password.snake_case.safe_name
-    
+
     def _get_token_constructor_parameter_name(self, bearer_auth_scheme: ir_types.BearerAuthScheme) -> str:
         return bearer_auth_scheme.token.snake_case.safe_name
 
     def _get_token_member_name(self, bearer_auth_scheme: ir_types.BearerAuthScheme) -> str:
         return f"_{bearer_auth_scheme.token.snake_case.safe_name}"
-    
+
     def _get_token_getter_name(self, bearer_auth_scheme: ir_types.BearerAuthScheme) -> str:
         return f"_get_{bearer_auth_scheme.token.snake_case.safe_name}"
 

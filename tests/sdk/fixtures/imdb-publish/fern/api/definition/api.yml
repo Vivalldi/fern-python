@@ -7,5 +7,5 @@ auth: BearerAuth
 auth-schemes:
   BearerAuth:
     scheme: bearer
-    token: 
+    token:
       name: api_key
