@@ -72,3 +72,12 @@ To run the [FastAPI tests](tests/fastapi/test_fastapi.py):
 ```
 poetry run pytest tests/fastapi/test_fastapi.py
 ```
+
+## Updating Snapshots
+
+To update the snapshots associated with the tests use the `--snapshot-update` flag. 
+
+```
+poetry run pytest tests/sdk/test_sdk.py --snapshot-update
+```
+
