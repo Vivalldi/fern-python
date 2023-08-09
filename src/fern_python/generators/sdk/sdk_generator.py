@@ -28,6 +28,7 @@ from .environment_generators import (
     SingleBaseUrlEnvironmentGenerator,
 )
 from .error_generator.error_generator import ErrorGenerator
+from .readme_json import ReadmeJson
 
 
 class SdkGenerator(AbstractGenerator):
@@ -132,6 +133,13 @@ class SdkGenerator(AbstractGenerator):
                 project=project,
             )
 
+        if project._project_config is not None:
+            self._generate_readme(
+                context=context,
+                ir=ir,
+                project=project,
+            )
+
         context.core_utilities.copy_to_project(project=project)
 
     def _generate_environments(
@@ -223,6 +231,24 @@ class SdkGenerator(AbstractGenerator):
             project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
         ) as source_file:
             ErrorGenerator(context=context, error=error).generate(source_file=source_file)
+
+    def _generate_readme(
+        self,
+        context: SdkGeneratorContext,
+        ir: ir_types.IntermediateRepresentation,
+        project: Project,
+    ) -> None:
+        filepath = context.get_filepath_for_root_client()
+        readme_json = ReadmeJson(
+            package_name=project._project_config.package_name
+            if project._project_config is not None
+            else context.generator_config.organization,
+            root_client_module=filepath.to_module(),
+            root_client_class_name=context.get_class_name_for_root_client(),
+            path=project._root_filepath,
+            auth=ir.auth,
+        )
+        readme_json.write()
 
     def get_sorted_modules(self) -> Sequence[str]:
         # always import types/errors before resources (nested packages)
