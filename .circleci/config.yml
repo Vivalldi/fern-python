@@ -16,7 +16,7 @@ jobs:
           version: default
       - run: |
           docker buildx create --driver docker-container --bootstrap --use
-          docker buildx build -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
+          docker buildx build --output type=docker -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
           docker image ls
           sudo npm install -g @fern-api/seed-cli
           npx seed test --docker fernapi/fern-python-sdk:latest --irVersion v20 --language python --compile-command 'poetry install && poetry run mypy .' --fixture exhaustive
