@@ -13,7 +13,7 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - setup_remote_docker:
-          version: 0.0.1
+          version: 20.10.12
       - run: |
           docker buildx create --driver docker-container --bootstrap --use
           docker buildx build -f ./docker/pydantic-model/Dockerfile -t fernapi/fern-pydantic-model:latest .
