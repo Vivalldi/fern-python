@@ -10,19 +10,13 @@ jobs:
     steps:
       - checkout
       - python/install-packages:
-            pkg-manager: poetry
-      - run:
-          name: Install Seed
-          command: npm install -g @fern-api/seed-cli
-      - run:
-          name: Build docker for test
-          command: |
-            docker buildx create --name multiplatform --driver docker-container --bootstrap --use
-            docker buildx build  -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest --output type=docker .
-      - run:
-          name: Run seed
-          command: seed test --docker fernapi/fern-python-sdk:latest --irVersion v20 --language python --compile-commmand `poetry install && poetry run mypy .' --fixture basic-auth
-
+          pkg-manager: poetry
+      - run: |
+          docker buildx create --driver docker-container --bootstrap --use
+          docker buildx build -f ./docker/pydantic-model/Dockerfile -t fernapi/fern-pydantic-model:latest .
+      - run: |
+          npm install -g @fern-api/seed
+          seed test --docker fernapi/fern-pydantic-model:latest
   check:
     docker:
       - image: cimg/python:3.8.16-node
