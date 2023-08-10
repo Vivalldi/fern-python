@@ -117,20 +117,21 @@ class EndpointResponseCodeWriter:
                     file_download=lambda _: self._handle_success_file_download(writer=writer),
                 )
 
-        for error in self._endpoint.errors.get_as_list():
-            # in streaming responses, we need to call read() or aread()
-            # before deserializing or httpx will raise ResponseNotRead
-            if self._endpoint.sdk_response is not None and (
-                self._endpoint.sdk_response.get_as_union().type == "streaming"
-                or self._endpoint.sdk_response.get_as_union().type == "fileDownload"
-            ):
-                writer.write_line(
-                    f"await {EndpointResponseCodeWriter.RESPONSE_VARIABLE}.aread()"
-                    if self._is_async
-                    else f"{EndpointResponseCodeWriter.RESPONSE_VARIABLE}.read()"
-                )
+        # in streaming responses, we need to call read() or aread()
+        # before deserializing or httpx will raise ResponseNotRead
+        if self._endpoint.sdk_response is not None and (
+            self._endpoint.sdk_response.get_as_union().type == "streaming"
+            or self._endpoint.sdk_response.get_as_union().type == "fileDownload"
+        ):
+            writer.write_line(
+                f"await {EndpointResponseCodeWriter.RESPONSE_VARIABLE}.aread()"
+                if self._is_async
+                else f"{EndpointResponseCodeWriter.RESPONSE_VARIABLE}.read()"
+            )
 
+        for error in self._endpoint.errors.get_as_list():
             error_declaration = self._context.ir.errors[error.error.error_id]
+
             writer.write_line(
                 f"if {EndpointResponseCodeWriter.RESPONSE_VARIABLE}.status_code == {error_declaration.status_code}:"
             )

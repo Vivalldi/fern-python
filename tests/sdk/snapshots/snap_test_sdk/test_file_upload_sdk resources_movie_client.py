@@ -58,6 +58,7 @@ class MovieClient:
                 for _chunk in _response.iter_bytes():
                     yield _chunk
                 return
+            _response.read()
             try:
                 _response_json = _response.json()
             except JSONDecodeError:
@@ -110,6 +111,7 @@ class AsyncMovieClient:
                 async for _chunk in _response.aiter_bytes():
                     yield _chunk
                 return
+            await _response.aread()
             try:
                 _response_json = _response.json()
             except JSONDecodeError:
