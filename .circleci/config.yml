@@ -81,6 +81,10 @@ workflows:
           filters:
             tags:
               only: /.*/
+      - seed:
+          filters:
+            tags:
+              only: /.*/
       - publish-dockers:
           filters:
             branches:
