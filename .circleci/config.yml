@@ -13,7 +13,7 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - setup_remote_docker:
-          version: 20.10.12
+          version: 20.10.18
       - run: |
           docker buildx create --driver docker-container --bootstrap --use
           docker buildx build -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
