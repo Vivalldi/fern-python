@@ -19,7 +19,7 @@ jobs:
           docker buildx build -f ./docker/pydantic-model/Dockerfile -t fernapi/fern-pydantic-model:latest .
       - run: |
           npm install -g @fern-api/seed-cli
-          seed test --docker fernapi/fern-python-sdk:latest --irVersion v20 --language python --compile-command 'poetry install && poetry run mypy .' --fixture exhaustive
+          seed test --docker fernapi/fern-python-sdk:latest --irVersion v20 --language python --compile-command 'sudo poetry install && sudo poetry run mypy .' --fixture exhaustive
 
   check:
     docker:
