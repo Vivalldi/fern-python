@@ -16,10 +16,10 @@ jobs:
           version: 20.10.12
       - run: |
           docker buildx create --driver docker-container --bootstrap --use
-          docker buildx build -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:0.3.15 .
+          docker buildx build -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
       - run: |
           sudo npm install -g @fern-api/seed-cli
-          npx seed test --docker fernapi/fern-python-sdk:0.3.15 --irVersion v20 --language python --compile-command 'poetry install && poetry run mypy .' --fixture exhaustive
+          npx seed test --docker fernapi/fern-python-sdk:latest --irVersion v20 --language python --compile-command 'poetry install && poetry run mypy .' --fixture exhaustive
 
   check:
     docker:
