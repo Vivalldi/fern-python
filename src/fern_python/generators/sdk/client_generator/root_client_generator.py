@@ -149,7 +149,7 @@ class RootClientGenerator:
                 RootClientConstructorParameter(
                     constructor_parameter_name=RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
                     type_hint=AST.TypeHint(self._context.get_reference_to_environments_class())
-                    if environments_config.default_environment is None
+                    if environments_config.default_environment is not None
                     else AST.TypeHint.optional(AST.TypeHint(self._context.get_reference_to_environments_class())),
                     private_member_name=None,
                     initializer=AST.Expression(
@@ -173,7 +173,7 @@ class RootClientGenerator:
                 RootClientConstructorParameter(
                     constructor_parameter_name=RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
                     type_hint=AST.TypeHint(self._context.get_reference_to_environments_class())
-                    if environments_config.default_environment is None
+                    if environments_config.default_environment is not None
                     else AST.TypeHint.optional(AST.TypeHint(self._context.get_reference_to_environments_class())),
                     private_member_name=None,
                     initializer=AST.Expression(
@@ -234,7 +234,7 @@ class RootClientGenerator:
                 )
                 with writer.indent():
                     writer.write_line(
-                        'raise new Exception("Please pass in either base_url or environment to construct the client")'
+                        'raise Exception("Please pass in either base_url or environment to construct the client")'
                     )
                 client_wrapper_constructor_kwargs.append(
                     (

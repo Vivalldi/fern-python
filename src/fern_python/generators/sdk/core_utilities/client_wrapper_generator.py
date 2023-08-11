@@ -63,18 +63,26 @@ class ClientWrapperGenerator:
 
     def generate(self, source_file: SourceFile, project: Project) -> None:
         constructor_info = self._get_constructor_info()
+        url_constructor_param = self._get_url_storage_info()
+        constructor_parameters = [param for param in constructor_info.constructor_parameters]
+        constructor_parameters.append(url_constructor_param)
+
         source_file.add_class_declaration(
             declaration=self._create_base_client_wrapper_class_declaration(
-                constructor_info=constructor_info, project=project
+                constructor_parameters=constructor_parameters, project=project
             ),
             should_export=True,
         )
         source_file.add_class_declaration(
-            declaration=self._create_sync_client_wrapper_class_declaration(constructor_info=constructor_info),
+            declaration=self._create_sync_client_wrapper_class_declaration(
+                constructor_parameters=constructor_parameters
+            ),
             should_export=True,
         )
         source_file.add_class_declaration(
-            declaration=self._create_async_client_wrapper_class_declaration(constructor_info=constructor_info),
+            declaration=self._create_async_client_wrapper_class_declaration(
+                constructor_parameters=constructor_parameters
+            ),
             should_export=True,
         )
 
@@ -88,7 +96,7 @@ class ClientWrapperGenerator:
                 getter_method=AST.FunctionDeclaration(
                     name=ClientWrapperGenerator.GET_BASE_URL_METHOD_NAME,
                     signature=AST.FunctionSignature(return_type=AST.TypeHint.str_()),
-                    body=AST.CodeWriter(f"return self.{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}"),
+                    body=AST.CodeWriter(f"return self._{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}"),
                 ),
             )
         elif url_storage_type is ClientWrapperUrlStorage.ENVIRONMENT:
@@ -97,23 +105,19 @@ class ClientWrapperGenerator:
                 type_hint=AST.TypeHint(self._context.get_reference_to_environments_class()),
                 private_member_name=f"_{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}",
                 getter_method=AST.FunctionDeclaration(
-                    name=ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME,
+                    name=ClientWrapperGenerator.GET_ENVIRONMENT_METHOD_NAME,
                     signature=AST.FunctionSignature(
                         return_type=AST.TypeHint(self._context.get_reference_to_environments_class())
                     ),
-                    body=AST.CodeWriter(f"return self.{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}"),
+                    body=AST.CodeWriter(f"return self._{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}"),
                 ),
             )
         else:
             raise Exception(f"URL Storage type is unknown {url_storage_type}")
 
     def _create_base_client_wrapper_class_declaration(
-        self, *, constructor_info: ConstructorInfo, project: Project
+        self, *, constructor_parameters: typing.List[ConstructorParameter], project: Project
     ) -> AST.ClassDeclaration:
-        url_constructor_param = self._get_url_storage_info()
-
-        constructor_parameters = [param for param in constructor_info.constructor_parameters]
-        constructor_parameters.append(url_constructor_param)
 
         named_parameters = self._get_named_parameters(constructor_parameters=constructor_parameters)
 
@@ -135,23 +139,23 @@ class ClientWrapperGenerator:
                 ),
                 body=AST.CodeWriter(
                     self._get_write_get_headers_body(
-                        constructor_parameters=constructor_info.constructor_parameters,
+                        constructor_parameters=constructor_parameters,
                         project=project,
                     )
                 ),
             )
         )
 
-        for constructor_param in constructor_info.constructor_parameters:
+        for constructor_param in constructor_parameters:
             if constructor_param.getter_method is not None:
                 class_declaration.add_method(constructor_param.getter_method)
 
         return class_declaration
 
     def _create_sync_client_wrapper_class_declaration(
-        self, *, constructor_info: ConstructorInfo
+        self, *, constructor_parameters: typing.List[ConstructorParameter]
     ) -> AST.ClassDeclaration:
-        named_parameters = self._get_named_parameters(constructor_parameters=constructor_info.constructor_parameters)
+        named_parameters = self._get_named_parameters(constructor_parameters=constructor_parameters)
 
         named_parameters.append(
             AST.NamedFunctionParameter(
@@ -169,7 +173,7 @@ class ClientWrapperGenerator:
                 ),
                 body=AST.CodeWriter(
                     self._get_write_derived_client_wrapper_constructor_body(
-                        constructor_parameters=constructor_info.constructor_parameters
+                        constructor_parameters=constructor_parameters
                     )
                 ),
             ),
@@ -178,9 +182,9 @@ class ClientWrapperGenerator:
         return class_declaration
 
     def _create_async_client_wrapper_class_declaration(
-        self, *, constructor_info: ConstructorInfo
+        self, *, constructor_parameters: typing.List[ConstructorParameter]
     ) -> AST.ClassDeclaration:
-        named_parameters = self._get_named_parameters(constructor_parameters=constructor_info.constructor_parameters)
+        named_parameters = self._get_named_parameters(constructor_parameters=constructor_parameters)
 
         named_parameters.append(
             AST.NamedFunctionParameter(
@@ -198,7 +202,7 @@ class ClientWrapperGenerator:
                 ),
                 body=AST.CodeWriter(
                     self._get_write_derived_client_wrapper_constructor_body(
-                        constructor_parameters=constructor_info.constructor_parameters
+                        constructor_parameters=constructor_parameters
                     )
                 ),
             ),
