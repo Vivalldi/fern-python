@@ -13,7 +13,7 @@ jobs:
       - python/install-packages:
           pkg-manager: poetry
       - setup_remote_docker:
-          version: default
+          version: 20.10.23
       - run: |
           docker version
           docker buildx create --driver docker-container --bootstrap --use
