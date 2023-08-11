@@ -5,7 +5,7 @@ orbs:
 
 jobs:
 
-  seed:
+  seed-test:
     docker:
       - image: cimg/python:3.8.16-node
     steps:
@@ -76,7 +76,7 @@ jobs:
 workflows:
   build:
     jobs:
-      - seed:
+      - seed-test:
           filters:
             tags:
               only: /.*/
