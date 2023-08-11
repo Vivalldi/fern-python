@@ -1,3 +1,4 @@
+from enum import Enum
 import typing
 from dataclasses import dataclass
 from typing import List, Optional
@@ -27,6 +28,11 @@ class ConstructorParameter:
 class ConstructorInfo:
     constructor_parameters: List[ConstructorParameter]
 
+@dataclass
+class UrlStorageInfo:
+    member: ConstructorParameter
+    getter: AST.FunctionDeclaration
+
 
 class ClientWrapperGenerator:
     AUTHORIZATION_HEADER = "Authorization"
@@ -35,6 +41,11 @@ class ClientWrapperGenerator:
     BASE_CLIENT_WRAPPER_CLASS_NAME = "BaseClientWrapper"
 
     GET_HEADERS_METHOD_NAME = "get_headers"
+    GET_BASE_URL_METHOD_NAME = "get_base_url"
+    GET_ENVIRONMENT_METHOD_NAME = "get_environment"
+
+    BASE_URL_PARAMETER_NAME = "base_url"
+    ENVIRONMENT_PARAMETER_NAME = "environment"
 
     HTTPX_CLIENT_MEMBER_NAME = "httpx_client"
 
@@ -66,10 +77,50 @@ class ClientWrapperGenerator:
             should_export=True,
         )
 
+    def _get_url_storage_info(self) -> ConstructorParameter:
+        url_storage_type = get_client_wrapper_url_type(ir=self._context.ir)
+        if url_storage_type is ClientWrapperUrlStorage.URL:
+            return ConstructorParameter(
+                constructor_parameter_name=ClientWrapperGenerator.BASE_URL_PARAMETER_NAME, 
+                type_hint=AST.TypeHint.str_(),
+                private_member_name=f"_{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}",
+                getter_method=AST.FunctionDeclaration(
+                    name=ClientWrapperGenerator.GET_BASE_URL_METHOD_NAME,
+                    signature=AST.FunctionSignature(
+                        return_type=AST.TypeHint.str_()
+                    ),
+                    body=AST.CodeWriter(
+                        f"return self.{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}"
+                    )
+                )
+            )
+        elif url_storage_type is ClientWrapperUrlStorage.ENVIRONMENT:
+            return ConstructorParameter(
+                constructor_parameter_name=ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME, 
+                type_hint=AST.TypeHint(self._context.get_reference_to_environments_class()),
+                private_member_name=f"_{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}",
+                getter_method=AST.FunctionDeclaration(
+                    name=ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME,
+                    signature=AST.FunctionSignature(
+                        return_type=AST.TypeHint(self._context.get_reference_to_environments_class())
+                    ),
+                    body=AST.CodeWriter(
+                        f"return self.{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}"
+                    )
+                )
+            )
+        else:
+            raise Exception(f"URL Storage type is unknown {url_storage_type}")
+
     def _create_base_client_wrapper_class_declaration(
         self, *, constructor_info: ConstructorInfo, project: Project
     ) -> AST.ClassDeclaration:
-        named_parameters = self._get_named_parameters(constructor_parameters=constructor_info.constructor_parameters)
+        url_constructor_param = self._get_url_storage_info()
+
+        constructor_parameters = [param for param in constructor_info.constructor_parameters]        
+        constructor_parameters.append(url_constructor_param)
+
+        named_parameters = self._get_named_parameters(constructor_parameters=constructor_parameters)
 
         class_declaration = AST.ClassDeclaration(
             name=ClientWrapperGenerator.BASE_CLIENT_WRAPPER_CLASS_NAME,
@@ -78,7 +129,7 @@ class ClientWrapperGenerator:
                     named_parameters=named_parameters,
                 ),
                 body=AST.CodeWriter(
-                    self._get_write_constructor_body(constructor_parameters=constructor_info.constructor_parameters)
+                    self._get_write_constructor_body(constructor_parameters=constructor_parameters)
                 ),
             ),
         )
@@ -521,3 +572,19 @@ class ClientWrapperGenerator:
 
     def _get_auth_scheme_header_private_member_name(self, header: ir_types.HeaderAuthScheme) -> str:
         return header.name.name.snake_case.unsafe_name
+
+
+class ClientWrapperUrlStorage(Enum):
+    URL = "url"
+    ENVIRONMENT = "environment"
+
+
+def get_client_wrapper_url_type(*, ir: ir_types.IntermediateRepresentation) -> ClientWrapperUrlStorage: 
+    if ir.environments is None: 
+        return ClientWrapperUrlStorage.URL
+    environment = ir.environments.environments.get_as_union()
+    if environment.type == "singleBaseUrl":
+        return ClientWrapperUrlStorage.URL
+    elif environment.type == "multipleBaseUrls":
+        return ClientWrapperUrlStorage.ENVIRONMENT
+    raise Exception(f"Encountered unknown environment type: {environment.type}")
