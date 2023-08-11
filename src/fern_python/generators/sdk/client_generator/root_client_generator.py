@@ -125,7 +125,7 @@ class RootClientGenerator:
 
         environments_config = self._context.ir.environments
         # If no environments, client should only provide base_url argument
-        if environments_config is None: 
+        if environments_config is None:
             parameters.append(
                 RootClientConstructorParameter(
                     constructor_parameter_name=RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME,
@@ -142,9 +142,11 @@ class RootClientGenerator:
                     type_hint=AST.TypeHint.optional(AST.TypeHint.str_()),
                     private_member_name=None,
                     initializer=AST.Expression("None"),
-                    exclude_from_wrapper_construction=True
-                ))
-            parameters.append(RootClientConstructorParameter(
+                    exclude_from_wrapper_construction=True,
+                )
+            )
+            parameters.append(
+                RootClientConstructorParameter(
                     constructor_parameter_name=RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
                     type_hint=AST.TypeHint(self._context.get_reference_to_environments_class())
                     if environments_config.default_environment is None
@@ -162,12 +164,13 @@ class RootClientGenerator:
                     )
                     if environments_config.default_environment is not None
                     else None,
-                    exclude_from_wrapper_construction=True
+                    exclude_from_wrapper_construction=True,
                 ),
             )
         # If mutli url environment present, client should provide only environment argument
         elif environments_config.environments.get_as_union().type == "multipleBaseUrls":
-            parameters.append(RootClientConstructorParameter(
+            parameters.append(
+                RootClientConstructorParameter(
                     constructor_parameter_name=RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
                     type_hint=AST.TypeHint(self._context.get_reference_to_environments_class())
                     if environments_config.default_environment is None
@@ -218,7 +221,7 @@ class RootClientGenerator:
 
             environments_config = self._context.ir.environments
             # If no environments, client should only provide base_url argument
-            if environments_config is None: 
+            if environments_config is None:
                 client_wrapper_constructor_kwargs.append(
                     (
                         ClientWrapperGenerator.BASE_URL_PARAMETER_NAME,
@@ -226,13 +229,19 @@ class RootClientGenerator:
                     )
                 )
             elif environments_config.environments.get_as_union().type == "singleBaseUrl":
-                writer.write_line(f"if {RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME} is None and {RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME} is None:")
-                with writer.indent(): 
-                    writer.write_line('raise new Exception("Please pass in either base_url or environment to construct the client")')
+                writer.write_line(
+                    f"if {RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME} is None and {RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME} is None:"
+                )
+                with writer.indent():
+                    writer.write_line(
+                        'raise new Exception("Please pass in either base_url or environment to construct the client")'
+                    )
                 client_wrapper_constructor_kwargs.append(
                     (
                         ClientWrapperGenerator.BASE_URL_PARAMETER_NAME,
-                        AST.Expression(f"{RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME} if {RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME} is not None else {RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME}.value"),
+                        AST.Expression(
+                            f"{RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME} if {RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME} is not None else {RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME}.value"
+                        ),
                     )
                 )
             elif environments_config.environments.get_as_union().type == "multipleBaseUrls":
@@ -242,7 +251,7 @@ class RootClientGenerator:
                         AST.Expression(RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME),
                     )
                 )
-            
+
             for wrapper_param in client_wrapper_generator._get_constructor_info().constructor_parameters:
                 client_wrapper_constructor_kwargs.append(
                     (
@@ -314,7 +323,9 @@ class RootClientGenerator:
         writer.write_node(AST.TypeHint.cast(AST.TypeHint.any(), AST.Expression("...")))
         writer.write_newline_if_last_line_not()
 
-    def _get_client_wrapper_constructor_parameter_name(self, params: typing.List[RootClientConstructorParameter]) -> str:
+    def _get_client_wrapper_constructor_parameter_name(
+        self, params: typing.List[RootClientConstructorParameter]
+    ) -> str:
         for param in params:
             if param.constructor_parameter_name == "client_wrapper":
                 return "_client_wrapper"

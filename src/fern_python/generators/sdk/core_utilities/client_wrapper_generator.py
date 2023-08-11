@@ -1,6 +1,6 @@
-from enum import Enum
 import typing
 from dataclasses import dataclass
+from enum import Enum
 from typing import List, Optional
 
 import fern.ir.resources as ir_types
@@ -27,6 +27,7 @@ class ConstructorParameter:
 @dataclass
 class ConstructorInfo:
     constructor_parameters: List[ConstructorParameter]
+
 
 @dataclass
 class UrlStorageInfo:
@@ -81,22 +82,18 @@ class ClientWrapperGenerator:
         url_storage_type = get_client_wrapper_url_type(ir=self._context.ir)
         if url_storage_type is ClientWrapperUrlStorage.URL:
             return ConstructorParameter(
-                constructor_parameter_name=ClientWrapperGenerator.BASE_URL_PARAMETER_NAME, 
+                constructor_parameter_name=ClientWrapperGenerator.BASE_URL_PARAMETER_NAME,
                 type_hint=AST.TypeHint.str_(),
                 private_member_name=f"_{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}",
                 getter_method=AST.FunctionDeclaration(
                     name=ClientWrapperGenerator.GET_BASE_URL_METHOD_NAME,
-                    signature=AST.FunctionSignature(
-                        return_type=AST.TypeHint.str_()
-                    ),
-                    body=AST.CodeWriter(
-                        f"return self.{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}"
-                    )
-                )
+                    signature=AST.FunctionSignature(return_type=AST.TypeHint.str_()),
+                    body=AST.CodeWriter(f"return self.{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}"),
+                ),
             )
         elif url_storage_type is ClientWrapperUrlStorage.ENVIRONMENT:
             return ConstructorParameter(
-                constructor_parameter_name=ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME, 
+                constructor_parameter_name=ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME,
                 type_hint=AST.TypeHint(self._context.get_reference_to_environments_class()),
                 private_member_name=f"_{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}",
                 getter_method=AST.FunctionDeclaration(
@@ -104,10 +101,8 @@ class ClientWrapperGenerator:
                     signature=AST.FunctionSignature(
                         return_type=AST.TypeHint(self._context.get_reference_to_environments_class())
                     ),
-                    body=AST.CodeWriter(
-                        f"return self.{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}"
-                    )
-                )
+                    body=AST.CodeWriter(f"return self.{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}"),
+                ),
             )
         else:
             raise Exception(f"URL Storage type is unknown {url_storage_type}")
@@ -117,7 +112,7 @@ class ClientWrapperGenerator:
     ) -> AST.ClassDeclaration:
         url_constructor_param = self._get_url_storage_info()
 
-        constructor_parameters = [param for param in constructor_info.constructor_parameters]        
+        constructor_parameters = [param for param in constructor_info.constructor_parameters]
         constructor_parameters.append(url_constructor_param)
 
         named_parameters = self._get_named_parameters(constructor_parameters=constructor_parameters)
@@ -128,9 +123,7 @@ class ClientWrapperGenerator:
                 signature=AST.FunctionSignature(
                     named_parameters=named_parameters,
                 ),
-                body=AST.CodeWriter(
-                    self._get_write_constructor_body(constructor_parameters=constructor_parameters)
-                ),
+                body=AST.CodeWriter(self._get_write_constructor_body(constructor_parameters=constructor_parameters)),
             ),
         )
 
@@ -579,8 +572,8 @@ class ClientWrapperUrlStorage(Enum):
     ENVIRONMENT = "environment"
 
 
-def get_client_wrapper_url_type(*, ir: ir_types.IntermediateRepresentation) -> ClientWrapperUrlStorage: 
-    if ir.environments is None: 
+def get_client_wrapper_url_type(*, ir: ir_types.IntermediateRepresentation) -> ClientWrapperUrlStorage:
+    if ir.environments is None:
         return ClientWrapperUrlStorage.URL
     environment = ir.environments.environments.get_as_union()
     if environment.type == "singleBaseUrl":

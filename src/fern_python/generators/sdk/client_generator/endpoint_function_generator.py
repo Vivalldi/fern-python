@@ -10,7 +10,10 @@ from fern_python.generators.sdk.client_generator.endpoint_response_code_writer i
     EndpointResponseCodeWriter,
 )
 from fern_python.generators.sdk.context.sdk_generator_context import SdkGeneratorContext
-from fern_python.generators.sdk.environment_generators.multiple_base_urls_environment_generator import get_base_url, get_base_url_property_name
+from fern_python.generators.sdk.environment_generators.multiple_base_urls_environment_generator import (
+    get_base_url,
+    get_base_url_property_name,
+)
 
 from ..core_utilities.client_wrapper_generator import ClientWrapperGenerator
 from .request_body_parameters import (
@@ -435,9 +438,15 @@ class EndpointFunctionGenerator:
                 base_url = endpoint.base_url
                 if base_url is None:
                     raise RuntimeError("Service is missing base_url")
-                url_reference = get_base_url_property_name(get_base_url(environments=environments_as_union, base_url_id=base_url))
-                return AST.Expression(f"self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_ENVIRONMENT_METHOD_NAME}().{url_reference}")
-        return AST.Expression(f"self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_BASE_URL_METHOD_NAME}()")
+                url_reference = get_base_url_property_name(
+                    get_base_url(environments=environments_as_union, base_url_id=base_url)
+                )
+                return AST.Expression(
+                    f"self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_ENVIRONMENT_METHOD_NAME}().{url_reference}"
+                )
+        return AST.Expression(
+            f"self.{self._client_wrapper_member_name}.{ClientWrapperGenerator.GET_BASE_URL_METHOD_NAME}()"
+        )
 
     def _get_headers_for_endpoint(
         self,

@@ -114,7 +114,9 @@ def get_base_url_property_name(base_url: ir_types.EnvironmentBaseUrlWithId) -> s
     return base_url.name.snake_case.safe_name
 
 
-def get_base_url(environments: ir_types.MultipleBaseUrlsEnvironments, base_url_id: ir_types.EnvironmentBaseUrlId) -> ir_types.EnvironmentBaseUrlWithId:
+def get_base_url(
+    environments: ir_types.MultipleBaseUrlsEnvironments, base_url_id: ir_types.EnvironmentBaseUrlId
+) -> ir_types.EnvironmentBaseUrlWithId:
     for base_url in environments.base_urls:
         if base_url.id == base_url_id:
             return base_url
