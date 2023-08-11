@@ -15,6 +15,7 @@ jobs:
       - setup_remote_docker:
           version: default
       - run: |
+          docker version
           docker buildx create --driver docker-container --bootstrap --use
           docker buildx build -o type=docker -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
           npm uninstall @fern-api/seed-cli
