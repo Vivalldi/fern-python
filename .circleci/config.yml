@@ -6,18 +6,22 @@ orbs:
 jobs:
 
   seed-test:
-    docker:
-      - image: cimg/node:lts
+    machine:
+      image: ubuntu-2004:current
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 20.10.23
+      - run:
+          name: Install Node.js
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y nodejs npm
       - run: |
           docker buildx create --driver docker-container --bootstrap --use
           docker buildx build -o type=docker -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
           sudo npm install -g @fern-api/seed-cli@0.14.3-4-g9dd53050
           seed test --docker fernapi/fern-python-sdk:latest --irVersion v20 --language python --compile-command 'poetry install && poetry run mypy .' --fixture basic-auth
           git --no-pager diff --exit-code
+
   check:
     docker:
       - image: cimg/python:3.8.16-node
@@ -70,8 +74,6 @@ jobs:
             projectVersion=$(./scripts/git-version.sh)
             echo "$FERNAPI_DOCKER_HUB_PASSWORD" | docker login --username fernapi --password-stdin
             docker buildx build --platform linux/amd64,linux/arm64 -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:${projectVersion} . --push
-
-
 
 workflows:
   build:
