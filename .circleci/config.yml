@@ -6,14 +6,10 @@ orbs:
 jobs:
 
   seed-test:
-    docker:
-      - image: cimg/python:3.8.16-node
+    machine:
+      image: ubuntu-2004:current
     steps:
       - checkout
-      - python/install-packages:
-          pkg-manager: poetry
-      - setup_remote_docker:
-          version: 20.10.23
       - run: |
           docker buildx create --driver docker-container --bootstrap --use
           docker buildx build -o type=docker -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
