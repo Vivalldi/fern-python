@@ -10,6 +10,8 @@ jobs:
       - image: cimg/node:lts
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 20.10.23
       - run: |
           docker buildx create --driver docker-container --bootstrap --use
           docker buildx build -o type=docker -f ./docker/sdk/Dockerfile -t fernapi/fern-python-sdk:latest .
