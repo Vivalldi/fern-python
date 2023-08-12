@@ -12,7 +12,7 @@ from .resources.no_req_body.client import AsyncNoReqBodyClient, NoReqBodyClient
 from .resources.req_with_headers.client import AsyncReqWithHeadersClient, ReqWithHeadersClient
 
 
-class SeedExhaustive:
+class SeedApi:
     def __init__(
         self,
         *,
@@ -30,7 +30,7 @@ class SeedExhaustive:
         self.req_with_headers = ReqWithHeadersClient(client_wrapper=self._client_wrapper)
 
 
-class AsyncSeedExhaustive:
+class AsyncSeedApi:
     def __init__(
         self,
         *,
