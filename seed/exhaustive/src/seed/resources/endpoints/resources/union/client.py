@@ -16,8 +16,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class UnionClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def get_and_return_union(self, *, request: Animal) -> Animal:
@@ -27,7 +26,7 @@ class UnionClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "union"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "union"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -42,8 +41,7 @@ class UnionClient:
 
 
 class AsyncUnionClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def get_and_return_union(self, *, request: Animal) -> Animal:
@@ -53,7 +51,7 @@ class AsyncUnionClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "union"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "union"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,

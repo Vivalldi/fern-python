@@ -6,8 +6,9 @@ import httpx
 
 
 class BaseClientWrapper:
-    def __init__(self, *, custom_auth_scheme: str):
+    def __init__(self, *, custom_auth_scheme: str, base_url: str):
         self.custom_auth_scheme = custom_auth_scheme
+        self._base_url = base_url
 
     def get_headers(self) -> typing.Dict[str, str]:
         headers: typing.Dict[str, str] = {
@@ -18,14 +19,17 @@ class BaseClientWrapper:
         headers["X-API-KEY"] = self.custom_auth_scheme
         return headers
 
+    def get_base_url(self) -> str:
+        return self._base_url
+
 
 class SyncClientWrapper(BaseClientWrapper):
-    def __init__(self, *, custom_auth_scheme: str, httpx_client: httpx.Client):
-        super().__init__(custom_auth_scheme=custom_auth_scheme)
+    def __init__(self, *, custom_auth_scheme: str, base_url: str, httpx_client: httpx.Client):
+        super().__init__(custom_auth_scheme=custom_auth_scheme, base_url=base_url)
         self.httpx_client = httpx_client
 
 
 class AsyncClientWrapper(BaseClientWrapper):
-    def __init__(self, *, custom_auth_scheme: str, httpx_client: httpx.AsyncClient):
-        super().__init__(custom_auth_scheme=custom_auth_scheme)
+    def __init__(self, *, custom_auth_scheme: str, base_url: str, httpx_client: httpx.AsyncClient):
+        super().__init__(custom_auth_scheme=custom_auth_scheme, base_url=base_url)
         self.httpx_client = httpx_client

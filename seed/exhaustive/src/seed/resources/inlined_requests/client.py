@@ -18,8 +18,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class InlinedRequestsClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def post_with_object_bodyand_response(
@@ -37,7 +36,7 @@ class InlinedRequestsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "req-bodies/object"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "req-bodies/object"),
             json=jsonable_encoder({"string": string, "integer": integer, "NestedObject": nested_object}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -54,8 +53,7 @@ class InlinedRequestsClient:
 
 
 class AsyncInlinedRequestsClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def post_with_object_bodyand_response(
@@ -73,7 +71,7 @@ class AsyncInlinedRequestsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "req-bodies/object"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "req-bodies/object"),
             json=jsonable_encoder({"string": string, "integer": integer, "NestedObject": nested_object}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,

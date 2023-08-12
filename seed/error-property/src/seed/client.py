@@ -9,18 +9,12 @@ from .resources.property_based_error.client import AsyncPropertyBasedErrorClient
 
 
 class SeedErrorProperty:
-    def __init__(self, *, environment: str, timeout: typing.Optional[float] = 60):
-        self._environment = environment
-        self._client_wrapper = SyncClientWrapper(httpx_client=httpx.Client(timeout=timeout))
-        self.property_based_error = PropertyBasedErrorClient(
-            environment=environment, client_wrapper=self._client_wrapper
-        )
+    def __init__(self, *, base_url: str, timeout: typing.Optional[float] = 60):
+        self._client_wrapper = SyncClientWrapper(base_url=base_url, httpx_client=httpx.Client(timeout=timeout))
+        self.property_based_error = PropertyBasedErrorClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSeedErrorProperty:
-    def __init__(self, *, environment: str, timeout: typing.Optional[float] = 60):
-        self._environment = environment
-        self._client_wrapper = AsyncClientWrapper(httpx_client=httpx.AsyncClient(timeout=timeout))
-        self.property_based_error = AsyncPropertyBasedErrorClient(
-            environment=environment, client_wrapper=self._client_wrapper
-        )
+    def __init__(self, *, base_url: str, timeout: typing.Optional[float] = 60):
+        self._client_wrapper = AsyncClientWrapper(base_url=base_url, httpx_client=httpx.AsyncClient(timeout=timeout))
+        self.property_based_error = AsyncPropertyBasedErrorClient(client_wrapper=self._client_wrapper)

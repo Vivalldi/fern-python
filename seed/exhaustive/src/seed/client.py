@@ -16,31 +16,33 @@ class SeedExhaustive:
     def __init__(
         self,
         *,
-        environment: str,
+        base_url: str,
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         timeout: typing.Optional[float] = 60
     ):
-        self._environment = environment
-        self._client_wrapper = SyncClientWrapper(token=token, httpx_client=httpx.Client(timeout=timeout))
-        self.endpoints = EndpointsClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.inlined_requests = InlinedRequestsClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.no_auth = NoAuthClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.no_req_body = NoReqBodyClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.req_with_headers = ReqWithHeadersClient(environment=environment, client_wrapper=self._client_wrapper)
+        self._client_wrapper = SyncClientWrapper(
+            base_url=base_url, token=token, httpx_client=httpx.Client(timeout=timeout)
+        )
+        self.endpoints = EndpointsClient(client_wrapper=self._client_wrapper)
+        self.inlined_requests = InlinedRequestsClient(client_wrapper=self._client_wrapper)
+        self.no_auth = NoAuthClient(client_wrapper=self._client_wrapper)
+        self.no_req_body = NoReqBodyClient(client_wrapper=self._client_wrapper)
+        self.req_with_headers = ReqWithHeadersClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSeedExhaustive:
     def __init__(
         self,
         *,
-        environment: str,
+        base_url: str,
         token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         timeout: typing.Optional[float] = 60
     ):
-        self._environment = environment
-        self._client_wrapper = AsyncClientWrapper(token=token, httpx_client=httpx.AsyncClient(timeout=timeout))
-        self.endpoints = AsyncEndpointsClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.inlined_requests = AsyncInlinedRequestsClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.no_auth = AsyncNoAuthClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.no_req_body = AsyncNoReqBodyClient(environment=environment, client_wrapper=self._client_wrapper)
-        self.req_with_headers = AsyncReqWithHeadersClient(environment=environment, client_wrapper=self._client_wrapper)
+        self._client_wrapper = AsyncClientWrapper(
+            base_url=base_url, token=token, httpx_client=httpx.AsyncClient(timeout=timeout)
+        )
+        self.endpoints = AsyncEndpointsClient(client_wrapper=self._client_wrapper)
+        self.inlined_requests = AsyncInlinedRequestsClient(client_wrapper=self._client_wrapper)
+        self.no_auth = AsyncNoAuthClient(client_wrapper=self._client_wrapper)
+        self.no_req_body = AsyncNoReqBodyClient(client_wrapper=self._client_wrapper)
+        self.req_with_headers = AsyncReqWithHeadersClient(client_wrapper=self._client_wrapper)

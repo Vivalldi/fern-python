@@ -11,26 +11,24 @@ from .resources.union.client import AsyncUnionClient, UnionClient
 
 
 class EndpointsClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
-        self.container = ContainerClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.enum = EnumClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.http_methods = HttpMethodsClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.object = ObjectClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.params = ParamsClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.primitive = PrimitiveClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.union = UnionClient(environment=self._environment, client_wrapper=self._client_wrapper)
+        self.container = ContainerClient(client_wrapper=self._client_wrapper)
+        self.enum = EnumClient(client_wrapper=self._client_wrapper)
+        self.http_methods = HttpMethodsClient(client_wrapper=self._client_wrapper)
+        self.object = ObjectClient(client_wrapper=self._client_wrapper)
+        self.params = ParamsClient(client_wrapper=self._client_wrapper)
+        self.primitive = PrimitiveClient(client_wrapper=self._client_wrapper)
+        self.union = UnionClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncEndpointsClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
-        self.container = AsyncContainerClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.enum = AsyncEnumClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.http_methods = AsyncHttpMethodsClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.object = AsyncObjectClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.params = AsyncParamsClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.primitive = AsyncPrimitiveClient(environment=self._environment, client_wrapper=self._client_wrapper)
-        self.union = AsyncUnionClient(environment=self._environment, client_wrapper=self._client_wrapper)
+        self.container = AsyncContainerClient(client_wrapper=self._client_wrapper)
+        self.enum = AsyncEnumClient(client_wrapper=self._client_wrapper)
+        self.http_methods = AsyncHttpMethodsClient(client_wrapper=self._client_wrapper)
+        self.object = AsyncObjectClient(client_wrapper=self._client_wrapper)
+        self.params = AsyncParamsClient(client_wrapper=self._client_wrapper)
+        self.primitive = AsyncPrimitiveClient(client_wrapper=self._client_wrapper)
+        self.union = AsyncUnionClient(client_wrapper=self._client_wrapper)

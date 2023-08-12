@@ -17,8 +17,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class PrimitiveClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def get_and_return_string(self, *, request: str) -> str:
@@ -28,7 +27,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/string"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/string"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -48,7 +47,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/integer"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/integer"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -68,7 +67,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/long"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/long"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -88,7 +87,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/double"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/double"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -108,7 +107,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/boolean"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/boolean"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -128,7 +127,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/datetime"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/datetime"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -148,7 +147,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/date"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/date"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -168,7 +167,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/uuid"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/uuid"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -188,7 +187,7 @@ class PrimitiveClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/base64"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/base64"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -203,8 +202,7 @@ class PrimitiveClient:
 
 
 class AsyncPrimitiveClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def get_and_return_string(self, *, request: str) -> str:
@@ -214,7 +212,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/string"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/string"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -234,7 +232,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/integer"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/integer"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -254,7 +252,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/long"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/long"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -274,7 +272,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/double"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/double"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -294,7 +292,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/boolean"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/boolean"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -314,7 +312,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/datetime"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/datetime"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -334,7 +332,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/date"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/date"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -354,7 +352,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/uuid"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/uuid"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -374,7 +372,7 @@ class AsyncPrimitiveClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "primitive/base64"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "primitive/base64"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,

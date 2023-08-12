@@ -16,8 +16,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class ContainerClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def get_and_return_list_of_primitives(self, *, request: typing.List[str]) -> typing.List[str]:
@@ -27,7 +26,7 @@ class ContainerClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/list-of-primitives"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/list-of-primitives"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -49,7 +48,7 @@ class ContainerClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/list-of-objects"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/list-of-objects"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -69,7 +68,7 @@ class ContainerClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/set-of-primitives"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/set-of-primitives"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -91,7 +90,7 @@ class ContainerClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/set-of-objects"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/set-of-objects"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -111,7 +110,7 @@ class ContainerClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/map-prim-to-prim"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/map-prim-to-prim"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -133,7 +132,7 @@ class ContainerClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/map-prim-to-object"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/map-prim-to-object"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -148,8 +147,7 @@ class ContainerClient:
 
 
 class AsyncContainerClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def get_and_return_list_of_primitives(self, *, request: typing.List[str]) -> typing.List[str]:
@@ -159,7 +157,7 @@ class AsyncContainerClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/list-of-primitives"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/list-of-primitives"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -181,7 +179,7 @@ class AsyncContainerClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/list-of-objects"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/list-of-objects"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -201,7 +199,7 @@ class AsyncContainerClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/set-of-primitives"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/set-of-primitives"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -223,7 +221,7 @@ class AsyncContainerClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/set-of-objects"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/set-of-objects"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -243,7 +241,7 @@ class AsyncContainerClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/map-prim-to-prim"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/map-prim-to-prim"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -265,7 +263,7 @@ class AsyncContainerClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "container/map-prim-to-object"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "container/map-prim-to-object"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,

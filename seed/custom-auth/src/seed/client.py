@@ -9,18 +9,16 @@ from .resources.custom_auth.client import AsyncCustomAuthClient, CustomAuthClien
 
 
 class SeedCustomAuth:
-    def __init__(self, *, environment: str, custom_auth_scheme: str, timeout: typing.Optional[float] = 60):
-        self._environment = environment
+    def __init__(self, *, base_url: str, custom_auth_scheme: str, timeout: typing.Optional[float] = 60):
         self._client_wrapper = SyncClientWrapper(
-            custom_auth_scheme=custom_auth_scheme, httpx_client=httpx.Client(timeout=timeout)
+            base_url=base_url, custom_auth_scheme=custom_auth_scheme, httpx_client=httpx.Client(timeout=timeout)
         )
-        self.custom_auth = CustomAuthClient(environment=environment, client_wrapper=self._client_wrapper)
+        self.custom_auth = CustomAuthClient(client_wrapper=self._client_wrapper)
 
 
 class AsyncSeedCustomAuth:
-    def __init__(self, *, environment: str, custom_auth_scheme: str, timeout: typing.Optional[float] = 60):
-        self._environment = environment
+    def __init__(self, *, base_url: str, custom_auth_scheme: str, timeout: typing.Optional[float] = 60):
         self._client_wrapper = AsyncClientWrapper(
-            custom_auth_scheme=custom_auth_scheme, httpx_client=httpx.AsyncClient(timeout=timeout)
+            base_url=base_url, custom_auth_scheme=custom_auth_scheme, httpx_client=httpx.AsyncClient(timeout=timeout)
         )
-        self.custom_auth = AsyncCustomAuthClient(environment=environment, client_wrapper=self._client_wrapper)
+        self.custom_auth = AsyncCustomAuthClient(client_wrapper=self._client_wrapper)

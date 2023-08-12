@@ -11,14 +11,13 @@ from ..types.resources.object.types.object_with_optional_field import ObjectWith
 
 
 class NoReqBodyClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def get_with_no_request_body(self) -> ObjectWithOptionalField:
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "no-req-body"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "no-req-body"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -32,14 +31,13 @@ class NoReqBodyClient:
 
 
 class AsyncNoReqBodyClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def get_with_no_request_body(self) -> ObjectWithOptionalField:
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "no-req-body"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "no-req-body"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )

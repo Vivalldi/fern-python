@@ -17,8 +17,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class HttpMethodsClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def test_get(self, id: str) -> str:
@@ -28,7 +27,7 @@ class HttpMethodsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -47,7 +46,7 @@ class HttpMethodsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "http-methods"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "http-methods"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -69,7 +68,7 @@ class HttpMethodsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -91,7 +90,7 @@ class HttpMethodsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "PATCH",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -111,7 +110,7 @@ class HttpMethodsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -125,8 +124,7 @@ class HttpMethodsClient:
 
 
 class AsyncHttpMethodsClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def test_get(self, id: str) -> str:
@@ -136,7 +134,7 @@ class AsyncHttpMethodsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -155,7 +153,7 @@ class AsyncHttpMethodsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "POST",
-            urllib.parse.urljoin(f"{self._environment}/", "http-methods"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "http-methods"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -177,7 +175,7 @@ class AsyncHttpMethodsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -199,7 +197,7 @@ class AsyncHttpMethodsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "PATCH",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -219,7 +217,7 @@ class AsyncHttpMethodsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "DELETE",
-            urllib.parse.urljoin(f"{self._environment}/", f"http-methods/{id}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"http-methods/{id}"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )

@@ -16,8 +16,7 @@ OMIT = typing.cast(typing.Any, ...)
 
 
 class ParamsClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def get_with_path(self, param: str) -> str:
@@ -29,7 +28,7 @@ class ParamsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"params/path/{param}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"params/path/{param}"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -52,7 +51,7 @@ class ParamsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "params"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "params"),
             params=remove_none_from_dict({"query": query, "number": number}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -78,7 +77,7 @@ class ParamsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "params"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "params"),
             params=remove_none_from_dict({"query": query, "numer": numer}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -102,7 +101,7 @@ class ParamsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"params/path/{param}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"params/path/{param}"),
             params=remove_none_from_dict({"query": query}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -126,7 +125,7 @@ class ParamsClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"params/path/{param}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"params/path/{param}"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -141,8 +140,7 @@ class ParamsClient:
 
 
 class AsyncParamsClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def get_with_path(self, param: str) -> str:
@@ -154,7 +152,7 @@ class AsyncParamsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"params/path/{param}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"params/path/{param}"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -177,7 +175,7 @@ class AsyncParamsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "params"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "params"),
             params=remove_none_from_dict({"query": query, "number": number}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -203,7 +201,7 @@ class AsyncParamsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "params"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "params"),
             params=remove_none_from_dict({"query": query, "numer": numer}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -227,7 +225,7 @@ class AsyncParamsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", f"params/path/{param}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"params/path/{param}"),
             params=remove_none_from_dict({"query": query}),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
@@ -251,7 +249,7 @@ class AsyncParamsClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "PUT",
-            urllib.parse.urljoin(f"{self._environment}/", f"params/path/{param}"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", f"params/path/{param}"),
             json=jsonable_encoder(request),
             headers=self._client_wrapper.get_headers(),
             timeout=60,

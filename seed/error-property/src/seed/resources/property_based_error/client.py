@@ -12,8 +12,7 @@ from ..errors.types.property_based_error_test_body import PropertyBasedErrorTest
 
 
 class PropertyBasedErrorClient:
-    def __init__(self, *, environment: str, client_wrapper: SyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     def throw_error(self) -> str:
@@ -22,7 +21,7 @@ class PropertyBasedErrorClient:
         """
         _response = self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "property-based-error"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "property-based-error"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
@@ -41,8 +40,7 @@ class PropertyBasedErrorClient:
 
 
 class AsyncPropertyBasedErrorClient:
-    def __init__(self, *, environment: str, client_wrapper: AsyncClientWrapper):
-        self._environment = environment
+    def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
     async def throw_error(self) -> str:
@@ -51,7 +49,7 @@ class AsyncPropertyBasedErrorClient:
         """
         _response = await self._client_wrapper.httpx_client.request(
             "GET",
-            urllib.parse.urljoin(f"{self._environment}/", "property-based-error"),
+            urllib.parse.urljoin(f"{self._client_wrapper.get_base_url()}/", "property-based-error"),
             headers=self._client_wrapper.get_headers(),
             timeout=60,
         )
