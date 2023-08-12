@@ -6,8 +6,8 @@ orbs:
 jobs:
 
   seed-test:
-    machine:
-      image: ubuntu-2004:current
+    docker:
+      - image: cimg/node:lts
     steps:
       - checkout
       - run: |
