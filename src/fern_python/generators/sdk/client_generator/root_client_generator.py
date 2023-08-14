@@ -96,7 +96,9 @@ class RootClientGenerator:
                                     name=RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME,
                                     type_hint=AST.TypeHint(self._context.get_reference_to_environments_class())
                                     if self._environments_config.default_environment is not None
-                                    else AST.TypeHint.optional(AST.TypeHint(self._context.get_reference_to_environments_class())),
+                                    else AST.TypeHint.optional(
+                                        AST.TypeHint(self._context.get_reference_to_environments_class())
+                                    ),
                                 ),
                             ],
                             return_type=AST.TypeHint.str_(),
@@ -346,13 +348,13 @@ class RootClientGenerator:
 
     def _write_get_base_url_function(self, writer: AST.NodeWriter) -> None:
         writer.write_line(f"if {RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME} is not None:")
-        with writer.indent(): 
+        with writer.indent():
             writer.write_line(f"return {RootClientGenerator.BASE_URL_CONSTRUCTOR_PARAMETER_NAME}")
         writer.write_line(f"elif {RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME} is not None:")
-        with writer.indent(): 
+        with writer.indent():
             writer.write_line(f"return {RootClientGenerator.ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME}.value")
         writer.write("else:")
-        with writer.indent(): 
+        with writer.indent():
             writer.write_line(
                 'raise Exception("Please pass in either base_url or environment to construct the client")'
             )
