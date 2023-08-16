@@ -47,7 +47,7 @@ class AbstractGenerator(ABC):
             project_config=project_config,
             should_format_files=self.should_format_files(generator_config=generator_config),
             sorted_modules=self.get_sorted_modules(),
-            flat_layout=self.is_flat_layout(),
+            flat_layout=self.is_flat_layout(generator_config=generator_config),
         ) as project:
             self.run(
                 generator_exec_wrapper=generator_exec_wrapper, ir=ir, generator_config=generator_config, project=project

@@ -159,5 +159,7 @@ class FastApiGenerator(AbstractGenerator):
 
     def is_flat_layout(
         self,
+        *,
+        generator_config: GeneratorConfig,
     ) -> bool:
         return False
