@@ -68,8 +68,7 @@ name = "{self.name}"'''
             s += """
 description = ""
 readme = "README.md"
-authors = []
-"""
+authors = []"""
             if self.package._from is not None:
                 s += f"""
 packages = [
