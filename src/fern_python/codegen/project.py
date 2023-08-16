@@ -39,11 +39,11 @@ class Project:
         sorted_modules: Optional[Sequence[str]] = None,
         flat_layout: bool = False,
     ) -> None:
-        if flat_layout: 
+        if flat_layout:
             self._project_filepath = (
                 filepath if project_config is None else os.path.join(filepath, relative_path_to_project)
             )
-        else: 
+        else:
             self._project_filepath = (
                 filepath if project_config is None else os.path.join(filepath, "src", relative_path_to_project)
             )
