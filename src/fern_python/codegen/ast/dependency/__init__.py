@@ -1,3 +1,3 @@
-from .dependency import Dependency, DependencyName, DependencyVersion
+from .dependency import Dependency, DependencyName, DependencyVersion, DependencyCompatibility
 
-__all__ = ["Dependency", "DependencyName", "DependencyVersion"]
+__all__ = ["Dependency", "DependencyName", "DependencyVersion", "DependencyCompatibility"]

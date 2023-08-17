@@ -6,7 +6,7 @@ from .ast_node import (
     NodeWriter,
     Writer,
 )
-from .dependency import Dependency, DependencyName, DependencyVersion
+from .dependency import Dependency, DependencyName, DependencyVersion, DependencyCompatibility
 from .nodes import (
     ClassConstructor,
     ClassDeclaration,
@@ -74,4 +74,5 @@ __all__ = [
     "AstNodeMetadata",
     "DictionaryInstantiation",
     "NamedFunctionParameter",
+    "DependencyCompatibility"
 ]
