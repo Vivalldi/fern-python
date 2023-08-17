@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import fern.ir.resources as ir_types
 from fern.generator_exec import Readme
@@ -10,12 +11,14 @@ class ReadmeJson:
     def __init__(
         self,
         *,
+        registry_url: Optional[str],
         package_name: str,
         root_client_class_name: str,
         root_client_module: AST.Module,
         path: str,
         auth: ir_types.ApiAuth,
     ):
+        self._registry_url = registry_url
         self._package_name = package_name
         self._root_client_module = root_client_module
         self._root_client_class_name = root_client_class_name
@@ -25,8 +28,9 @@ class ReadmeJson:
     def write(self) -> None:
         readme = Readme(
             title=self._title(self._root_client_class_name),
-            badges=self._badge(self._package_name),
-            installation=self._installation(self._package_name),
+            badges=self._badge(self._registry_url, self._package_name),
+            summary=self._summary(self._root_client_class_name),
+            installation=self._installation(self._registry_url, self._package_name),
             instantiation=self._instantiation(self._root_client_class_name, self._root_client_module, self._auth),
             usage="",
             status=self._status(),
@@ -35,14 +39,23 @@ class ReadmeJson:
             f.write(readme.json())
 
     def _title(self, root_client_class_name: str) -> str:
-        return f"{root_client_class_name} Python Library"
+        return f"# {root_client_class_name} Python Library"
 
-    def _badge(self, package_name: str) -> str:
-        return (
-            f"[![pypi](https://img.shields.io/pypi/v/{package_name}.svg)](https://pypi.python.org/pypi/{package_name})"
-        )
+    def _badge(self, registry_url: Optional[str], package_name: str) -> str:
+        if registry_url is None:
+            # A badge only makes sense if the package is available on PyPi.
+            return ""
+        formatted_registry_url = registry_url.rstrip("/")
+        return f"[![pypi](https://img.shields.io/pypi/v/{package_name}.svg)](https://{formatted_registry_url}/pypi/{package_name})"
 
-    def _installation(self, package_name: str) -> str:
+    def _summary(self, root_client_class_name: str) -> str:
+        return f"The {root_client_class_name} Python library provides access to the {root_client_class_name} API from Python."
+
+    def _installation(self, registry_url: Optional[str], package_name: str) -> str:
+        if registry_url is None:
+            # An installation guide only makes sense if the package is available on PyPi.
+            return ""
+
         return f"""```sh
 pip install --upgrade {package_name}"
 ```"""

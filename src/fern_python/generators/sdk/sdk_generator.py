@@ -133,12 +133,11 @@ class SdkGenerator(AbstractGenerator):
                 project=project,
             )
 
-        if project._project_config is not None:
-            self._generate_readme(
-                context=context,
-                ir=ir,
-                project=project,
-            )
+        self._generate_readme(
+            context=context,
+            ir=ir,
+            project=project,
+        )
 
         context.core_utilities.copy_to_project(project=project)
 
@@ -238,11 +237,12 @@ class SdkGenerator(AbstractGenerator):
         ir: ir_types.IntermediateRepresentation,
         project: Project,
     ) -> None:
+        if project._project_config is None:
+            return
         filepath = context.get_filepath_for_root_client()
         readme_json = ReadmeJson(
-            package_name=project._project_config.package_name
-            if project._project_config is not None
-            else context.generator_config.organization,
+            registry_url=project._project_config.registry_url,
+            package_name=project._project_config.package_name,
             root_client_module=filepath.to_module(),
             root_client_class_name=context.get_class_name_for_root_client(),
             path=project._root_filepath,

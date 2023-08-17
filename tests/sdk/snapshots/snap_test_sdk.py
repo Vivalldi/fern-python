@@ -28,6 +28,8 @@ snapshots['test_circular_imports filepaths'] = [
     'tests/test_client.py'
 ]
 
+snapshots['test_circular_imports readme'] = FileSnapshot('snap_test_sdk/test_circular_imports readme.json')
+
 snapshots['test_circular_imports src_my_org___init__'] = FileSnapshot('snap_test_sdk/test_circular_imports src_my_org___init__.py')
 
 snapshots['test_circular_imports src_my_org_client'] = FileSnapshot('snap_test_sdk/test_circular_imports src_my_org_client.py')
@@ -127,6 +129,8 @@ snapshots['test_github_no_publish_sdk filepaths'] = [
     'tests/test_client.py'
 ]
 
+snapshots['test_github_no_publish_sdk readme'] = FileSnapshot('snap_test_sdk/test_github_no_publish_sdk readme.json')
+
 snapshots['test_github_no_publish_sdk src_fern___init__'] = FileSnapshot('snap_test_sdk/test_github_no_publish_sdk src_fern___init__.py')
 
 snapshots['test_github_no_publish_sdk src_fern_client'] = FileSnapshot('snap_test_sdk/test_github_no_publish_sdk src_fern_client.py')
@@ -191,6 +195,8 @@ snapshots['test_github_sdk filepaths'] = [
     'tests/__init__.py',
     'tests/test_client.py'
 ]
+
+snapshots['test_github_sdk readme'] = FileSnapshot('snap_test_sdk/test_github_sdk readme.json')
 
 snapshots['test_github_sdk src_fern___init__'] = FileSnapshot('snap_test_sdk/test_github_sdk src_fern___init__.py')
 
@@ -328,6 +334,8 @@ snapshots['test_publish_sdk filepaths'] = [
     'src/fern/api/resources/movie/types/movie.py',
     'src/fern/api/resources/movie/types/movie_id.py'
 ]
+
+snapshots['test_publish_sdk readme'] = FileSnapshot('snap_test_sdk/test_publish_sdk readme.json')
 
 snapshots['test_publish_sdk src_fern_api___init__'] = FileSnapshot('snap_test_sdk/test_publish_sdk src_fern_api___init__.py')
 

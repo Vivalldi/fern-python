@@ -73,6 +73,11 @@ def run_snapshot_test(
             name=relative_filepath.replace("/", "_").replace(".py", ""), value=FileSnapshot(written_filepath)
         )
 
+    if output_mode.get_as_union().type == "github" or output_mode.get_as_union().type == "publish":
+        written_filepath = os.path.join(path_to_output, "readme.json")
+        relative_filepath = os.path.relpath(written_filepath, start=path_to_output)
+        snapshot.assert_match(name=relative_filepath.replace(".json", ""), value=FileSnapshot(written_filepath))
+
     snapshot.assert_match(
         name="filepaths",
         value=sorted(list(relative_filepaths)),
