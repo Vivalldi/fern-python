@@ -72,4 +72,5 @@ def test_publish_pydantic_model(snapshot: SnapshotTest, tmpdir: Path) -> None:
                 version="1.0.0",
             )
         ),
+        checkReadme=False,
     )
