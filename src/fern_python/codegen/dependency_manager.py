@@ -10,5 +10,5 @@ class DependencyManager:
     def add_dependency(self, dependency: AST.Dependency) -> None:
         self._dependencies[dependency.name] = dependency
 
-    def get_dependencies(self) -> Set[AST.Dependency]: 
+    def get_dependencies(self) -> Set[AST.Dependency]:
         return {dep for (name, dep) in self._dependencies.items()}
