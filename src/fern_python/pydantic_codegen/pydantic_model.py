@@ -286,7 +286,7 @@ class PydanticModel:
                     initializer=AST.Expression("True"),
                 )
             )
-        
+
         if self._smart_union:
             config.add_class_var(
                 AST.VariableDeclaration(
