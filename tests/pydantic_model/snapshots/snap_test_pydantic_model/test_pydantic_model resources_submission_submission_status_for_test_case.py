@@ -7,10 +7,20 @@ import typing
 import pydantic
 import typing_extensions
 
-from ..commons.key_value_pair import KeyValuePair
-from ..commons.map_value import MapValue
-from ..commons.variable_value import VariableValue
+from ..commons.binary_tree_node_value import BinaryTreeNodeValue
+from ..commons.binary_tree_value import BinaryTreeValue
+from ..commons.doubly_linked_list_node_value import DoublyLinkedListNodeValue
+from ..commons.doubly_linked_list_value import DoublyLinkedListValue
+from ..commons.node_id import NodeId
+from ..commons.singly_linked_list_node_value import SinglyLinkedListNodeValue
+from ..commons.singly_linked_list_value import SinglyLinkedListValue
+from .actual_result import ActualResult
+from .exception_info import ExceptionInfo
+from .exception_v_2 import ExceptionV2
 from .test_case_grade import TestCaseGrade
+from .test_case_hidden_grade import TestCaseHiddenGrade
+from .test_case_non_hidden_grade import TestCaseNonHiddenGrade
+from .test_case_result import TestCaseResult
 from .test_case_result_with_stdout import TestCaseResultWithStdout
 from .traced_test_case import TracedTestCase
 
@@ -37,9 +47,6 @@ class SubmissionStatusForTestCase_Traced(TracedTestCase):
 SubmissionStatusForTestCase = typing.Union[
     SubmissionStatusForTestCase_Graded, SubmissionStatusForTestCase_GradedV2, SubmissionStatusForTestCase_Traced
 ]
-SubmissionStatusForTestCase_Graded.update_forward_refs(
-    KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue
-)
-SubmissionStatusForTestCase_Traced.update_forward_refs(
-    KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue
-)
+from ..commons.key_value_pair import KeyValuePair  # noqa: E402
+from ..commons.map_value import MapValue  # noqa: E402
+from ..commons.variable_value import VariableValue  # noqa: E402

@@ -6,9 +6,15 @@ import typing
 
 import typing_extensions
 
-from ...commons.types.key_value_pair import KeyValuePair
-from ...commons.types.map_value import MapValue
-from ...commons.types.variable_value import VariableValue
+from ...commons.types.binary_tree_node_value import BinaryTreeNodeValue
+from ...commons.types.binary_tree_value import BinaryTreeValue
+from ...commons.types.doubly_linked_list_node_value import DoublyLinkedListNodeValue
+from ...commons.types.doubly_linked_list_value import DoublyLinkedListValue
+from ...commons.types.node_id import NodeId
+from ...commons.types.singly_linked_list_node_value import SinglyLinkedListNodeValue
+from ...commons.types.singly_linked_list_value import SinglyLinkedListValue
+from .exception_info import ExceptionInfo
+from .exception_v_2 import ExceptionV2
 from .test_case_hidden_grade import TestCaseHiddenGrade
 from .test_case_non_hidden_grade import TestCaseNonHiddenGrade
 
@@ -32,4 +38,6 @@ class TestCaseGrade_NonHidden(TestCaseNonHiddenGrade):
 
 
 TestCaseGrade = typing.Union[TestCaseGrade_Hidden, TestCaseGrade_NonHidden]
-TestCaseGrade_NonHidden.update_forward_refs(KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue)
+from ...commons.types.key_value_pair import KeyValuePair  # noqa: E402
+from ...commons.types.map_value import MapValue  # noqa: E402
+from ...commons.types.variable_value import VariableValue  # noqa: E402

@@ -6,10 +6,9 @@ import typing
 
 import typing_extensions
 
-from ......commons.list_type import ListType
-from ......commons.map_type import MapType
-from ......commons.variable_type import VariableType
 from .non_void_function_signature import NonVoidFunctionSignature
+from .parameter import Parameter
+from .parameter_id import ParameterId
 from .void_function_signature import VoidFunctionSignature
 from .void_function_signature_that_takes_actual_result import VoidFunctionSignatureThatTakesActualResult
 
@@ -38,8 +37,6 @@ class FunctionSignature_VoidThatTakesActualResult(VoidFunctionSignatureThatTakes
 FunctionSignature = typing.Union[
     FunctionSignature_Void, FunctionSignature_NonVoid, FunctionSignature_VoidThatTakesActualResult
 ]
-FunctionSignature_Void.update_forward_refs(ListType=ListType, MapType=MapType, VariableType=VariableType)
-FunctionSignature_NonVoid.update_forward_refs(ListType=ListType, MapType=MapType, VariableType=VariableType)
-FunctionSignature_VoidThatTakesActualResult.update_forward_refs(
-    ListType=ListType, MapType=MapType, VariableType=VariableType
-)
+from ......commons.list_type import ListType  # noqa: E402
+from ......commons.map_type import MapType  # noqa: E402
+from ......commons.variable_type import VariableType  # noqa: E402

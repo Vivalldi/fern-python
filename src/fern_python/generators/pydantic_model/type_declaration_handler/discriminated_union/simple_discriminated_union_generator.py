@@ -115,34 +115,55 @@ class SimpleDiscriminatedUnionGenerator(AbstractTypeGenerator):
                         )
                     )
 
-                # if any of our inherited fields are forward refs, we need to call
+                # if any of our fields are forward refs, we need to call
                 # update_forwards_refs()
-                if shape.properties_type == "samePropertiesAsObject":
-                    # we assume that the forward-refed types are the ones
-                    # that circularly reference themselves
-                    forward_refed_types = [
-                        referenced_type
-                        for referenced_type in self._context.get_declaration_for_type_name(shape).referenced_types
-                        if self._context.does_circularly_reference_itself(referenced_type)
-                    ]
-                    if len(forward_refed_types) > 0:
-                        # when calling update_forward_refs, Pydantic will throw
-                        # if an inherited field's type is not defined in this
-                        # file. https://github.com/pydantic/pydantic/issues/4902.
-                        # as a workaround, we explicitly pass references to update_forward_refs
-                        # so they are in scope
-                        internal_pydantic_model_for_single_union_type.update_forward_refs(
-                            {
-                                self._context.get_class_reference_for_type_name(type_name)
-                                for type_name in forward_refed_types
-                            }
-                        )
+
+                # we assume that the forward-refed types are the ones
+                # that circularly reference this union type
+                referenced_types = single_union_type.shape.visit(
+                    same_properties_as_object=lambda type_name: self._context.get_declaration_for_type_name(
+                        type_name
+                    ).referenced_types,
+                    single_property=lambda single_property: self._context.get_referenced_types_of_type_reference(
+                        single_property.type
+                    ),
+                    no_properties=lambda: [],
+                )
+                forward_refed_types = [
+                    referenced_type
+                    for referenced_type in referenced_types
+                    if self._context.does_type_reference_other_type(referenced_type, self._name)
+                ]
+                if len(forward_refed_types) > 0:
+                    # when calling update_forward_refs, Pydantic will throw
+                    # if an inherited field's type is not defined in this
+                    # file. https://github.com/pydantic/pydantic/issues/4902.
+                    # as a workaround, we explicitly pass references to update_forward_refs
+                    # so they are in scope
+                    internal_pydantic_model_for_single_union_type.update_forward_refs(
+                        {
+                            self._context.get_class_reference_for_type_name(type_name)
+                            for type_name in forward_refed_types
+                        }
+                    )
+
+        type_alias_declaration = AST.TypeAliasDeclaration(
+            type_hint=AST.TypeHint.union(*(AST.TypeHint(ref) for ref in single_union_type_references)),
+            name=self._name.name.pascal_case.safe_name,
+        )
+
+        for type_name in self._context.get_declaration_for_type_name(self._name).referenced_types:
+            type_alias_declaration.add_ghost_reference(
+                self._context.get_class_reference_for_type_name(
+                    type_name,
+                    must_import_after_current_declaration=lambda other_type_name: self._context.does_type_reference_other_type(
+                        other_type_name, type_name
+                    ),
+                ),
+            )
 
         self._source_file.add_declaration(
-            AST.TypeAliasDeclaration(
-                type_hint=AST.TypeHint.union(*(AST.TypeHint(ref) for ref in single_union_type_references)),
-                name=self._name.name.pascal_case.safe_name,
-            ),
+            type_alias_declaration,
             should_export=True,
         )
 

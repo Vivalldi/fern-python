@@ -6,11 +6,35 @@ import typing
 
 import typing_extensions
 
-from ..commons.key_value_pair import KeyValuePair
-from ..commons.map_value import MapValue
-from ..commons.variable_value import VariableValue
+from ..commons.binary_tree_node_value import BinaryTreeNodeValue
+from ..commons.binary_tree_value import BinaryTreeValue
+from ..commons.doubly_linked_list_node_value import DoublyLinkedListNodeValue
+from ..commons.doubly_linked_list_value import DoublyLinkedListValue
+from ..commons.node_id import NodeId
+from ..commons.problem_id import ProblemId
+from ..commons.singly_linked_list_node_value import SinglyLinkedListNodeValue
+from ..commons.singly_linked_list_value import SinglyLinkedListValue
+from ..commons.test_case import TestCase
+from .actual_result import ActualResult
+from .compile_error import CompileError
+from .error_info import ErrorInfo
+from .exception_info import ExceptionInfo
+from .exception_v_2 import ExceptionV2
+from .internal_error import InternalError
+from .running_submission_state import RunningSubmissionState
+from .runtime_error import RuntimeError
+from .submission_status_for_test_case import SubmissionStatusForTestCase
+from .test_case_grade import TestCaseGrade
+from .test_case_hidden_grade import TestCaseHiddenGrade
+from .test_case_non_hidden_grade import TestCaseNonHiddenGrade
+from .test_case_result import TestCaseResult
+from .test_case_result_with_stdout import TestCaseResultWithStdout
 from .test_submission_state import TestSubmissionState
+from .test_submission_status import TestSubmissionStatus
+from .traced_test_case import TracedTestCase
+from .workspace_run_details import WorkspaceRunDetails
 from .workspace_submission_state import WorkspaceSubmissionState
+from .workspace_submission_status import WorkspaceSubmissionStatus
 
 
 class SubmissionTypeState_Test(TestSubmissionState):
@@ -28,4 +52,6 @@ class SubmissionTypeState_Workspace(WorkspaceSubmissionState):
 
 
 SubmissionTypeState = typing.Union[SubmissionTypeState_Test, SubmissionTypeState_Workspace]
-SubmissionTypeState_Test.update_forward_refs(KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue)
+from ..commons.key_value_pair import KeyValuePair  # noqa: E402
+from ..commons.map_value import MapValue  # noqa: E402
+from ..commons.variable_value import VariableValue  # noqa: E402

@@ -7,8 +7,12 @@ import typing
 import pydantic
 import typing_extensions
 
+from ...commons.types.language import Language
+from ...commons.types.problem_id import ProblemId
 from .initialize_problem_request import InitializeProblemRequest
 from .stop_request import StopRequest
+from .submission_file_info import SubmissionFileInfo
+from .submission_id import SubmissionId
 from .submit_request_v_2 import SubmitRequestV2
 from .workspace_submit_request import WorkspaceSubmitRequest
 

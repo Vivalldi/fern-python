@@ -6,7 +6,10 @@ import typing
 
 import typing_extensions
 
+from ...commons.types.language import Language
+from ...commons.types.problem_id import ProblemId
 from .custom_test_cases_unsupported import CustomTestCasesUnsupported
+from .submission_id import SubmissionId
 from .submission_id_not_found import SubmissionIdNotFound
 from .unexpected_language_error import UnexpectedLanguageError
 

@@ -6,11 +6,18 @@ import typing
 
 import typing_extensions
 
-from .......commons.types.list_type import ListType
-from .......commons.types.map_type import MapType
-from .......commons.types.variable_type import VariableType
+from .......commons.types.language import Language
+from .assert_correctness_check import AssertCorrectnessCheck
+from .deep_equality_correctness_check import DeepEqualityCorrectnessCheck
+from .function_implementation import FunctionImplementation
+from .function_implementation_for_multiple_languages import FunctionImplementationForMultipleLanguages
+from .non_void_function_definition import NonVoidFunctionDefinition
+from .non_void_function_signature import NonVoidFunctionSignature
+from .parameter import Parameter
+from .parameter_id import ParameterId
 from .test_case_with_actual_result_implementation import TestCaseWithActualResultImplementation
 from .void_function_definition import VoidFunctionDefinition
+from .void_function_definition_that_takes_actual_result import VoidFunctionDefinitionThatTakesActualResult
 
 
 class TestCaseFunction_WithActualResult(TestCaseWithActualResultImplementation):
@@ -32,5 +39,6 @@ class TestCaseFunction_Custom(VoidFunctionDefinition):
 
 
 TestCaseFunction = typing.Union[TestCaseFunction_WithActualResult, TestCaseFunction_Custom]
-TestCaseFunction_WithActualResult.update_forward_refs(ListType=ListType, MapType=MapType, VariableType=VariableType)
-TestCaseFunction_Custom.update_forward_refs(ListType=ListType, MapType=MapType, VariableType=VariableType)
+from .......commons.types.list_type import ListType  # noqa: E402
+from .......commons.types.map_type import MapType  # noqa: E402
+from .......commons.types.variable_type import VariableType  # noqa: E402

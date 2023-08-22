@@ -7,13 +7,26 @@ import typing
 import pydantic
 import typing_extensions
 
-from ...commons.types.key_value_pair import KeyValuePair
-from ...commons.types.map_value import MapValue
-from ...commons.types.variable_value import VariableValue
+from ...commons.types.binary_tree_node_value import BinaryTreeNodeValue
+from ...commons.types.binary_tree_value import BinaryTreeValue
+from ...commons.types.doubly_linked_list_node_value import DoublyLinkedListNodeValue
+from ...commons.types.doubly_linked_list_value import DoublyLinkedListValue
+from ...commons.types.node_id import NodeId
+from ...commons.types.singly_linked_list_node_value import SinglyLinkedListNodeValue
+from ...commons.types.singly_linked_list_value import SinglyLinkedListValue
+from ...v_2.resources.problem.types.test_case_id import TestCaseId
+from .compile_error import CompileError
 from .error_info import ErrorInfo
+from .exception_info import ExceptionInfo
+from .exception_v_2 import ExceptionV2
 from .graded_test_case_update import GradedTestCaseUpdate
+from .internal_error import InternalError
 from .recorded_test_case_update import RecordedTestCaseUpdate
 from .running_submission_state import RunningSubmissionState
+from .runtime_error import RuntimeError
+from .test_case_grade import TestCaseGrade
+from .test_case_hidden_grade import TestCaseHiddenGrade
+from .test_case_non_hidden_grade import TestCaseNonHiddenGrade
 
 
 class TestSubmissionUpdateInfo_Running(pydantic.BaseModel):
@@ -76,6 +89,6 @@ TestSubmissionUpdateInfo = typing.Union[
     TestSubmissionUpdateInfo_RecordedTestCase,
     TestSubmissionUpdateInfo_Finished,
 ]
-TestSubmissionUpdateInfo_GradedTestCase.update_forward_refs(
-    KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue
-)
+from ...commons.types.key_value_pair import KeyValuePair  # noqa: E402
+from ...commons.types.map_value import MapValue  # noqa: E402
+from ...commons.types.variable_value import VariableValue  # noqa: E402
