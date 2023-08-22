@@ -7,7 +7,6 @@ import typing
 import typing_extensions
 
 from .compile_error import CompileError
-from .exception_info import ExceptionInfo
 from .internal_error import InternalError
 from .runtime_error import RuntimeError
 

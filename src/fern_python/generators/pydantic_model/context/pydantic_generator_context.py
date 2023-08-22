@@ -72,6 +72,12 @@ class PydanticGeneratorContext(ABC):
         ...
 
     @abstractmethod
+    def get_type_names_in_type_reference(
+        self, type_reference: ir_types.TypeReference
+    ) -> List[ir_types.DeclaredTypeName]:
+        ...
+
+    @abstractmethod
     def get_filepath_for_type_name(self, type_name: ir_types.DeclaredTypeName) -> Filepath:
         ...
 

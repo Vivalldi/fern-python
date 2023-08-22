@@ -9,15 +9,8 @@ import typing_extensions
 
 from ....commons.language import Language
 from .basic_custom_files import BasicCustomFiles
-from .basic_test_case_template import BasicTestCaseTemplate
 from .file_info_v_2 import FileInfoV2
 from .files import Files
-from .non_void_function_signature import NonVoidFunctionSignature
-from .parameter import Parameter
-from .parameter_id import ParameterId
-from .test_case_implementation_description import TestCaseImplementationDescription
-from .test_case_implementation_description_board import TestCaseImplementationDescriptionBoard
-from .test_case_template_id import TestCaseTemplateId
 
 
 class CustomFiles_Basic(BasicCustomFiles):
@@ -33,6 +26,3 @@ class CustomFiles_Custom(pydantic.BaseModel):
 
 
 CustomFiles = typing.Union[CustomFiles_Basic, CustomFiles_Custom]
-from ....commons.list_type import ListType  # noqa: E402
-from ....commons.map_type import MapType  # noqa: E402
-from ....commons.variable_type import VariableType  # noqa: E402

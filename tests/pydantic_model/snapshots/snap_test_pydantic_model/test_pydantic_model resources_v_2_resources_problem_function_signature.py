@@ -7,8 +7,6 @@ import typing
 import typing_extensions
 
 from .non_void_function_signature import NonVoidFunctionSignature
-from .parameter import Parameter
-from .parameter_id import ParameterId
 from .void_function_signature import VoidFunctionSignature
 from .void_function_signature_that_takes_actual_result import VoidFunctionSignatureThatTakesActualResult
 
@@ -37,6 +35,3 @@ class FunctionSignature_VoidThatTakesActualResult(VoidFunctionSignatureThatTakes
 FunctionSignature = typing.Union[
     FunctionSignature_Void, FunctionSignature_NonVoid, FunctionSignature_VoidThatTakesActualResult
 ]
-from ....commons.list_type import ListType  # noqa: E402
-from ....commons.map_type import MapType  # noqa: E402
-from ....commons.variable_type import VariableType  # noqa: E402

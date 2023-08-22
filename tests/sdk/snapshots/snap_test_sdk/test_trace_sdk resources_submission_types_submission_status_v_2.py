@@ -6,74 +6,8 @@ import typing
 
 import typing_extensions
 
-from ...commons.types.binary_tree_node_value import BinaryTreeNodeValue
-from ...commons.types.binary_tree_value import BinaryTreeValue
-from ...commons.types.doubly_linked_list_node_value import DoublyLinkedListNodeValue
-from ...commons.types.doubly_linked_list_value import DoublyLinkedListValue
-from ...commons.types.language import Language
-from ...commons.types.node_id import NodeId
-from ...commons.types.problem_id import ProblemId
-from ...commons.types.singly_linked_list_node_value import SinglyLinkedListNodeValue
-from ...commons.types.singly_linked_list_value import SinglyLinkedListValue
-from ...problem.types.problem_description import ProblemDescription
-from ...problem.types.problem_description_board import ProblemDescriptionBoard
-from ...v_2.resources.problem.types.assert_correctness_check import AssertCorrectnessCheck
-from ...v_2.resources.problem.types.basic_custom_files import BasicCustomFiles
-from ...v_2.resources.problem.types.basic_test_case_template import BasicTestCaseTemplate
-from ...v_2.resources.problem.types.custom_files import CustomFiles
-from ...v_2.resources.problem.types.deep_equality_correctness_check import DeepEqualityCorrectnessCheck
-from ...v_2.resources.problem.types.file_info_v_2 import FileInfoV2
-from ...v_2.resources.problem.types.files import Files
-from ...v_2.resources.problem.types.function_implementation import FunctionImplementation
-from ...v_2.resources.problem.types.function_implementation_for_multiple_languages import (
-    FunctionImplementationForMultipleLanguages,
-)
-from ...v_2.resources.problem.types.generated_files import GeneratedFiles
-from ...v_2.resources.problem.types.non_void_function_definition import NonVoidFunctionDefinition
-from ...v_2.resources.problem.types.non_void_function_signature import NonVoidFunctionSignature
-from ...v_2.resources.problem.types.parameter import Parameter
-from ...v_2.resources.problem.types.parameter_id import ParameterId
-from ...v_2.resources.problem.types.problem_info_v_2 import ProblemInfoV2
-from ...v_2.resources.problem.types.test_case_expects import TestCaseExpects
-from ...v_2.resources.problem.types.test_case_function import TestCaseFunction
-from ...v_2.resources.problem.types.test_case_id import TestCaseId
-from ...v_2.resources.problem.types.test_case_implementation import TestCaseImplementation
-from ...v_2.resources.problem.types.test_case_implementation_description import TestCaseImplementationDescription
-from ...v_2.resources.problem.types.test_case_implementation_description_board import (
-    TestCaseImplementationDescriptionBoard,
-)
-from ...v_2.resources.problem.types.test_case_implementation_reference import TestCaseImplementationReference
-from ...v_2.resources.problem.types.test_case_metadata import TestCaseMetadata
-from ...v_2.resources.problem.types.test_case_template import TestCaseTemplate
-from ...v_2.resources.problem.types.test_case_template_id import TestCaseTemplateId
-from ...v_2.resources.problem.types.test_case_v_2 import TestCaseV2
-from ...v_2.resources.problem.types.test_case_with_actual_result_implementation import (
-    TestCaseWithActualResultImplementation,
-)
-from ...v_2.resources.problem.types.void_function_definition import VoidFunctionDefinition
-from ...v_2.resources.problem.types.void_function_definition_that_takes_actual_result import (
-    VoidFunctionDefinitionThatTakesActualResult,
-)
-from .compile_error import CompileError
-from .error_info import ErrorInfo
-from .exception_info import ExceptionInfo
-from .exception_v_2 import ExceptionV2
-from .graded_test_case_update import GradedTestCaseUpdate
-from .internal_error import InternalError
-from .recorded_test_case_update import RecordedTestCaseUpdate
-from .running_submission_state import RunningSubmissionState
-from .runtime_error import RuntimeError
-from .test_case_grade import TestCaseGrade
-from .test_case_hidden_grade import TestCaseHiddenGrade
-from .test_case_non_hidden_grade import TestCaseNonHiddenGrade
 from .test_submission_status_v_2 import TestSubmissionStatusV2
-from .test_submission_update import TestSubmissionUpdate
-from .test_submission_update_info import TestSubmissionUpdateInfo
-from .workspace_run_details import WorkspaceRunDetails
 from .workspace_submission_status_v_2 import WorkspaceSubmissionStatusV2
-from .workspace_submission_update import WorkspaceSubmissionUpdate
-from .workspace_submission_update_info import WorkspaceSubmissionUpdateInfo
-from .workspace_traced_update import WorkspaceTracedUpdate
 
 
 class SubmissionStatusV2_Test(TestSubmissionStatusV2):
@@ -95,9 +29,3 @@ class SubmissionStatusV2_Workspace(WorkspaceSubmissionStatusV2):
 
 
 SubmissionStatusV2 = typing.Union[SubmissionStatusV2_Test, SubmissionStatusV2_Workspace]
-from ...commons.types.key_value_pair import KeyValuePair  # noqa: E402
-from ...commons.types.list_type import ListType  # noqa: E402
-from ...commons.types.map_type import MapType  # noqa: E402
-from ...commons.types.map_value import MapValue  # noqa: E402
-from ...commons.types.variable_type import VariableType  # noqa: E402
-from ...commons.types.variable_value import VariableValue  # noqa: E402

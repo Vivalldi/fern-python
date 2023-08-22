@@ -9,7 +9,6 @@ import typing_extensions
 
 from ..commons.problem_id import ProblemId
 from .create_problem_error import CreateProblemError
-from .generic_create_problem_error import GenericCreateProblemError
 
 
 class CreateProblemResponse_Success(pydantic.BaseModel):

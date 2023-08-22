@@ -110,3 +110,22 @@ class PydanticGeneratorContextImpl(PydanticGeneratorContext):
             named=lambda type_name: self.get_declaration_for_type_name(type_name).referenced_types,
             unknown=lambda: [],
         )
+
+    def get_type_names_in_type_reference(
+        self, type_reference: ir_types.TypeReference
+    ) -> List[ir_types.DeclaredTypeName]:
+        return type_reference.visit(
+            container=lambda container: container.visit(
+                list=lambda item_type: self.get_referenced_types_of_type_reference(item_type),
+                set=lambda item_type: self.get_referenced_types_of_type_reference(item_type),
+                optional=lambda item_type: self.get_referenced_types_of_type_reference(item_type),
+                map=lambda map_type: (
+                    self.get_referenced_types_of_type_reference(map_type.key_type)
+                    + self.get_referenced_types_of_type_reference(map_type.value_type)
+                ),
+                literal=lambda literal: [],
+            ),
+            primitive=lambda primitive: [],
+            named=lambda type_name: [type_name],
+            unknown=lambda: [],
+        )
