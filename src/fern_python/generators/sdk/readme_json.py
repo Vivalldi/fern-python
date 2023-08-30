@@ -28,8 +28,8 @@ class ReadmeJson:
     def write(self) -> None:
         readme = Readme(
             title=self._title(self._root_client_class_name),
-            badges=self._badge(self._registry_url, self._package_name),
             summary=self._summary(self._root_client_class_name),
+            badges=self._badge(self._registry_url, self._package_name),
             installation=self._installation(self._registry_url, self._package_name),
             instantiation=self._instantiation(self._root_client_class_name, self._root_client_module, self._auth),
             usage="",
@@ -71,7 +71,7 @@ pip install --upgrade {package_name}"
                 header=self._get_auth_header_client_option,
             )
         module_path = ".".join(root_client_module.path)
-        return f"""```python
+        return f"""```pythoutn
 from {module_path} import {root_client_class_name}
 
 client = {root_client_class_name}({parameters})

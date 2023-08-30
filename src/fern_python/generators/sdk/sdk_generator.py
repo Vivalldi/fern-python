@@ -1,11 +1,11 @@
-from typing import Sequence, Tuple
+from typing import Optional, Sequence, Tuple
 
 import fern.ir.resources as ir_types
 from fern.generator_exec.resources.config import GeneratorConfig
 from fern.generator_exec.resources.readme import GenerateReadmeRequest
 
 from fern_python.cli.abstract_generator import AbstractGenerator
-from fern_python.codegen import Project
+from fern_python.codegen import AST, Project
 from fern_python.codegen.filepath import Filepath
 from fern_python.generator_exec_wrapper import GeneratorExecWrapper
 from fern_python.generators.pydantic_model import (
@@ -29,7 +29,6 @@ from .environment_generators import (
     SingleBaseUrlEnvironmentGenerator,
 )
 from .error_generator.error_generator import ErrorGenerator
-from .readme_json import ReadmeJson
 
 
 class SdkGenerator(AbstractGenerator):
@@ -137,24 +136,16 @@ class SdkGenerator(AbstractGenerator):
                 project=project,
             )
 
-        self._generate_readme(
-            context=context,
-            ir=ir,
-            project=project,
-        )
-
         context.core_utilities.copy_to_project(project=project)
 
         output_mode = generator_config.output.mode.get_as_union()
         if output_mode.type == "github":
-            capitalized_org_name = generator_config.organization.capitalize()
-            request_sent = generator_exec_wrapper.generate_readme(
-                GenerateReadmeRequest(
-                    title=f"{capitalized_org_name} Python Library",
-                    summary=f"The {capitalized_org_name} Python Library provides convenient access to the {capitalized_org_name} API from applications written in Python.",
-                    usage="",
-                    requirements=[],
-                )
+            request_sent = self._generate_readme(
+                context=context,
+                ir=ir,
+                generator_exec_wrapper=generator_exec_wrapper,
+                capitalized_org_name=generator_config.organization.capitalize(),
+                project=project,
             )
             if request_sent:
                 project.set_generate_readme(False)
@@ -252,21 +243,66 @@ class SdkGenerator(AbstractGenerator):
     def _generate_readme(
         self,
         context: SdkGeneratorContext,
+        generator_exec_wrapper: GeneratorExecWrapper,
         ir: ir_types.IntermediateRepresentation,
+        capitalized_org_name: str,
         project: Project,
-    ) -> None:
-        if project._project_config is None:
-            return
+    ) -> bool:
         filepath = context.get_filepath_for_root_client()
-        readme_json = ReadmeJson(
-            registry_url=project._project_config.registry_url,
-            package_name=project._project_config.package_name,
-            root_client_module=filepath.to_module(),
-            root_client_class_name=context.get_class_name_for_root_client(),
-            path=project._root_filepath,
-            auth=ir.auth,
+        return generator_exec_wrapper.generate_readme(
+            self._new_generate_readme_request(
+                registry_url=project._project_config.registry_url,
+                package_name=project._project_config.package_name,
+                capitalized_org_name=capitalized_org_name,
+                root_client_module=filepath.to_module(),
+                root_client_class_name=context.get_class_name_for_root_client(),
+                path=project._root_filepath,
+                auth=ir.auth,
+            ),
         )
-        readme_json.write()
+
+    def _new_generate_readme_request(
+        self,
+        registry_url: Optional[str],
+        capitalized_org_name: str,
+        package_name: str,
+        root_client_class_name: str,
+        root_client_module: AST.Module,
+        path: str,
+        auth: ir_types.ApiAuth,
+    ) -> GenerateReadmeRequest:
+        badge = ""
+        installation = ""
+        if registry_url is not None:
+            # A badge and installation guide only make sense if the package is available on PyPi.
+            formatted_registry_url = registry_url.rstrip("/")
+            badge = f"[![pypi](https://img.shields.io/pypi/v/{package_name}.svg)](https://{formatted_registry_url}/pypi/{package_name})"
+            installation=f"""```sh
+pip install --upgrade {package_name}"
+```"""
+
+        parameters = ""
+        if len(auth.schemes) > 0:
+            parameters = auth.schemes[0].visit(
+                bearer=self._get_auth_bearer_client_option,
+                basic=self._get_auth_basic_client_option,
+                header=self._get_auth_header_client_option,
+            )
+        module_path = ".".join(root_client_module.path)
+
+        return GenerateReadmeRequest(
+            title=f"{capitalized_org_name} Python Library",
+            badege=badge,
+            summary=f"The {capitalized_org_name} Python Library provides convenient access to the {capitalized_org_name} API from applications written in Python.",
+            installation=installation,
+            instantiation=f"""```python
+from {module_path} import {root_client_class_name}
+
+client = {root_client_class_name}({parameters})
+```"""
+            usage="",
+            requirements=[],
+        )
 
     def get_sorted_modules(self) -> Sequence[str]:
         # always import types/errors before resources (nested packages)
