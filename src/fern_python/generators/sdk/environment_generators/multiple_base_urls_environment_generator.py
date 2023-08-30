@@ -52,7 +52,7 @@ class MultipleBaseUrlsEnvironmentGenerator:
         source_file.add_arbitrary_code(AST.CodeWriter(self._write_bottom_statements))
 
         return GeneratedEnvironment(
-            module_path=".".join(self._context.get_filepath_for_environments_enum().to_module().path),
+            module_path=".".join(self._context.get_filepath_in_project(self._context.get_filepath_for_environments_enum()).to_module().path),
             class_name=class_name,
             example_environment=example_environment,
         )
