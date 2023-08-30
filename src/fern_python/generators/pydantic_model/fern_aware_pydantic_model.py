@@ -61,6 +61,7 @@ class FernAwarePydanticModel:
             forbid_extra_fields=custom_config.forbid_extra_fields,
             frozen=custom_config.frozen,
             orm_mode=custom_config.orm_mode,
+            smart_union=custom_config.smart_union,
         )
         self._pydantic_model.add_json_encoder(
             key=AST.Expression(
@@ -246,14 +247,20 @@ class FernAwarePydanticModel:
         type_reference: ir_types.TypeReference,
         description: Optional[str] = None,
     ) -> PydanticField:
+        type_hint = self.get_type_hint_for_type_reference(type_reference)
+        default_value = (
+            AST.Expression("None")
+            if type_hint.is_optional() and self._custom_config.require_optional_fields is False
+            else None
+        )
+
         return PydanticField(
             name=name,
             pascal_case_field_name=pascal_case_field_name,
-            type_hint=self.get_type_hint_for_type_reference(
-                type_reference,
-            ),
+            type_hint=type_hint,
             json_field_name=json_field_name,
             description=description,
+            default_value=default_value,
         )
 
     def _override_json(self) -> None:

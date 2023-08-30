@@ -8,11 +8,16 @@ import pydantic
 import typing_extensions
 
 from .binary_tree_node_and_tree_value import BinaryTreeNodeAndTreeValue
-from .debug_key_value_pairs import DebugKeyValuePairs
-from .debug_map_value import DebugMapValue
+from .binary_tree_node_value import BinaryTreeNodeValue
+from .binary_tree_value import BinaryTreeValue
 from .doubly_linked_list_node_and_list_value import DoublyLinkedListNodeAndListValue
+from .doubly_linked_list_node_value import DoublyLinkedListNodeValue
+from .doubly_linked_list_value import DoublyLinkedListValue
 from .generic_value import GenericValue
+from .node_id import NodeId
 from .singly_linked_list_node_and_list_value import SinglyLinkedListNodeAndListValue
+from .singly_linked_list_node_value import SinglyLinkedListNodeValue
+from .singly_linked_list_value import SinglyLinkedListValue
 
 
 class DebugVariableValue_IntegerValue(pydantic.BaseModel):
@@ -21,6 +26,7 @@ class DebugVariableValue_IntegerValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_BooleanValue(pydantic.BaseModel):
@@ -29,6 +35,7 @@ class DebugVariableValue_BooleanValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_DoubleValue(pydantic.BaseModel):
@@ -37,6 +44,7 @@ class DebugVariableValue_DoubleValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_StringValue(pydantic.BaseModel):
@@ -45,6 +53,7 @@ class DebugVariableValue_StringValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_CharValue(pydantic.BaseModel):
@@ -53,6 +62,7 @@ class DebugVariableValue_CharValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_MapValue(DebugMapValue):
@@ -60,6 +70,7 @@ class DebugVariableValue_MapValue(DebugMapValue):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -69,6 +80,7 @@ class DebugVariableValue_ListValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_BinaryTreeNodeValue(BinaryTreeNodeAndTreeValue):
@@ -76,6 +88,7 @@ class DebugVariableValue_BinaryTreeNodeValue(BinaryTreeNodeAndTreeValue):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -84,6 +97,7 @@ class DebugVariableValue_SinglyLinkedListNodeValue(SinglyLinkedListNodeAndListVa
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -92,6 +106,7 @@ class DebugVariableValue_DoublyLinkedListNodeValue(DoublyLinkedListNodeAndListVa
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -100,6 +115,7 @@ class DebugVariableValue_UndefinedValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_NullValue(pydantic.BaseModel):
@@ -107,6 +123,7 @@ class DebugVariableValue_NullValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class DebugVariableValue_GenericValue(GenericValue):
@@ -114,6 +131,7 @@ class DebugVariableValue_GenericValue(GenericValue):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -132,6 +150,12 @@ DebugVariableValue = typing.Union[
     DebugVariableValue_NullValue,
     DebugVariableValue_GenericValue,
 ]
+from .debug_key_value_pairs import DebugKeyValuePairs  # noqa: E402
+from .debug_map_value import DebugMapValue  # noqa: E402
+
 DebugVariableValue_MapValue.update_forward_refs(
+    DebugKeyValuePairs=DebugKeyValuePairs, DebugMapValue=DebugMapValue, DebugVariableValue=DebugVariableValue
+)
+DebugVariableValue_ListValue.update_forward_refs(
     DebugKeyValuePairs=DebugKeyValuePairs, DebugMapValue=DebugMapValue, DebugVariableValue=DebugVariableValue
 )

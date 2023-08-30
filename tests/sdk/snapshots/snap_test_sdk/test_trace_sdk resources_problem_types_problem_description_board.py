@@ -7,8 +7,6 @@ import typing
 import pydantic
 import typing_extensions
 
-from ...commons.types.variable_value import VariableValue
-
 
 class ProblemDescriptionBoard_Html(pydantic.BaseModel):
     type: typing_extensions.Literal["html"]
@@ -16,6 +14,7 @@ class ProblemDescriptionBoard_Html(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class ProblemDescriptionBoard_Variable(pydantic.BaseModel):
@@ -24,6 +23,7 @@ class ProblemDescriptionBoard_Variable(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class ProblemDescriptionBoard_TestCaseId(pydantic.BaseModel):
@@ -32,8 +32,10 @@ class ProblemDescriptionBoard_TestCaseId(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 ProblemDescriptionBoard = typing.Union[
     ProblemDescriptionBoard_Html, ProblemDescriptionBoard_Variable, ProblemDescriptionBoard_TestCaseId
 ]
+from ...commons.types.variable_value import VariableValue  # noqa: E402

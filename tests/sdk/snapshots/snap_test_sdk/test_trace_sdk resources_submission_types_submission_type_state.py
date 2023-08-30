@@ -6,9 +6,6 @@ import typing
 
 import typing_extensions
 
-from ...commons.types.key_value_pair import KeyValuePair
-from ...commons.types.map_value import MapValue
-from ...commons.types.variable_value import VariableValue
 from .test_submission_state import TestSubmissionState
 from .workspace_submission_state import WorkspaceSubmissionState
 
@@ -18,6 +15,7 @@ class SubmissionTypeState_Test(TestSubmissionState):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -26,8 +24,8 @@ class SubmissionTypeState_Workspace(WorkspaceSubmissionState):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
 SubmissionTypeState = typing.Union[SubmissionTypeState_Test, SubmissionTypeState_Workspace]
-SubmissionTypeState_Test.update_forward_refs(KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue)

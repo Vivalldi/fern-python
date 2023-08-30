@@ -7,9 +7,6 @@ import typing
 import pydantic
 import typing_extensions
 
-from ...commons.types.key_value_pair import KeyValuePair
-from ...commons.types.map_value import MapValue
-from ...commons.types.variable_value import VariableValue
 from .error_info import ErrorInfo
 from .graded_test_case_update import GradedTestCaseUpdate
 from .recorded_test_case_update import RecordedTestCaseUpdate
@@ -22,6 +19,7 @@ class TestSubmissionUpdateInfo_Running(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class TestSubmissionUpdateInfo_Stopped(pydantic.BaseModel):
@@ -29,6 +27,7 @@ class TestSubmissionUpdateInfo_Stopped(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class TestSubmissionUpdateInfo_Errored(pydantic.BaseModel):
@@ -37,6 +36,7 @@ class TestSubmissionUpdateInfo_Errored(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class TestSubmissionUpdateInfo_GradedTestCase(GradedTestCaseUpdate):
@@ -44,6 +44,7 @@ class TestSubmissionUpdateInfo_GradedTestCase(GradedTestCaseUpdate):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -52,6 +53,7 @@ class TestSubmissionUpdateInfo_RecordedTestCase(RecordedTestCaseUpdate):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -60,6 +62,7 @@ class TestSubmissionUpdateInfo_Finished(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 TestSubmissionUpdateInfo = typing.Union[
@@ -70,6 +73,3 @@ TestSubmissionUpdateInfo = typing.Union[
     TestSubmissionUpdateInfo_RecordedTestCase,
     TestSubmissionUpdateInfo_Finished,
 ]
-TestSubmissionUpdateInfo_GradedTestCase.update_forward_refs(
-    KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue
-)

@@ -6,9 +6,6 @@ import typing
 
 import typing_extensions
 
-from ...commons.types.key_value_pair import KeyValuePair
-from ...commons.types.map_value import MapValue
-from ...commons.types.variable_value import VariableValue
 from .test_case_hidden_grade import TestCaseHiddenGrade
 from .test_case_non_hidden_grade import TestCaseNonHiddenGrade
 
@@ -18,6 +15,7 @@ class TestCaseGrade_Hidden(TestCaseHiddenGrade):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -26,8 +24,8 @@ class TestCaseGrade_NonHidden(TestCaseNonHiddenGrade):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
 TestCaseGrade = typing.Union[TestCaseGrade_Hidden, TestCaseGrade_NonHidden]
-TestCaseGrade_NonHidden.update_forward_refs(KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue)

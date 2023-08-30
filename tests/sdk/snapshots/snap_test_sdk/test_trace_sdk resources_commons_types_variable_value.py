@@ -7,10 +7,12 @@ import typing
 import pydantic
 import typing_extensions
 
+from .binary_tree_node_value import BinaryTreeNodeValue
 from .binary_tree_value import BinaryTreeValue
+from .doubly_linked_list_node_value import DoublyLinkedListNodeValue
 from .doubly_linked_list_value import DoublyLinkedListValue
-from .key_value_pair import KeyValuePair
-from .map_value import MapValue
+from .node_id import NodeId
+from .singly_linked_list_node_value import SinglyLinkedListNodeValue
 from .singly_linked_list_value import SinglyLinkedListValue
 
 
@@ -20,6 +22,7 @@ class VariableValue_IntegerValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableValue_BooleanValue(pydantic.BaseModel):
@@ -28,6 +31,7 @@ class VariableValue_BooleanValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableValue_DoubleValue(pydantic.BaseModel):
@@ -36,6 +40,7 @@ class VariableValue_DoubleValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableValue_StringValue(pydantic.BaseModel):
@@ -44,6 +49,7 @@ class VariableValue_StringValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableValue_CharValue(pydantic.BaseModel):
@@ -52,6 +58,7 @@ class VariableValue_CharValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableValue_MapValue(MapValue):
@@ -59,6 +66,7 @@ class VariableValue_MapValue(MapValue):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -68,6 +76,7 @@ class VariableValue_ListValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableValue_BinaryTreeValue(BinaryTreeValue):
@@ -75,6 +84,7 @@ class VariableValue_BinaryTreeValue(BinaryTreeValue):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -83,6 +93,7 @@ class VariableValue_SinglyLinkedListValue(SinglyLinkedListValue):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -91,6 +102,7 @@ class VariableValue_DoublyLinkedListValue(DoublyLinkedListValue):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -99,6 +111,7 @@ class VariableValue_NullValue(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 VariableValue = typing.Union[
@@ -114,4 +127,8 @@ VariableValue = typing.Union[
     VariableValue_DoublyLinkedListValue,
     VariableValue_NullValue,
 ]
+from .key_value_pair import KeyValuePair  # noqa: E402
+from .map_value import MapValue  # noqa: E402
+
 VariableValue_MapValue.update_forward_refs(KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue)
+VariableValue_ListValue.update_forward_refs(KeyValuePair=KeyValuePair, MapValue=MapValue, VariableValue=VariableValue)

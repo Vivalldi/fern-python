@@ -2,6 +2,7 @@ from typing import Sequence, Tuple
 
 import fern.ir.resources as ir_types
 from fern.generator_exec.resources.config import GeneratorConfig
+from fern.generator_exec.resources.readme import GenerateReadmeRequest
 
 from fern_python.cli.abstract_generator import AbstractGenerator
 from fern_python.codegen import Project
@@ -77,6 +78,7 @@ class SdkGenerator(AbstractGenerator):
             include_union_utils=custom_config.include_union_utils,
             orm_mode=False,
             frozen=True,
+            smart_union=True,
         )
 
         context = SdkGeneratorContextImpl(
@@ -142,6 +144,20 @@ class SdkGenerator(AbstractGenerator):
         )
 
         context.core_utilities.copy_to_project(project=project)
+
+        output_mode = generator_config.output.mode.get_as_union()
+        if output_mode.type == "github":
+            capitalized_org_name = generator_config.organization.capitalize()
+            request_sent = generator_exec_wrapper.generate_readme(
+                GenerateReadmeRequest(
+                    title=f"{capitalized_org_name} Python Library",
+                    summary=f"The {capitalized_org_name} Python Library provides convenient access to the {capitalized_org_name} API from applications written in Python.",
+                    usage="",
+                    requirements=[],
+                )
+            )
+            if request_sent:
+                project.set_generate_readme(False)
 
     def _generate_environments(
         self,

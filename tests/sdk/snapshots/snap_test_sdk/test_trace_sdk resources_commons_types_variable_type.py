@@ -7,15 +7,13 @@ import typing
 import pydantic
 import typing_extensions
 
-from .list_type import ListType
-from .map_type import MapType
-
 
 class VariableType_IntegerType(pydantic.BaseModel):
     type: typing_extensions.Literal["integerType"]
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableType_DoubleType(pydantic.BaseModel):
@@ -23,6 +21,7 @@ class VariableType_DoubleType(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableType_BooleanType(pydantic.BaseModel):
@@ -30,6 +29,7 @@ class VariableType_BooleanType(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableType_StringType(pydantic.BaseModel):
@@ -37,6 +37,7 @@ class VariableType_StringType(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableType_CharType(pydantic.BaseModel):
@@ -44,6 +45,7 @@ class VariableType_CharType(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableType_ListType(ListType):
@@ -51,6 +53,7 @@ class VariableType_ListType(ListType):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -59,6 +62,7 @@ class VariableType_MapType(MapType):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -67,6 +71,7 @@ class VariableType_BinaryTreeType(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableType_SinglyLinkedListType(pydantic.BaseModel):
@@ -74,6 +79,7 @@ class VariableType_SinglyLinkedListType(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class VariableType_DoublyLinkedListType(pydantic.BaseModel):
@@ -81,6 +87,7 @@ class VariableType_DoublyLinkedListType(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 VariableType = typing.Union[
@@ -95,5 +102,8 @@ VariableType = typing.Union[
     VariableType_SinglyLinkedListType,
     VariableType_DoublyLinkedListType,
 ]
+from .list_type import ListType  # noqa: E402
+from .map_type import MapType  # noqa: E402
+
 VariableType_ListType.update_forward_refs(ListType=ListType, MapType=MapType, VariableType=VariableType)
 VariableType_MapType.update_forward_refs(ListType=ListType, MapType=MapType, VariableType=VariableType)

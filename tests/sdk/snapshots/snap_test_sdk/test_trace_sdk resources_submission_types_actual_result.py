@@ -7,7 +7,6 @@ import typing
 import pydantic
 import typing_extensions
 
-from ...commons.types.variable_value import VariableValue
 from .exception_info import ExceptionInfo
 from .exception_v_2 import ExceptionV2
 
@@ -18,6 +17,7 @@ class ActualResult_Value(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 class ActualResult_Exception(ExceptionInfo):
@@ -25,6 +25,7 @@ class ActualResult_Exception(ExceptionInfo):
 
     class Config:
         frozen = True
+        smart_union = True
         allow_population_by_field_name = True
 
 
@@ -34,6 +35,8 @@ class ActualResult_ExceptionV2(pydantic.BaseModel):
 
     class Config:
         frozen = True
+        smart_union = True
 
 
 ActualResult = typing.Union[ActualResult_Value, ActualResult_Exception, ActualResult_ExceptionV2]
+from ...commons.types.variable_value import VariableValue  # noqa: E402
