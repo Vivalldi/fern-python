@@ -27,6 +27,7 @@ class ConstructorParameter:
 @dataclass
 class ConstructorInfo:
     constructor_parameters: List[ConstructorParameter]
+    instantiation: Optional[str] = None
 
 
 @dataclass
@@ -358,6 +359,7 @@ class ClientWrapperGenerator:
 
     def _get_constructor_info(self) -> ConstructorInfo:
         parameters: List[ConstructorParameter] = []
+        instantiation: Optional[str] = None
 
         # TODO(dsinghvi): Support suppliers for global headers
         for header in self._context.ir.headers:
@@ -385,6 +387,7 @@ class ClientWrapperGenerator:
                     header_prefix=header_auth_scheme.prefix,
                 )
             )
+            instantiation = f'{header_auth_scheme.name.name.snake_case.safe_name}=<"YOUR_{header_auth_scheme.name.name.screaming_snake_case.safe_name}">'
 
         bearer_auth_scheme = self._get_bearer_auth_scheme()
         if bearer_auth_scheme is not None:
@@ -417,6 +420,7 @@ class ClientWrapperGenerator:
                     header_prefix=ClientWrapperGenerator.BEARER_AUTH_PREFIX,
                 )
             )
+            instantiation = f'{bearer_auth_scheme.token.snake_case.safe_name}=<"YOUR_{bearer_auth_scheme.token.screaming_snake_case.safe_name}">'
 
         basic_auth_scheme = self._get_basic_auth_scheme()
         if basic_auth_scheme is not None:
@@ -478,8 +482,12 @@ class ClientWrapperGenerator:
                     password_constructor_parameter,
                 ]
             )
+            instantiation = f'{basic_auth_scheme.username.snake_case.safe_name}=<"YOUR_{basic_auth_scheme.username.screaming_snake_case.safe_name}">, {basic_auth_scheme.password.snake_case.safe_name}=<"YOUR_{basic_auth_scheme.password.screaming_snake_case.safe_name}">'
 
-        return ConstructorInfo(constructor_parameters=parameters)
+        return ConstructorInfo(
+            constructor_parameters=parameters,
+            instantiation=instantiation,
+        )
 
     def _get_optional_getter_body_writer(self, *, member_name: str) -> AST.CodeWriterFunction:
         def _write_optional_getter_body(writer: AST.NodeWriter) -> None:

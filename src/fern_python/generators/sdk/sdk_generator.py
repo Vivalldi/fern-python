@@ -22,7 +22,7 @@ from fern_python.generators.sdk.core_utilities.client_wrapper_generator import (
 from fern_python.source_file_generator import SourceFileGenerator
 
 from .client_generator.client_generator import ClientGenerator
-from .client_generator.root_client_generator import RootClientGenerator
+from .client_generator.root_client_generator import GeneratedRootClient, RootClientGenerator
 from .custom_config import SDKCustomConfig
 from .environment_generators import (
     MultipleBaseUrlsEnvironmentGenerator,
@@ -108,7 +108,7 @@ class SdkGenerator(AbstractGenerator):
             project=project,
         )
 
-        self._generate_root_client(
+        generated_root_client = self._generate_root_client(
             context=context,
             ir=ir,
             generator_exec_wrapper=generator_exec_wrapper,
@@ -141,9 +141,8 @@ class SdkGenerator(AbstractGenerator):
         output_mode = generator_config.output.mode.get_as_union()
         if output_mode.type == "github":
             request_sent = self._generate_readme(
-                context=context,
-                ir=ir,
                 generator_exec_wrapper=generator_exec_wrapper,
+                generated_root_client=generated_root_client,
                 capitalized_org_name=generator_config.organization.capitalize(),
                 project=project,
             )
@@ -193,13 +192,13 @@ class SdkGenerator(AbstractGenerator):
         ir: ir_types.IntermediateRepresentation,
         generator_exec_wrapper: GeneratorExecWrapper,
         project: Project,
-    ) -> None:
+    ) -> GeneratedRootClient:
         with SourceFileGenerator.generate(
             project=project,
             filepath=context.get_filepath_for_root_client(),
             generator_exec_wrapper=generator_exec_wrapper,
         ) as source_file:
-            RootClientGenerator(
+            return RootClientGenerator(
                 context=context,
                 package=ir.root_package,
                 class_name=context.get_class_name_for_root_client(),
@@ -242,64 +241,42 @@ class SdkGenerator(AbstractGenerator):
 
     def _generate_readme(
         self,
-        context: SdkGeneratorContext,
         generator_exec_wrapper: GeneratorExecWrapper,
-        ir: ir_types.IntermediateRepresentation,
+        generated_root_client: GeneratedRootClient,
         capitalized_org_name: str,
         project: Project,
     ) -> bool:
-        filepath = context.get_filepath_for_root_client()
         return generator_exec_wrapper.generate_readme(
             self._new_generate_readme_request(
-                registry_url=project._project_config.registry_url,
-                package_name=project._project_config.package_name,
+                generated_root_client=generated_root_client,
                 capitalized_org_name=capitalized_org_name,
-                root_client_module=filepath.to_module(),
-                root_client_class_name=context.get_class_name_for_root_client(),
-                path=project._root_filepath,
-                auth=ir.auth,
+                project=project,
             ),
         )
 
     def _new_generate_readme_request(
         self,
-        registry_url: Optional[str],
+        generated_root_client: GeneratedRootClient,
         capitalized_org_name: str,
-        package_name: str,
-        root_client_class_name: str,
-        root_client_module: AST.Module,
-        path: str,
-        auth: ir_types.ApiAuth,
+        project: Project,
     ) -> GenerateReadmeRequest:
         badge = ""
         installation = ""
-        if registry_url is not None:
+        if project._project_config is not None:
             # A badge and installation guide only make sense if the package is available on PyPi.
-            formatted_registry_url = registry_url.rstrip("/")
-            badge = f"[![pypi](https://img.shields.io/pypi/v/{package_name}.svg)](https://{formatted_registry_url}/pypi/{package_name})"
-            installation=f"""```sh
+            package_name = project._project_config.package_name
+            registry_url = project._project_config.registry_url.rstrip("/")
+            badge = f"[![pypi](https://img.shields.io/pypi/v/{package_name}.svg)](https://{registry_url}/pypi/{package_name})"
+            installation = f"""```sh
 pip install --upgrade {package_name}"
 ```"""
-
-        parameters = ""
-        if len(auth.schemes) > 0:
-            parameters = auth.schemes[0].visit(
-                bearer=self._get_auth_bearer_client_option,
-                basic=self._get_auth_basic_client_option,
-                header=self._get_auth_header_client_option,
-            )
-        module_path = ".".join(root_client_module.path)
 
         return GenerateReadmeRequest(
             title=f"{capitalized_org_name} Python Library",
             badege=badge,
             summary=f"The {capitalized_org_name} Python Library provides convenient access to the {capitalized_org_name} API from applications written in Python.",
             installation=installation,
-            instantiation=f"""```python
-from {module_path} import {root_client_class_name}
-
-client = {root_client_class_name}({parameters})
-```"""
+            instantiation=generated_root_client.instantiation,
             usage="",
             requirements=[],
         )

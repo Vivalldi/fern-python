@@ -32,6 +32,12 @@ class RootClientConstructorParameter:
     exclude_from_wrapper_construction: Optional[bool] = False
 
 
+@dataclass
+class GeneratedRootClient:
+    instantiation: Optional[str] = None
+    async_instantiation: Optional[str] = None
+
+
 class RootClientGenerator:
     ENVIRONMENT_CONSTRUCTOR_PARAMETER_NAME = "environment"
     ENVIRONMENT_MEMBER_NAME = "_environment"
@@ -60,15 +66,13 @@ class RootClientGenerator:
         self._environments_config = self._context.ir.environments
 
         client_wrapper_generator = ClientWrapperGenerator(context=self._context)
-        self._client_wrapper_constructor_params = (
-            client_wrapper_generator._get_constructor_info().constructor_parameters
-        )
+        self._constructor_info = client_wrapper_generator._get_constructor_info()
 
         self._timeout_constructor_parameter_name = self._get_timeout_constructor_parameter_name(
-            [param.constructor_parameter_name for param in self._client_wrapper_constructor_params]
+            [param.constructor_parameter_name for param in self._constructor_info.constructor_parameters]
         )
 
-    def generate(self, source_file: SourceFile) -> None:
+    def generate(self, source_file: SourceFile) -> GeneratedRootClient:
         class_declaration = self._create_class_declaration(is_async=False)
         if self._is_default_body_parameter_used:
             source_file.add_arbitrary_code(AST.CodeWriter(self._write_default_param))
@@ -107,6 +111,20 @@ class RootClientGenerator:
                     ),
                     should_export=False,
                 )
+
+        module_path = self._context.get_filepath_for_root_client().to_module().path
+        return GeneratedRootClient(
+            instantiation=f"""```python
+from {module_path} import {self._class_name}
+
+client = {self._class_name}({self._constructor_info.instantiation})
+```""",
+            async_instantiation=f"""```python
+from {module_path} import {self._async_class_name}
+
+client = {self._async_class_name}({self._constructor_info.instantiation})
+```""",
+        )
 
     def _create_class_declaration(self, *, is_async: bool) -> AST.ClassDeclaration:
         constructor_parameters = self._get_constructor_parameters(is_async=is_async)
