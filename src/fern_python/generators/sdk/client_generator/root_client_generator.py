@@ -121,7 +121,7 @@ class RootClientGenerator:
                     should_export=False,
                 )
         return self._new_generated_root_client(
-            module_path=".".join(self._context.get_filepath_for_root_client().to_module().path),
+            module_path=".".join(self._context.get_filepath_in_project(self._context.get_filepath_for_root_client()).to_module().path),
         )
 
     def _new_generated_root_client(
@@ -152,12 +152,10 @@ class RootClientGenerator:
         return GeneratedRootClient(
             usage=f"""```python
 {imports}
-
 client = {self._class_name}{instantiation}
 ```""",
             async_usage=f"""```python
 {async_imports}
-
 client = {self._async_class_name}{instantiation}
 ```""",
         )

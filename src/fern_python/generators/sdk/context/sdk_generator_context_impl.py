@@ -1,7 +1,7 @@
 import fern.ir.resources as ir_types
 from fern.generator_exec.resources import GeneratorConfig
 
-from fern_python.codegen import AST
+from fern_python.codegen import AST, Project
 from fern_python.codegen.filepath import Filepath
 from fern_python.utils import pascal_case
 
@@ -23,8 +23,9 @@ class SdkGeneratorContextImpl(SdkGeneratorContext):
         ir: ir_types.IntermediateRepresentation,
         generator_config: GeneratorConfig,
         custom_config: SDKCustomConfig,
+        project: Project,
     ):
-        super().__init__(ir=ir, generator_config=generator_config, custom_config=custom_config)
+        super().__init__(ir=ir, generator_config=generator_config, custom_config=custom_config, project=project)
         client_class_name = custom_config.client_class_name or (
             pascal_case(generator_config.organization) + pascal_case(generator_config.workspace_name)
         )
@@ -39,6 +40,11 @@ class SdkGeneratorContextImpl(SdkGeneratorContext):
             root_client_filename=custom_config.client_filename,
         )
         self._custom_config = custom_config
+        self._project = project
+
+    def get_filepath_in_project(self, filepath: Filepath) -> Filepath:
+        # TODO: Prepend the project path.
+        return filepath
 
     def get_filepath_for_error(self, error_name: ir_types.DeclaredErrorName) -> Filepath:
         return self._error_declaration_referencer.get_filepath(name=error_name)

@@ -88,6 +88,7 @@ class SdkGenerator(AbstractGenerator):
             ir=ir,
             generator_config=generator_config,
             custom_config=custom_config,
+            project=project,
         )
 
         PydanticModelGenerator().generate_types(
@@ -278,7 +279,7 @@ class SdkGenerator(AbstractGenerator):
         if project._project_config is not None:
             badge = BadgeType.PYPI
             installation = f"""```sh
-pip install --upgrade {project._project_config.package_name}"
+pip install --upgrade {project._project_config.package_name}
 ```"""
 
         return GenerateReadmeRequest(
