@@ -28,6 +28,7 @@ from .client_generator.root_client_generator import (
 )
 from .custom_config import SDKCustomConfig
 from .environment_generators import (
+    GeneratedEnvironment,
     MultipleBaseUrlsEnvironmentGenerator,
     SingleBaseUrlEnvironmentGenerator,
 )
@@ -97,8 +98,9 @@ class SdkGenerator(AbstractGenerator):
             context=context.pydantic_generator_context,
         )
 
+        generated_environment: Optional[GeneratedEnvironment] = None
         if ir.environments is not None:
-            self._generate_environments(
+            generated_environment = self._generate_environments(
                 context=context,
                 environments=ir.environments.environments,
                 generator_exec_wrapper=generator_exec_wrapper,
@@ -107,6 +109,7 @@ class SdkGenerator(AbstractGenerator):
 
         self._generate_client_wrapper(
             context=context,
+            generated_environment=generated_environment,
             generator_exec_wrapper=generator_exec_wrapper,
             project=project,
         )
@@ -114,6 +117,7 @@ class SdkGenerator(AbstractGenerator):
         generated_root_client = self._generate_root_client(
             context=context,
             ir=ir,
+            generated_environment=generated_environment,
             generator_exec_wrapper=generator_exec_wrapper,
             project=project,
         )
@@ -158,12 +162,12 @@ class SdkGenerator(AbstractGenerator):
         environments: ir_types.Environments,
         generator_exec_wrapper: GeneratorExecWrapper,
         project: Project,
-    ) -> None:
+    ) -> GeneratedEnvironment:
         filepath = context.get_filepath_for_environments_enum()
         with SourceFileGenerator.generate(
             project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
         ) as source_file:
-            environments.visit(
+            return environments.visit(
                 single_base_url=lambda single_base_url_environments: SingleBaseUrlEnvironmentGenerator(
                     context=context, environments=single_base_url_environments
                 ).generate(source_file=source_file),
@@ -175,6 +179,7 @@ class SdkGenerator(AbstractGenerator):
     def _generate_client_wrapper(
         self,
         context: SdkGeneratorContext,
+        generated_environment: Optional[GeneratedEnvironment],
         generator_exec_wrapper: GeneratorExecWrapper,
         project: Project,
     ) -> None:
@@ -187,12 +192,16 @@ class SdkGenerator(AbstractGenerator):
             filepath=filepath,
             generator_exec_wrapper=generator_exec_wrapper,
         ) as source_file:
-            ClientWrapperGenerator(context=context).generate(source_file=source_file, project=project)
+            ClientWrapperGenerator(
+                context=context,
+                generated_environment=generated_environment,
+            ).generate(source_file=source_file, project=project)
 
     def _generate_root_client(
         self,
         context: SdkGeneratorContext,
         ir: ir_types.IntermediateRepresentation,
+        generated_environment: Optional[GeneratedEnvironment],
         generator_exec_wrapper: GeneratorExecWrapper,
         project: Project,
     ) -> GeneratedRootClient:
@@ -204,6 +213,7 @@ class SdkGenerator(AbstractGenerator):
             return RootClientGenerator(
                 context=context,
                 package=ir.root_package,
+                generated_environment=generated_environment,
                 class_name=context.get_class_name_for_root_client(),
                 async_class_name="Async" + context.get_class_name_for_root_client(),
             ).generate(source_file=source_file)
