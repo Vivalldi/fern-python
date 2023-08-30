@@ -17,7 +17,7 @@ from ..environment_generators import GeneratedEnvironment
 @dataclass
 class ConstructorInstantiation:
     parameter: str
-    imports: List[str] = []
+    imports: Optional[List[str]] = None
 
 
 @dataclass

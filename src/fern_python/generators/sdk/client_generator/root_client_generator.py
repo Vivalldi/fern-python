@@ -137,9 +137,9 @@ class RootClientGenerator:
             instantiation += "".join([f"    {param.parameter},\n" for param in filtered_constructor_params])
             instantiation += ")\n"
 
-        base_imports = []
+        base_imports: List[str] = []
         for param in filtered_constructor_params:
-            if len(param.imports) > 0:
+            if param.imports is not None and len(param.imports) > 0:
                 base_imports.extend(param.imports)
 
         imports = "".join(
