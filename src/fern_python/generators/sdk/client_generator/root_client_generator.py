@@ -34,8 +34,8 @@ class RootClientConstructorParameter:
 
 @dataclass
 class GeneratedRootClient:
-    instantiation: Optional[str] = None
-    async_instantiation: Optional[str] = None
+    usage: str
+    async_usage: str
 
 
 class RootClientGenerator:
@@ -115,7 +115,7 @@ class RootClientGenerator:
                     should_export=False,
                 )
         return self._new_generated_root_client(
-            module_path=self._context.get_filepath_for_root_client().to_module().path,
+            module_path=".".join(self._context.get_filepath_for_root_client().to_module().path),
         )
 
     def _new_generated_root_client(
@@ -129,12 +129,12 @@ class RootClientGenerator:
             instantiation += filtered_constructor_params
             instantiation += ")\n"
         return GeneratedRootClient(
-            instantiation=f"""```python
+            usage=f"""```python
 from {module_path} import {self._class_name}
 
 client = {self._class_name}{instantiation}
 ```""",
-            async_instantiation=f"""```python
+            async_usage=f"""```python
 from {module_path} import {self._async_class_name}
 
 client = {self._async_class_name}{instantiation}

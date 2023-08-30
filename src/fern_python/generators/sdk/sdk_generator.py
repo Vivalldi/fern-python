@@ -273,9 +273,8 @@ pip install --upgrade {project._project_config.package_name}"
             badge=badge,
             summary=f"The {capitalized_org_name} Python Library provides convenient access to the {capitalized_org_name} API from applications written in Python.",
             installation=installation,
-            instantiation=generated_root_client.instantiation,
-            async_instantiation=generated_root_client.async_instantiation,
-            usage="",
+            usage=generated_root_client.usage,
+            async_usage=generated_root_client.async_usage,
             requirements=[],
         )
 
