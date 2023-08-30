@@ -94,6 +94,7 @@ class ClientWrapperGenerator:
                 constructor_parameter_name=ClientWrapperGenerator.BASE_URL_PARAMETER_NAME,
                 type_hint=AST.TypeHint.str_(),
                 private_member_name=f"_{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}",
+                instantiation=f'{ClientWrapperGenerator.BASE_URL_PARAMETER_NAME}=<"YOUR_BASE_URL">',
                 getter_method=AST.FunctionDeclaration(
                     name=ClientWrapperGenerator.GET_BASE_URL_METHOD_NAME,
                     signature=AST.FunctionSignature(return_type=AST.TypeHint.str_()),
@@ -105,6 +106,7 @@ class ClientWrapperGenerator:
                 constructor_parameter_name=ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME,
                 type_hint=AST.TypeHint(self._context.get_reference_to_environments_class()),
                 private_member_name=f"_{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}",
+                instantiation=self._get_environment_instantiation(self._context.ir),
                 getter_method=AST.FunctionDeclaration(
                     name=ClientWrapperGenerator.GET_ENVIRONMENT_METHOD_NAME,
                     signature=AST.FunctionSignature(
@@ -582,6 +584,11 @@ class ClientWrapperGenerator:
 
     def _get_auth_scheme_header_private_member_name(self, header: ir_types.HeaderAuthScheme) -> str:
         return header.name.name.snake_case.unsafe_name
+
+    def _get_environment_instantiation(self, ir: ir_types.IntermediateRepresentation) -> Optional[str]:
+        if ir.environments is None or ir.environments.default_environment is None:
+            return None
+        return f'{ClientWrapperGenerator.ENVIRONMENT_PARAMETER_NAME}=<"YOUR_ENVIRONMENT">'
 
 
 class ClientWrapperUrlStorage(Enum):
