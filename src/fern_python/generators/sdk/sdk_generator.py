@@ -2,7 +2,7 @@ from typing import Optional, Sequence, Tuple
 
 import fern.ir.resources as ir_types
 from fern.generator_exec.resources.config import GeneratorConfig
-from fern.generator_exec.resources.readme import GenerateReadmeRequest
+from fern.generator_exec.resources.readme import BadgeType, GenerateReadmeRequest
 
 from fern_python.cli.abstract_generator import AbstractGenerator
 from fern_python.codegen import AST, Project
@@ -260,23 +260,21 @@ class SdkGenerator(AbstractGenerator):
         capitalized_org_name: str,
         project: Project,
     ) -> GenerateReadmeRequest:
-        badge = ""
-        installation = ""
+        badge: Optional[BadgeType] = None
+        installation: Optional[str] = None
         if project._project_config is not None:
-            # A badge and installation guide only make sense if the package is available on PyPi.
-            package_name = project._project_config.package_name
-            registry_url = project._project_config.registry_url.rstrip("/")
-            badge = f"[![pypi](https://img.shields.io/pypi/v/{package_name}.svg)](https://{registry_url}/pypi/{package_name})"
+            badge = BadgeType.PYPI
             installation = f"""```sh
-pip install --upgrade {package_name}"
+pip install --upgrade {project._project_config.package_name}"
 ```"""
 
         return GenerateReadmeRequest(
             title=f"{capitalized_org_name} Python Library",
-            badege=badge,
+            badge=badge,
             summary=f"The {capitalized_org_name} Python Library provides convenient access to the {capitalized_org_name} API from applications written in Python.",
             installation=installation,
             instantiation=generated_root_client.instantiation,
+            async_instantiation=generated_root_client.async_instantiation,
             usage="",
             requirements=[],
         )
