@@ -22,7 +22,10 @@ from fern_python.generators.sdk.core_utilities.client_wrapper_generator import (
 from fern_python.source_file_generator import SourceFileGenerator
 
 from .client_generator.client_generator import ClientGenerator
-from .client_generator.root_client_generator import GeneratedRootClient, RootClientGenerator
+from .client_generator.root_client_generator import (
+    GeneratedRootClient,
+    RootClientGenerator,
+)
 from .custom_config import SDKCustomConfig
 from .environment_generators import (
     MultipleBaseUrlsEnvironmentGenerator,
