@@ -111,8 +111,12 @@ class RootClientGenerator:
                     ),
                     should_export=False,
                 )
+        return self._new_generated_root_client(self._context.get_filepath_for_root_client().to_module().path)
 
-        module_path = self._context.get_filepath_for_root_client().to_module().path
+    def _new_generated_root_client(
+        self,
+        module_path: str,
+    ) -> GeneratedRootClient:
         return GeneratedRootClient(
             instantiation=f"""```python
 from {module_path} import {self._class_name}
