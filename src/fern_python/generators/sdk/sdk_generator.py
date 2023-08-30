@@ -88,7 +88,10 @@ class SdkGenerator(AbstractGenerator):
             ir=ir,
             generator_config=generator_config,
             custom_config=custom_config,
-            project=project,
+            relative_path_to_project=self.get_relative_path_to_project_for_publish(
+                generator_config=generator_config,
+                ir=ir,
+            ),
         )
 
         PydanticModelGenerator().generate_types(

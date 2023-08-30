@@ -21,7 +21,6 @@ class SdkGeneratorContext(ABC):
         ir: ir_types.IntermediateRepresentation,
         generator_config: GeneratorConfig,
         custom_config: SDKCustomConfig,
-        project: Project,
     ):
         self.ir = ir
         self.generator_config = generator_config
@@ -32,7 +31,6 @@ class SdkGeneratorContext(ABC):
         )
         self.core_utilities = CoreUtilities()
         self.custom_config = custom_config
-        self.project = project
 
     @abstractmethod
     def get_filepath_in_project(self, filepath: Filepath) -> Filepath:
