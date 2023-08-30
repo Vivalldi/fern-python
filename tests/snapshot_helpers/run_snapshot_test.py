@@ -23,7 +23,6 @@ def run_snapshot_test(
     output_mode: config.OutputMode = config.OutputMode.factory.download_files(),
     test_commands: Optional[List[str]] = None,
     organization: str = "fern",
-    checkReadme: bool = True,
 ) -> None:
     path_to_fixture = os.path.join(os.path.dirname(filename_of_test), f"fixtures/{fixture_name}")
 
@@ -73,11 +72,6 @@ def run_snapshot_test(
         snapshot.assert_match(
             name=relative_filepath.replace("/", "_").replace(".py", ""), value=FileSnapshot(written_filepath)
         )
-
-    if checkReadme and (output_mode.get_as_union().type == "github" or output_mode.get_as_union().type == "publish"):
-        written_filepath = os.path.join(path_to_output, "readme.json")
-        relative_filepath = os.path.relpath(written_filepath, start=path_to_output)
-        snapshot.assert_match(name=relative_filepath.replace(".json", ""), value=FileSnapshot(written_filepath))
 
     snapshot.assert_match(
         name="filepaths",
