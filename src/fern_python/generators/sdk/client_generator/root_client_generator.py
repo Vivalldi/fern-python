@@ -123,9 +123,10 @@ class RootClientGenerator:
         module_path: str,
     ) -> GeneratedRootClient:
         instantiation = "()"
-        if len(self._client_wrapper_constructor_params) > 0:
+        filtered_constructor_params = "".join([f"    {param.instantiation},\n" for param in self._client_wrapper_constructor_params if param.instantiation is not None])
+        if len(filtered_constructor_params) > 0:
             instantiation = "(\n"
-            instantiation += "".join([f"    {param.instantiation},\n" for param in self._client_wrapper_constructor_params])
+            instantiation += filtered_constructor_params
             instantiation += ")\n"
         return GeneratedRootClient(
             instantiation=f"""```python

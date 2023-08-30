@@ -18,7 +18,7 @@ class ConstructorParameter:
     constructor_parameter_name: str
     type_hint: AST.TypeHint
     private_member_name: str
-    instantiation: str
+    instantiation: typing.Optional[str] = None
     getter_method: typing.Optional[AST.FunctionDeclaration] = None
     header_key: typing.Optional[str] = None
     header_prefix: typing.Optional[str] = None
