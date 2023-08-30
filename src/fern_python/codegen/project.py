@@ -18,7 +18,6 @@ from .writer_impl import WriterImpl
 
 @dataclass(frozen=True)
 class ProjectConfig:
-    registry_url: Optional[str]
     package_name: str
     package_version: str
 

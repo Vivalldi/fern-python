@@ -30,7 +30,6 @@ class AbstractGenerator(ABC):
         project_config = generator_config.output.mode.visit(
             download_files=lambda: None,
             publish=lambda publish: ProjectConfig(
-                registry_url=publish.registries_v_2.pypi.registry_url,
                 package_name=publish.registries_v_2.pypi.package_name,
                 package_version=publish.version,
             ),
@@ -80,7 +79,6 @@ class AbstractGenerator(ABC):
         # we generate a pyproject.toml
         if output_mode.publish_info is None:
             return ProjectConfig(
-                registry_url=None,
                 package_name=generator_config.organization,
                 package_version="0.0.0",
             )
@@ -88,7 +86,6 @@ class AbstractGenerator(ABC):
         if publish_info_union.type != "pypi":
             raise RuntimeError("Github publish info is not pypi")
         return ProjectConfig(
-            registry_url=publish_info_union.registry_url,
             package_name=publish_info_union.package_name,
             package_version=output_mode.version,
         )
