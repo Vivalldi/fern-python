@@ -66,10 +66,13 @@ class RootClientGenerator:
         self._environments_config = self._context.ir.environments
 
         client_wrapper_generator = ClientWrapperGenerator(context=self._context)
+        self._client_wrapper_constructor_params = (
+            client_wrapper_generator._get_constructor_info().constructor_parameters
+        )
         self._constructor_info = client_wrapper_generator._get_constructor_info()
 
         self._timeout_constructor_parameter_name = self._get_timeout_constructor_parameter_name(
-            [param.constructor_parameter_name for param in self._constructor_info.constructor_parameters]
+            [param.constructor_parameter_name for param in self._client_wrapper_constructor_params]
         )
 
     def generate(self, source_file: SourceFile) -> GeneratedRootClient:
@@ -111,22 +114,29 @@ class RootClientGenerator:
                     ),
                     should_export=False,
                 )
-        return self._new_generated_root_client(self._context.get_filepath_for_root_client().to_module().path)
+        return self._new_generated_root_client(
+            module_path=self._context.get_filepath_for_root_client().to_module().path,
+        )
 
     def _new_generated_root_client(
         self,
         module_path: str,
     ) -> GeneratedRootClient:
+        instantiation = "()"
+        if len(self._client_wrapper_constructor_params) > 0:
+            instantiation = "(\n"
+            instantiation += "".join([f"    {param.instantiation},\n" for param in self._client_wrapper_constructor_params])
+            instantiation += ")\n"
         return GeneratedRootClient(
             instantiation=f"""```python
 from {module_path} import {self._class_name}
 
-client = {self._class_name}({self._constructor_info.instantiation})
+client = {self._class_name}{instantiation}
 ```""",
             async_instantiation=f"""```python
 from {module_path} import {self._async_class_name}
 
-client = {self._async_class_name}({self._constructor_info.instantiation})
+client = {self._async_class_name}{instantiation}
 ```""",
         )
 
