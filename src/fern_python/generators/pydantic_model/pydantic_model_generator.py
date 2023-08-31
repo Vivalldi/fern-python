@@ -87,7 +87,8 @@ class PydanticModelGenerator(AbstractGenerator):
     ) -> None:
         filepath = context.get_filepath_for_type_name(type_name=type.name)
         source_file = SourceFileFactory.create(
-            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper)
+            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
+        )
         type_declaration_handler = TypeDeclarationHandler(
             declaration=type,
             context=context,
@@ -95,7 +96,7 @@ class PydanticModelGenerator(AbstractGenerator):
             source_file=source_file,
         )
         type_declaration_handler.run()
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
 
     def get_sorted_modules(self) -> None:
         return None

@@ -31,17 +31,16 @@ class RegisterFileGenerator:
 
     def generate_registry_file(self, project: Project, generator_exec_wrapper: GeneratorExecWrapper) -> None:
         filepath = Filepath(
-                directories=(),
-                file=Filepath.FilepathPart(module_name=RegisterFileGenerator._MODULE_NAME),
-            )
+            directories=(),
+            file=Filepath.FilepathPart(module_name=RegisterFileGenerator._MODULE_NAME),
+        )
         source_file = SourceFileFactory.create(
-            project=project,
-            generator_exec_wrapper=generator_exec_wrapper,
-            filepath=filepath)
+            project=project, generator_exec_wrapper=generator_exec_wrapper, filepath=filepath
+        )
         source_file.add_declaration(declaration=self._get_register_method(), should_export=False)
         source_file.add_declaration(declaration=self._get_register_service_method(), should_export=False)
         source_file.add_declaration(declaration=self._get_register_validators_method(), should_export=False)
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
 
     def _get_register_method(self) -> AST.FunctionDeclaration:
         return AST.FunctionDeclaration(

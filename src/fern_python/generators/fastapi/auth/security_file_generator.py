@@ -96,7 +96,7 @@ class SecurityFileGenerator:
                 body=AST.CodeWriter(self._write_fern_auth_body),
             ),
         )
-        source_file.write_to_file(filepath=project.get_source_file_filepath(security_filepath))
+        project.write_source_file(source_file=source_file, filepath=security_filepath)
 
     def _write_fern_auth_body(self, writer: AST.NodeWriter) -> None:
         writer.write_line(f"return {SecurityFileGenerator._AUTH_PARAMETER_NAME}")

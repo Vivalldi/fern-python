@@ -118,9 +118,10 @@ class FastApiGenerator(AbstractGenerator):
     ) -> None:
         filepath = context.get_filepath_for_service(service.name)
         service_file = SourceFileFactory.create(
-            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper)
+            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
+        )
         ServiceGenerator(context=context, service=service).generate(source_file=service_file)
-        service_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=service_file, filepath=filepath)
 
         for endpoint in service.endpoints:
             if endpoint.request_body is not None:
@@ -132,7 +133,8 @@ class FastApiGenerator(AbstractGenerator):
                     inlined_request_source_file = SourceFileFactory.create(
                         project=project,
                         filepath=inlined_request_filepath,
-                        generator_exec_wrapper=generator_exec_wrapper)
+                        generator_exec_wrapper=generator_exec_wrapper,
+                    )
                     InlinedRequestGenerator(
                         context=context,
                         service=service,
@@ -141,7 +143,7 @@ class FastApiGenerator(AbstractGenerator):
                     ).generate(
                         source_file=inlined_request_source_file,
                     )
-                    inlined_request_source_file.write_to_file(filepath=project.get_source_file_filepath(inlined_request_filepath))
+                    project.write_source_file(source_file=service_file, filepath=inlined_request_filepath)
 
     def _generate_error(
         self,
@@ -156,7 +158,7 @@ class FastApiGenerator(AbstractGenerator):
             project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
         )
         ErrorGenerator(context=context, error=error).generate(source_file=source_file)
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
 
     def get_sorted_modules(self) -> None:
         return None

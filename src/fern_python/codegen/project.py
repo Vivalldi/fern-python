@@ -83,6 +83,9 @@ class Project:
         )
         return source_file
 
+    def write_source_file(self, *, source_file: SourceFile, filepath: Filepath) -> None:
+        source_file.write_to_file(filepath=self.get_source_file_filepath(filepath))
+
     def get_source_file_filepath(self, filepath: Filepath) -> str:
         return os.path.join(self._project_filepath, str(filepath))
 

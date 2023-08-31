@@ -175,7 +175,7 @@ class SdkGenerator(AbstractGenerator):
                 context=context, environments=multiple_base_urls_environments
             ).generate(source_file=source_file),
         )
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
         return generated_environment
 
     def _generate_client_wrapper(
@@ -190,14 +190,13 @@ class SdkGenerator(AbstractGenerator):
             file=Filepath.FilepathPart(module_name="client_wrapper"),
         )
         source_file = SourceFileFactory.create(
-            project=project,
-            filepath=filepath,
-            generator_exec_wrapper=generator_exec_wrapper)
+            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
+        )
         ClientWrapperGenerator(
             context=context,
             generated_environment=generated_environment,
         ).generate(source_file=source_file, project=project)
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
 
     def _generate_root_client(
         self,
@@ -209,9 +208,8 @@ class SdkGenerator(AbstractGenerator):
     ) -> GeneratedRootClient:
         filepath = context.get_filepath_for_root_client()
         source_file = SourceFileFactory.create(
-            project=project,
-            filepath=filepath,
-            generator_exec_wrapper=generator_exec_wrapper)
+            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
+        )
         generated_root_client = RootClientGenerator(
             context=context,
             package=ir.root_package,
@@ -219,7 +217,7 @@ class SdkGenerator(AbstractGenerator):
             class_name=context.get_class_name_for_root_client(),
             async_class_name="Async" + context.get_class_name_for_root_client(),
         ).generate(source_file=source_file)
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
         return generated_root_client
 
     def _generate_subpackage_client(
@@ -233,14 +231,15 @@ class SdkGenerator(AbstractGenerator):
     ) -> None:
         filepath = context.get_filepath_for_subpackage_service(subpackage_id)
         source_file = SourceFileFactory.create(
-            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper)
+            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
+        )
         ClientGenerator(
             context=context,
             package=subpackage,
             class_name=context.get_class_name_of_subpackage_service(subpackage_id),
             async_class_name=context.get_class_name_of_async_subpackage_service(subpackage_id),
         ).generate(source_file=source_file)
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
 
     def _generate_error(
         self,
@@ -252,9 +251,10 @@ class SdkGenerator(AbstractGenerator):
     ) -> None:
         filepath = context.get_filepath_for_error(error.name)
         source_file = SourceFileFactory.create(
-            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper)
+            project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
+        )
         ErrorGenerator(context=context, error=error).generate(source_file=source_file)
-        source_file.write_to_file(filepath=project.get_source_file_filepath(filepath))
+        project.write_source_file(source_file=source_file, filepath=filepath)
 
     def _generate_readme(
         self,

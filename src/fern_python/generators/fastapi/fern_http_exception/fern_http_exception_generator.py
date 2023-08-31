@@ -55,7 +55,7 @@ class FernHTTPExceptionGenerator:
                     body=self._create_json_response_body_writer_status_code(),
                 )
             )
-        source_file.write_to_file(filepath=project.get_source_file_filepath(self.FernHTTPException.filepath))
+        project.write_source_file(source_file=source_file, filepath=self.FernHTTPException.filepath)
 
     def _get_constructor(self) -> AST.ClassConstructor:
         return AST.ClassConstructor(

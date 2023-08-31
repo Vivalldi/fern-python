@@ -27,7 +27,7 @@ class SourceFileFactory:
         return project.source_file(filepath=filepath)
 
     @staticmethod
-    def create_snippet() -> SourceFile: 
+    def create_snippet() -> SourceFile:
         return SourceFileImpl(
             module_path=(),
             reference_resolver=ReferenceResolverImpl(

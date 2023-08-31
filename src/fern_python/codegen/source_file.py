@@ -4,7 +4,6 @@ from abc import abstractmethod
 from typing import Callable, List, Set, TypeVar
 
 from fern_python.codegen.dependency_manager import DependencyManager
-from fern_python.codegen.filepath import Filepath
 
 from . import AST
 from .class_parent import ClassParent
@@ -113,11 +112,11 @@ class SourceFileImpl(SourceFile):
     def to_str(self) -> str:
         writer = self._prepare_for_writing()
         return writer.to_str()
-    
-    def write_to_file(self, *, filepath: str) -> None: 
+
+    def write_to_file(self, *, filepath: str) -> None:
         writer = self._prepare_for_writing()
         writer.write_to_file(filepath=filepath)
-        
+
         if self._completion_listener is not None:
             self._completion_listener(self)
 
