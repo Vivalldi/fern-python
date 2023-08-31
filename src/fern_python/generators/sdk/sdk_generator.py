@@ -2,7 +2,6 @@ from typing import Optional, Sequence, Tuple
 
 import fern.ir.resources as ir_types
 from fern.generator_exec.resources.config import GeneratorConfig
-from fern.generator_exec.resources.readme import BadgeType, GenerateReadmeRequest
 
 from fern_python.cli.abstract_generator import AbstractGenerator
 from fern_python.codegen import Project
@@ -12,6 +11,7 @@ from fern_python.generators.pydantic_model import (
     PydanticModelCustomConfig,
     PydanticModelGenerator,
 )
+from fern_python.generators.sdk.cloud_readme_generator import CloudReadmeGenerator
 from fern_python.generators.sdk.context.sdk_generator_context import SdkGeneratorContext
 from fern_python.generators.sdk.context.sdk_generator_context_impl import (
     SdkGeneratorContextImpl,
@@ -151,12 +151,13 @@ class SdkGenerator(AbstractGenerator):
 
         output_mode = generator_config.output.mode.get_as_union()
         if output_mode.type == "github":
-            request_sent = self._generate_readme(
+            readme_generator = CloudReadmeGenerator(
+                generator_config=generator_config,
                 generator_exec_wrapper=generator_exec_wrapper,
-                generated_root_client=generated_root_client,
-                capitalized_org_name=generator_config.organization.capitalize(),
                 project=project,
+                generated_root_client=generated_root_client,
             )
+            request_sent = readme_generator.generate_cloud_readme()
             if request_sent:
                 project.set_generate_readme(False)
 
@@ -255,45 +256,6 @@ class SdkGenerator(AbstractGenerator):
             project=project, filepath=filepath, generator_exec_wrapper=generator_exec_wrapper
         ) as source_file:
             ErrorGenerator(context=context, error=error).generate(source_file=source_file)
-
-    def _generate_readme(
-        self,
-        generator_exec_wrapper: GeneratorExecWrapper,
-        generated_root_client: GeneratedRootClient,
-        capitalized_org_name: str,
-        project: Project,
-    ) -> bool:
-        return generator_exec_wrapper.generate_readme(
-            self._new_generate_readme_request(
-                generated_root_client=generated_root_client,
-                capitalized_org_name=capitalized_org_name,
-                project=project,
-            ),
-        )
-
-    def _new_generate_readme_request(
-        self,
-        generated_root_client: GeneratedRootClient,
-        capitalized_org_name: str,
-        project: Project,
-    ) -> GenerateReadmeRequest:
-        badge: Optional[BadgeType] = None
-        installation: Optional[str] = None
-        if project._project_config is not None:
-            badge = BadgeType.PYPI
-            installation = f"""```sh
-pip install --upgrade {project._project_config.package_name}
-```"""
-
-        return GenerateReadmeRequest(
-            title=f"{capitalized_org_name} Python Library",
-            badge=badge,
-            summary=f"The {capitalized_org_name} Python Library provides convenient access to the {capitalized_org_name} API from applications written in Python.",
-            installation=installation,
-            usage=generated_root_client.usage,
-            async_usage=generated_root_client.async_usage,
-            requirements=[],
-        )
 
     def get_sorted_modules(self) -> Sequence[str]:
         # always import types/errors before resources (nested packages)

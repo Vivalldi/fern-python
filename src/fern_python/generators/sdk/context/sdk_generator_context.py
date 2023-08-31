@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 import fern.ir.resources as ir_types
 from fern.generator_exec.resources import GeneratorConfig
 
-from fern_python.codegen import AST, Project
+from fern_python.codegen import AST
 from fern_python.codegen.filepath import Filepath
 from fern_python.generators.pydantic_model import PydanticGeneratorContextImpl
 
@@ -90,4 +90,8 @@ class SdkGeneratorContext(ABC):
 
     @abstractmethod
     def get_class_name_for_root_client(self) -> str:
+        ...
+
+    @abstractmethod
+    def get_module(self, filepath: Filepath) -> AST.Module:
         ...

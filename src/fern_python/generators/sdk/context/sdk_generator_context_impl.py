@@ -3,7 +3,7 @@ from typing import Tuple
 import fern.ir.resources as ir_types
 from fern.generator_exec.resources import GeneratorConfig
 
-from fern_python.codegen import AST, Project
+from fern_python.codegen import AST
 from fern_python.codegen.filepath import Filepath
 from fern_python.utils import pascal_case
 
@@ -44,7 +44,7 @@ class SdkGeneratorContextImpl(SdkGeneratorContext):
         self._custom_config = custom_config
         self._relative_path_to_project = relative_path_to_project
 
-    def get_filepath_in_project(self, filepath: Filepath) -> Filepath:
+    def get_filepath_for_(self, filepath: Filepath) -> Filepath:
         # TODO: Prepend the relative path to project.
         return filepath
 
@@ -95,3 +95,10 @@ class SdkGeneratorContextImpl(SdkGeneratorContext):
     def get_reference_to_async_subpackage_service(self, subpackage_id: ir_types.SubpackageId) -> AST.ClassReference:
         subpackage = self.ir.subpackages[subpackage_id]
         return self._subpackage_async_client_declaration_referencer.get_class_reference(name=subpackage)
+
+    def get_module(self, module_path: Tuple[str, ...], filepath: Filepath) -> AST.Module:
+        return AST.Module.external(
+            module_path=module_path,
+            filepath=filepath,
+            dependency=None,
+        )

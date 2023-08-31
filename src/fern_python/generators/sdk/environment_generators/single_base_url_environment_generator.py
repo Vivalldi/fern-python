@@ -26,11 +26,8 @@ class SingleBaseUrlEnvironmentGenerator:
             ],
         )
 
-        example_environment = ""
         for i, single_base_url_env in enumerate(self._environments.environments):
             class_var_name = self._get_enum_value_name(single_base_url_env)
-            if i == 0:
-                example_environment = f"{class_name}.{class_var_name}"
             enum_class.add_class_var(
                 AST.VariableDeclaration(
                     name=class_var_name,
@@ -42,9 +39,11 @@ class SingleBaseUrlEnvironmentGenerator:
         source_file.add_class_declaration(enum_class)
 
         return GeneratedEnvironment(
-            module_path=".".join(self._context.get_filepath_in_project(self._context.get_filepath_for_environments_enum()).to_module().path),
-            class_name=class_name,
-            example_environment=example_environment,
+            class_reference=AST.ClassReference(
+                import_=AST.ReferenceImport(module=self._context.get_module(), named_import=class_name),
+                qualified_name_excluding_import=(),
+            ),
+            environment_enum=self._environments.environments[0].name.screaming_snake_case,
         )
 
     def get_reference_to_default_environment(self) -> AST.Expression:
