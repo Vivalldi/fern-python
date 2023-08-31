@@ -143,7 +143,9 @@ class FastApiGenerator(AbstractGenerator):
                     ).generate(
                         source_file=inlined_request_source_file,
                     )
-                    project.write_source_file(source_file=inlined_request_source_file, filepath=inlined_request_filepath)
+                    project.write_source_file(
+                        source_file=inlined_request_source_file, filepath=inlined_request_filepath
+                    )
 
     def _generate_error(
         self,
