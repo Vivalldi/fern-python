@@ -2,7 +2,7 @@ from fern_python.codegen import AST
 from fern_python.snippet_generator import SnippetGenerator
 
 
-def test_snippet_generator():
+def test_snippet_generator() -> None:
     snippet_generator = SnippetGenerator()
     snippet_generator.add_arbitrary_code(AST.CodeWriter("x = 42"))
     assert (
