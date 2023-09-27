@@ -277,9 +277,7 @@ class EndpointResponseCodeWriter:
         )
 
     def _get_streaming_response_data_type(self, streaming_response: ir_types.StreamingResponse) -> AST.TypeHint:
-        union = streaming_response.data_event_type.get_as_union()
-        if union.type == "json":
-            return self._context.pydantic_generator_context.get_type_hint_for_type_reference(union.json_)
-        if union.type == "text":
-            return AST.TypeHint.str_()
-        raise RuntimeError(f"{union.type} streaming response is unsupported")
+        return streaming_response.data_event_type.visit(
+            json=lambda json_: self._context.pydantic_generator_context.get_type_hint_for_type_reference(json_),
+            text=lambda: AST.TypeHint.str_(),
+        )
