@@ -114,14 +114,16 @@ class SnippetRegistry:
         self,
         endpoint: ir_types.HttpEndpoint,
     ) -> str:
-        # Not all paths start with a '/', so we strip and manually add it for consistency.
-        head = endpoint.full_path.head.lstrip("/")
-        path = f"/{head}"
+        components: List[str] = []
+        head = endpoint.full_path.head.strip("/")
+        if len(head) > 0:
+            components.append(head)
         for part in endpoint.full_path.parts:
-            path += "{" + part.path_parameter + "}" + part.tail
-
-        # Similarly, strip off the trailing '/', if any.
-        return path.rstrip("/")
+            components.append("{" + part.path_parameter + "}")
+            tail = part.tail.strip("/")
+            if len(tail) > 0:
+                components.append(tail)
+        return "/" + "/".join(components)
 
     def _ir_method_to_generator_exec_method(
         self,

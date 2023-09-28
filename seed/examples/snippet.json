@@ -20,7 +20,7 @@
     "endpoints": [
         {
             "id": {
-                "path": "",
+                "path": "/",
                 "method": "POST"
             },
             "snippet": {

@@ -14,7 +14,7 @@
         },
         {
             "id": {
-                "path": "/{id}//{nestedId}",
+                "path": "/{id}/{nestedId}",
                 "method": "GET"
             },
             "snippet": {
