@@ -6,7 +6,7 @@ authors = []
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pydantic = "^1.9.2"
+pydantic = "^1.10.13"
 typer = {extras = ["all"], version = "^0.6.1"}
 fern-fern-generator-exec-sdk = {version = "0.0.397", source = "fern-prod"}
 fern-fern-ir-model = "0.0.2922"
