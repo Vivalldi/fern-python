@@ -1,6 +1,9 @@
 from typing import Literal, Optional, Union
 
-import pydantic
+try:
+    import pydantic.v1 as pydantic
+except ImportError:
+    import pydantic
 
 
 class SDKCustomConfig(pydantic.BaseModel):

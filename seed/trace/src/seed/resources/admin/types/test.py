@@ -4,7 +4,10 @@ from __future__ import annotations
 
 import typing
 
-import pydantic
+try:
+    import pydantic.v1 as pydantic
+except ImportError:
+    import pydantic
 import typing_extensions
 
 

@@ -4,7 +4,10 @@ import datetime as dt
 import typing
 import uuid
 
-import pydantic
+try:
+    import pydantic.v1 as pydantic
+except ImportError:
+    import pydantic
 
 from ......core.datetime_utils import serialize_datetime
 
